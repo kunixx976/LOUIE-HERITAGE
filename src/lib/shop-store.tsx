@@ -55,8 +55,8 @@ const seedOrders: Order[] = [
     status: "Delivered",
     total: 660,
     items: [
-      { name: "Hanne Double-Faced Wool Coat", quantity: 1, price: 495, image: products[1].images[0] },
-      { name: "Aro Cashmere Scarf", quantity: 1, price: 135, image: products[7].images[0] },
+      { name: "Hanne Double-Faced Wool Coat", quantity: 1, price: 495, image: products[1]!.images[0]! },
+      { name: "Aro Cashmere Scarf", quantity: 1, price: 135, image: products[7]!.images[0]! },
     ],
   },
   {
@@ -65,8 +65,8 @@ const seedOrders: Order[] = [
     status: "In transit",
     total: 274,
     items: [
-      { name: "Elin Oversized Poplin Shirt", quantity: 1, price: 129, image: products[0].images[0] },
-      { name: "Kavi Heavyweight Hoodie", quantity: 1, price: 145, image: products[5].images[0] },
+      { name: "Elin Oversized Poplin Shirt", quantity: 1, price: 129, image: products[0]!.images[0]! },
+      { name: "Kavi Heavyweight Hoodie", quantity: 1, price: 145, image: products[5]!.images[0]! },
     ],
   },
 ];
@@ -138,7 +138,7 @@ export function ShopProvider({ children }: { children: ReactNode }) {
       );
       if (idx > -1) {
         const cart = [...s.cart];
-        cart[idx] = { ...cart[idx], quantity: cart[idx].quantity + line.quantity };
+        cart[idx] = { ...cart[idx]!, quantity: cart[idx]!.quantity + line.quantity };
         return { ...s, cart };
       }
       return { ...s, cart: [...s.cart, line] };
@@ -149,7 +149,7 @@ export function ShopProvider({ children }: { children: ReactNode }) {
     setState((s) => {
       const cart = [...s.cart];
       if (quantity <= 0) cart.splice(index, 1);
-      else cart[index] = { ...cart[index], quantity };
+      else cart[index] = { ...cart[index]!, quantity };
       return { ...s, cart };
     });
   }, []);
@@ -196,7 +196,7 @@ export function ShopProvider({ children }: { children: ReactNode }) {
           name: product.name,
           quantity: line.quantity,
           price: product.price,
-          image: product.images[0],
+          image: product.images[0]!,
         };
       });
       return {
