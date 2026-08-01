@@ -164,7 +164,6 @@ export function Navbar() {
       <Dialog open={searchOpen} onOpenChange={setSearchOpen}>
         <DialogContent
           className="top-24 max-w-2xl translate-y-0 rounded-[10px] border-border p-0"
-          showCloseButton={false}
         >
           <DialogTitle className="sr-only">Search</DialogTitle>
           <div className="flex items-center gap-3 border-b border-border px-5">
