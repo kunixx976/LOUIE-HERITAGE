@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { Heart, Minus, Plus, Truck, RotateCcw, Ruler } from "lucide-react";
 import { toast } from "sonner";
-import { getProduct, products, reviews as globalReviews } from "@/lib/data";
+import { getProduct, products, reviews as globalReviews, type Product } from "@/lib/data";
 import { formatPrice, useShop } from "@/lib/shop-store";
 import { cn } from "@/lib/utils";
 import { Breadcrumbs } from "@/components/site/PageHeader";
@@ -52,7 +52,7 @@ const sizeGuide = [
 ];
 
 function ProductPage() {
-  const { product } = Route.useLoaderData();
+  const { product } = Route.useLoaderData() as { product: Product };
   const { addToCart, toggleWishlist, isWishlisted, markViewed, recentlyViewed } = useShop();
 
   const [active, setActive] = useState(0);

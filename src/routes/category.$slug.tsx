@@ -1,5 +1,5 @@
 import { createFileRoute, notFound } from "@tanstack/react-router";
-import { getCategory, productsInCategory } from "@/lib/data";
+import { getCategory, productsInCategory, type Category } from "@/lib/data";
 import { Breadcrumbs } from "@/components/site/PageHeader";
 import { ShopBrowser } from "@/components/site/ShopBrowser";
 
@@ -30,7 +30,7 @@ export const Route = createFileRoute("/category/$slug")({
 });
 
 function CategoryPage() {
-  const { category } = Route.useLoaderData();
+  const { category } = Route.useLoaderData() as { category: Category };
   const items = productsInCategory(category.slug);
 
   return (
