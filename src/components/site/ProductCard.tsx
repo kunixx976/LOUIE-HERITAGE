@@ -117,7 +117,7 @@ export function ProductCard({ product, priority }: { product: Product; priority?
       </div>
 
       <div className="mt-3.5 flex items-baseline justify-between gap-4">
-        <h3 className="truncate text-sm font-normal">
+        <h3 className="truncate font-sans text-sm font-normal">
           <Link to="/product/$slug" params={{ slug: product.slug }} className="link-underline">
             {product.name}
           </Link>
