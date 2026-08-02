@@ -59,8 +59,6 @@ function ProductPage() {
   const [size, setSize] = useState(product.sizes[0]!);
   const [color, setColor] = useState(product.colors[0]!.name);
   const [quantity, setQuantity] = useState(1);
-  const [origin, setOrigin] = useState("50% 50%");
-  const [zooming, setZooming] = useState(false);
 
   useEffect(() => {
     setActive(0);
