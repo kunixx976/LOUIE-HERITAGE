@@ -55,13 +55,13 @@ export function Navbar() {
             {/* Left — navigation */}
             <nav className="hidden items-center gap-7 lg:flex" aria-label="Primary">
               <MegaMenu label="Shop" transparent={transparent} />
-              <Link to="/category/$slug" params={{ slug: "women" }} className="text-xs uppercase tracking-[0.14em] link-underline">
+              <Link to="/category/$slug" params={{ slug: "women" }} className="text-sm font-medium transition-colors hover:text-muted-foreground">
                 Women
               </Link>
-              <Link to="/category/$slug" params={{ slug: "men" }} className="text-xs uppercase tracking-[0.14em] link-underline">
+              <Link to="/category/$slug" params={{ slug: "men" }} className="text-sm font-medium transition-colors hover:text-muted-foreground">
                 Men
               </Link>
-              <Link to="/about" className="text-xs uppercase tracking-[0.14em] link-underline">
+              <Link to="/about" className="text-sm font-medium transition-colors hover:text-muted-foreground">
                 About
               </Link>
             </nav>
@@ -120,7 +120,7 @@ export function Navbar() {
             {/* Centre — logo */}
             <Link
               to="/"
-              className="justify-self-center text-center font-display text-lg tracking-[0.28em] uppercase md:text-xl"
+              className="justify-self-center text-center font-display text-lg tracking-[0.1em] uppercase md:text-xl"
             >
               Atelier&nbsp;Nord
             </Link>
@@ -240,7 +240,7 @@ function MegaMenu({ label, transparent }: { label: string; transparent: boolean 
     <div onMouseEnter={() => setOpen(true)} onMouseLeave={() => setOpen(false)} className="static">
       <Link
         to="/shop"
-        className="text-xs uppercase tracking-[0.14em] link-underline"
+        className="text-sm font-medium transition-colors hover:text-muted-foreground"
         aria-expanded={open}
       >
         {label}

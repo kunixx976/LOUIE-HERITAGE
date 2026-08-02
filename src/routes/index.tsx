@@ -49,7 +49,7 @@ function Home() {
             fetchPriority="high"
             className="absolute inset-0 h-full w-full object-cover"
           />
-          <div className="absolute inset-0 bg-black/25" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent" />
           <div className="container-editorial relative flex h-full items-end pb-16 md:pb-24">
             <div className="max-w-2xl text-white animate-fade-up">
               <p className="eyebrow text-white/70">Autumn / Winter 2026</p>
@@ -66,14 +66,14 @@ function Home() {
                 <Link
                   to="/category/$slug"
                   params={{ slug: "women" }}
-                  className="rounded-[8px] bg-white px-8 py-3.5 text-[11px] font-medium uppercase tracking-[0.16em] text-black transition-colors hover:bg-white/85"
+                  className="inline-flex h-12 items-center justify-center rounded-full bg-white px-8 text-sm font-medium text-black transition-colors hover:bg-white/90"
                 >
                   Shop women
                 </Link>
                 <Link
                   to="/category/$slug"
                   params={{ slug: "men" }}
-                  className="rounded-[8px] border border-white/60 px-8 py-3.5 text-[11px] font-medium uppercase tracking-[0.16em] text-white transition-colors hover:bg-white/10"
+                  className="inline-flex h-12 items-center justify-center rounded-full border border-white/40 px-8 text-sm font-medium text-white backdrop-blur-sm transition-colors hover:bg-white/10"
                 >
                   Shop men
                 </Link>
@@ -163,7 +163,7 @@ function Home() {
           title="Best sellers"
           description="The pieces our customers return for, season after season."
           action={
-            <Link to="/shop" className="text-xs uppercase tracking-[0.14em] link-underline">
+            <Link to="/shop" className="text-sm font-medium transition-colors hover:text-muted-foreground">
               View all
             </Link>
           }
@@ -201,7 +201,7 @@ function Home() {
               </p>
               <Link
                 to="/about"
-                className="mt-8 inline-block rounded-[8px] border border-white/60 px-8 py-3.5 text-[11px] font-medium uppercase tracking-[0.16em] transition-colors hover:bg-white/10"
+                className="mt-8 inline-flex h-12 items-center justify-center rounded-full border border-white/40 px-8 text-sm font-medium text-white backdrop-blur-sm transition-colors hover:bg-white/10"
               >
                 Read the story
               </Link>
@@ -216,7 +216,7 @@ function Home() {
           eyebrow="Just landed"
           title="New arrivals"
           action={
-            <Link to="/shop" className="text-xs uppercase tracking-[0.14em] link-underline">
+            <Link to="/shop" className="text-sm font-medium transition-colors hover:text-muted-foreground">
               View all
             </Link>
           }
@@ -246,7 +246,7 @@ function Home() {
               <Link
                 to="/category/$slug"
                 params={{ slug: "winter" }}
-                className="mt-8 inline-block rounded-[8px] bg-foreground px-8 py-3.5 text-[11px] font-medium uppercase tracking-[0.16em] text-background transition-colors hover:bg-hover-accent"
+                className="mt-8 inline-flex h-12 items-center justify-center rounded-full bg-foreground px-8 text-sm font-medium text-background transition-colors hover:bg-foreground/90"
               >
                 Shop winter
               </Link>

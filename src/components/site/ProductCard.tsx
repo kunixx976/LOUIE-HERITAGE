@@ -47,19 +47,19 @@ export function ProductCard({ product, priority }: { product: Product; priority?
           </div>
         </Link>
 
-        <div className="pointer-events-none absolute left-4 top-4 flex flex-col gap-2">
+        <div className="pointer-events-none absolute left-3 top-3 flex flex-col gap-2">
           {discount > 0 ? (
-            <span className="bg-foreground px-2.5 py-1 text-[10px] font-medium uppercase tracking-[0.14em] text-background">
-              −{discount}%
+            <span className="rounded-full bg-foreground px-3 py-1 text-[11px] font-medium text-background shadow-sm">
+              Sale {discount}%
             </span>
           ) : null}
           {product.tags.includes("new") ? (
-            <span className="border border-border bg-background/90 px-2.5 py-1 text-[10px] font-medium uppercase tracking-[0.14em]">
+            <span className="rounded-full bg-background px-3 py-1 text-[11px] font-medium text-foreground shadow-sm">
               New
             </span>
           ) : null}
           {!product.inStock ? (
-            <span className="bg-muted px-2.5 py-1 text-[10px] font-medium uppercase tracking-[0.14em] text-muted-foreground">
+            <span className="rounded-full bg-muted px-3 py-1 text-[11px] font-medium text-muted-foreground shadow-sm">
               Sold out
             </span>
           ) : null}
@@ -75,11 +75,11 @@ export function ProductCard({ product, priority }: { product: Product; priority?
           }}
           aria-label={wishlisted ? `Remove ${product.name} from wishlist` : `Save ${product.name} to wishlist`}
           aria-pressed={wishlisted}
-          className="absolute right-3 top-3 grid h-9 w-9 place-items-center rounded-full bg-background/85 text-foreground backdrop-blur transition-colors hover:bg-background"
+          className="absolute right-3 top-3 grid h-8 w-8 place-items-center rounded-full bg-background/90 text-foreground shadow-sm backdrop-blur transition-transform hover:scale-105 active:scale-95"
         >
           <Heart
-            className={cn("h-4 w-4", wishlisted && "fill-foreground")}
-            strokeWidth={1.25}
+            className={cn("h-4 w-4 transition-colors", wishlisted && "fill-foreground text-foreground")}
+            strokeWidth={1.5}
           />
         </button>
 
@@ -87,9 +87,9 @@ export function ProductCard({ product, priority }: { product: Product; priority?
           <button
             type="button"
             onClick={() => setQuickView(true)}
-            className="flex flex-1 items-center justify-center gap-1.5 rounded-[8px] border border-border bg-background/95 py-2.5 text-[11px] font-medium uppercase tracking-[0.14em] backdrop-blur transition-colors hover:bg-secondary"
+            className="flex flex-1 items-center justify-center gap-1.5 rounded-full bg-background/95 py-2.5 text-xs font-medium text-foreground shadow-sm backdrop-blur transition-colors hover:bg-secondary"
           >
-            <Eye className="h-3.5 w-3.5" strokeWidth={1.4} /> Quick view
+            <Eye className="h-3.5 w-3.5" strokeWidth={1.5} /> Quick view
           </button>
           <button
             type="button"
@@ -103,7 +103,7 @@ export function ProductCard({ product, priority }: { product: Product; priority?
               });
               toast("Added to bag", { description: `${product.name} · ${product.sizes[0]}` });
             }}
-            className="flex-1 rounded-[8px] bg-foreground py-2.5 text-[11px] font-medium uppercase tracking-[0.14em] text-background transition-colors hover:bg-hover-accent disabled:cursor-not-allowed disabled:opacity-40"
+            className="flex-1 rounded-full bg-foreground py-2.5 text-xs font-medium text-background shadow-sm transition-colors hover:bg-foreground/90 disabled:cursor-not-allowed disabled:opacity-40"
           >
             Add to bag
           </button>

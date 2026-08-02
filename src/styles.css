@@ -1,6 +1,6 @@
 @import "tailwindcss" source(none);
 @source "../src";
-@import "tw-animate-css";
+
 
 @custom-variant dark (&:is(.dark *));
 
@@ -123,7 +123,8 @@
     color: var(--color-foreground);
     font-family: var(--font-sans);
     font-size: 0.9375rem;
-    line-height: 1.65;
+    /* 15px */
+    line-height: 1.6;
     font-weight: 400;
   }
 
@@ -145,9 +146,10 @@
 /* Editorial eyebrow label */
 @utility eyebrow {
   font-family: var(--font-sans);
-  font-size: 0.6875rem;
+  font-size: 0.75rem;
+  /* 12px */
   font-weight: 500;
-  letter-spacing: 0.18em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--color-muted-foreground);
 }
@@ -156,24 +158,25 @@
 @utility container-editorial {
   width: 100%;
   margin-inline: auto;
-  max-width: 90rem;
+  max-width: 80rem;
+  /* 1280px (more focused) */
   padding-inline: 1.25rem;
 
-  @media (width >= 48rem) {
+  @media (width >=48rem) {
     padding-inline: 2.5rem;
   }
 
-  @media (width >= 80rem) {
+  @media (width >=80rem) {
     padding-inline: 4rem;
   }
 }
 
 /* Generous vertical rhythm between sections */
 @utility section-y {
-  padding-block: 4.5rem;
+  padding-block: 5rem;
 
-  @media (width >= 48rem) {
-    padding-block: 7rem;
+  @media (width >=48rem) {
+    padding-block: 8rem;
   }
 }
 
@@ -214,6 +217,7 @@
     opacity: 0;
     transform: translateY(12px);
   }
+
   to {
     opacity: 1;
     transform: none;
