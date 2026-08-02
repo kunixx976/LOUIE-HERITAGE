@@ -49,19 +49,20 @@ function Home() {
             fetchPriority="high"
             className="absolute inset-0 h-full w-full object-cover"
           />
-          <div className="absolute inset-0 bg-black/25" />
+          <div className="absolute inset-0 bg-linear-to-t from-black/65 via-black/20 to-black/10" />
           <div className="container-editorial relative flex h-full items-end pb-16 md:pb-24">
             <div className="max-w-2xl text-white animate-fade-up">
-              <p className="eyebrow text-white/70">Autumn / Winter 2026</p>
+              <p className="eyebrow text-white/80">Autumn / Winter 2026</p>
               <h1 className="mt-5 text-[2.75rem] leading-[1.06] md:text-6xl lg:text-7xl">
                 Clothes that outlast
                 <br />
                 the season they arrive in
               </h1>
-              <p className="mt-6 max-w-md text-sm leading-relaxed text-white/80">
+              <p className="mt-6 max-w-md text-sm leading-relaxed text-white/90">
                 Double-faced wool, washed linen and lambswool knits, cut in limited runs by
                 makers we've worked with for a decade.
               </p>
+
               <div className="mt-9 flex flex-wrap gap-3">
                 <Link
                   to="/category/$slug"
