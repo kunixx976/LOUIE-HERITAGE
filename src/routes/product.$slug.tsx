@@ -59,8 +59,6 @@ function ProductPage() {
   const [size, setSize] = useState(product.sizes[0]!);
   const [color, setColor] = useState(product.colors[0]!.name);
   const [quantity, setQuantity] = useState(1);
-  const [origin, setOrigin] = useState("50% 50%");
-  const [zooming, setZooming] = useState(false);
 
   useEffect(() => {
     setActive(0);
@@ -92,11 +90,36 @@ function ProductPage() {
         />
       </div>
 
-      <article className="container-editorial grid gap-12 pb-20 lg:grid-cols-12 lg:gap-16">
+      <article className="container-editorial grid gap-10 pb-24 lg:grid-cols-12 lg:gap-20">
         {/* Gallery */}
         <div className="lg:col-span-7">
-          <div className="flex flex-col-reverse gap-4 md:flex-row">
-            <div className="flex gap-3 md:flex-col">
+          {/* Desktop: stacked editorial column. Mobile: single frame + thumbnails. */}
+          <div className="hidden gap-3 md:grid">
+            {gallery.map((image, i) => (
+              <div key={i} className="overflow-hidden rounded-[3px] bg-secondary">
+                <img
+                  src={image}
+                  alt={i === 0 ? product.name : ""}
+                  width={900}
+                  height={1200}
+                  loading={i === 0 ? "eager" : "lazy"}
+                  className="aspect-[4/5] w-full object-cover"
+                />
+              </div>
+            ))}
+          </div>
+
+          <div className="md:hidden">
+            <div className="overflow-hidden rounded-[3px] bg-secondary">
+              <img
+                src={gallery[active]}
+                alt={product.name}
+                width={900}
+                height={1200}
+                className="aspect-[4/5] w-full object-cover"
+              />
+            </div>
+            <div className="mt-3 flex gap-2">
               {gallery.map((image, i) => (
                 <button
                   key={i}
@@ -104,8 +127,8 @@ function ProductPage() {
                   onClick={() => setActive(i)}
                   aria-label={`View image ${i + 1}`}
                   className={cn(
-                    "w-16 overflow-hidden rounded-[8px] border transition-colors md:w-20",
-                    active === i ? "border-foreground" : "border-border hover:border-muted-foreground",
+                    "w-14 overflow-hidden rounded-[3px] border transition-colors",
+                    active === i ? "border-foreground" : "border-transparent",
                   )}
                 >
                   <img
@@ -114,34 +137,10 @@ function ProductPage() {
                     width={900}
                     height={1200}
                     loading="lazy"
-                    className="aspect-[3/4] w-full object-cover"
+                    className="aspect-[4/5] w-full object-cover"
                   />
                 </button>
               ))}
-            </div>
-
-            <div
-              className="relative flex-1 overflow-hidden rounded-[10px] bg-secondary"
-              onMouseEnter={() => setZooming(true)}
-              onMouseLeave={() => setZooming(false)}
-              onMouseMove={(e) => {
-                const rect = e.currentTarget.getBoundingClientRect();
-                const x = ((e.clientX - rect.left) / rect.width) * 100;
-                const y = ((e.clientY - rect.top) / rect.height) * 100;
-                setOrigin(`${x}% ${y}%`);
-              }}
-            >
-              <img
-                src={gallery[active]}
-                alt={product.name}
-                width={900}
-                height={1200}
-                className="aspect-[3/4] w-full object-cover transition-transform duration-500 ease-out"
-                style={{
-                  transformOrigin: origin,
-                  transform: zooming ? "scale(1.7)" : "scale(1)",
-                }}
-              />
             </div>
           </div>
         </div>
@@ -150,20 +149,22 @@ function ProductPage() {
         <div className="lg:col-span-5">
           <div className="lg:sticky lg:top-28">
             <p className="eyebrow">{product.categories[0]}</p>
-            <h1 className="mt-3 text-3xl leading-tight md:text-[2.4rem]">{product.name}</h1>
+            <h1 className="mt-3 text-[1.95rem] md:text-[2.3rem]">{product.name}</h1>
 
-            <div className="mt-4 flex flex-wrap items-center gap-4">
-              <span className="text-lg">{formatPrice(product.price)}</span>
+            <div className="mt-5 flex flex-wrap items-baseline gap-x-4 gap-y-2">
+              <span className="nums text-lg">{formatPrice(product.price)}</span>
               {product.compareAt ? (
-                <span className="text-sm text-muted-foreground line-through">
+                <span className="nums text-sm text-muted-foreground line-through">
                   {formatPrice(product.compareAt)}
                 </span>
               ) : null}
-              <span className="flex items-center gap-2 text-xs text-muted-foreground">
+              <span className="flex items-center gap-2 self-center text-xs text-muted-foreground">
                 <StarRating rating={product.rating} />
-                {product.rating} · {product.reviewCount} reviews
+                <span className="nums">{`${product.rating} · ${product.reviewCount} reviews`}</span>
               </span>
+
             </div>
+
 
             <p className="mt-6 text-sm leading-relaxed text-muted-foreground">
               {product.description}
