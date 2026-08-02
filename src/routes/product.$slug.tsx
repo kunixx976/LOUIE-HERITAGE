@@ -160,8 +160,9 @@ function ProductPage() {
               ) : null}
               <span className="flex items-center gap-2 self-center text-xs text-muted-foreground">
                 <StarRating rating={product.rating} />
-                <span className="nums">{product.rating}</span> · {product.reviewCount} reviews
+                <span className="nums">{`${product.rating} · ${product.reviewCount} reviews`}</span>
               </span>
+
             </div>
 
 
