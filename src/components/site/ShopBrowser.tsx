@@ -240,7 +240,7 @@ export function ShopBrowser({
             </button>
           </div>
         ) : (
-          <div className="mt-10 grid grid-cols-2 gap-x-5 gap-y-12 md:grid-cols-3">
+          <div className="mt-10 grid grid-cols-2 gap-x-6 gap-y-14 md:grid-cols-3">
             {visible.map((product) => (
               <ProductCard key={product.id} product={product} />
             ))}
