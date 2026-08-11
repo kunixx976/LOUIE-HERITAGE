@@ -127,30 +127,30 @@ export function Navbar() {
             </Link>
 
             {/* Right — utilities */}
-            <div className="flex items-center justify-end gap-1 md:gap-3">
+            <div className="-mr-2.5 flex items-center justify-end md:-mr-2 md:gap-1">
               <button
                 type="button"
                 aria-label="Search"
                 onClick={() => setSearchOpen(true)}
-                className="p-2 transition-opacity hover:opacity-60"
+                className="grid h-11 w-11 place-items-center transition-opacity hover:opacity-60"
               >
                 <Search className="h-[18px] w-[18px]" strokeWidth={1.25} />
               </button>
-              <Link to="/wishlist" aria-label="Wishlist" className="relative p-2 transition-opacity hover:opacity-60">
+              <Link to="/wishlist" aria-label="Wishlist" className="relative grid h-11 w-11 place-items-center transition-opacity hover:opacity-60">
                 <Heart className="h-[18px] w-[18px]" strokeWidth={1.25} />
                 {hydrated && wishlist.length > 0 ? <Dot /> : null}
               </Link>
               <Link
                 to="/profile"
                 aria-label={user ? "My account" : "Sign in"}
-                className="hidden p-2 transition-opacity hover:opacity-60 sm:block"
+                className="hidden h-11 w-11 place-items-center transition-opacity hover:opacity-60 sm:grid"
               >
                 <User className="h-[18px] w-[18px]" strokeWidth={1.25} />
               </Link>
-              <Link to="/cart" aria-label="Shopping bag" className="relative p-2 transition-opacity hover:opacity-60">
+              <Link to="/cart" aria-label="Shopping bag" className="relative grid h-11 w-11 place-items-center transition-opacity hover:opacity-60">
                 <ShoppingBag className="h-[18px] w-[18px]" strokeWidth={1.25} />
                 {hydrated && cartCount > 0 ? (
-                  <span className="absolute -right-0.5 -top-0.5 grid h-4 min-w-4 place-items-center rounded-full bg-current px-1 text-[9px] font-medium leading-none">
+                  <span className="absolute right-2 top-2 grid h-4 min-w-4 place-items-center rounded-full bg-current px-1 text-[9px] font-medium leading-none">
                     <span className={transparent ? "text-foreground" : "text-background"}>
                       {cartCount}
                     </span>
@@ -158,6 +158,7 @@ export function Navbar() {
                 ) : null}
               </Link>
             </div>
+
           </div>
         </div>
       </header>
