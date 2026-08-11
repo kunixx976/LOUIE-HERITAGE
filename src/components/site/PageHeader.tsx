@@ -42,12 +42,12 @@ export function PageHeader({
 }) {
   return (
     <header className="border-b border-border">
-      <div className="container-editorial py-12 md:py-16">
+      <div className="container-editorial py-9 md:py-16">
         {crumbs ? <Breadcrumbs items={crumbs} /> : null}
-        {eyebrow ? <p className="eyebrow mt-6">{eyebrow}</p> : null}
-        <h1 className="mt-3 text-4xl leading-[1.1] md:text-5xl">{title}</h1>
+        {eyebrow ? <p className="eyebrow mt-5 md:mt-6">{eyebrow}</p> : null}
+        <h1 className="mt-3 text-[clamp(2rem,9vw,2.75rem)] leading-[1.08] md:text-5xl">{title}</h1>
         {description ? (
-          <p className="mt-5 max-w-xl text-sm leading-relaxed text-muted-foreground">
+          <p className="mt-4 max-w-xl text-sm leading-relaxed text-muted-foreground md:mt-5">
             {description}
           </p>
         ) : null}
