@@ -29,7 +29,7 @@ export function Footer() {
 
           <nav className="md:col-span-2" aria-label="Shop">
             <p className="eyebrow mb-4">Shop</p>
-            <ul className="space-y-0.5 text-sm text-muted-foreground [&_a]:inline-block [&_a]:py-1.5 md:space-y-2.5 md:[&_a]:py-0">
+            <ul className="space-y-0.5 text-sm text-muted-foreground [&_a]:inline-block [&_a]:py-2.5 md:space-y-2.5 md:[&_a]:py-0">
               {shop.map((item) =>
                 item.slug ? (
                   <li key={item.label}>
@@ -54,7 +54,7 @@ export function Footer() {
 
           <nav className="md:col-span-2" aria-label="Customer care">
             <p className="eyebrow mb-4">Customer care</p>
-            <ul className="space-y-0.5 text-sm text-muted-foreground [&_a]:inline-block [&_a]:py-1.5 md:space-y-2.5 md:[&_a]:py-0">
+            <ul className="space-y-0.5 text-sm text-muted-foreground [&_a]:inline-block [&_a]:py-2.5 md:space-y-2.5 md:[&_a]:py-0">
               <li>
                 <Link to="/contact" className="transition-colors hover:text-foreground">
                   Contact us
@@ -85,7 +85,7 @@ export function Footer() {
 
           <nav className="md:col-span-2" aria-label="Company">
             <p className="eyebrow mb-4">Company</p>
-            <ul className="space-y-0.5 text-sm text-muted-foreground [&_a]:inline-block [&_a]:py-1.5 md:space-y-2.5 md:[&_a]:py-0">
+            <ul className="space-y-0.5 text-sm text-muted-foreground [&_a]:inline-block [&_a]:py-2.5 md:space-y-2.5 md:[&_a]:py-0">
               <li>
                 <Link to="/about" className="transition-colors hover:text-foreground">
                   Our story
