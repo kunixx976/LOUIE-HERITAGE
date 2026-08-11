@@ -68,9 +68,10 @@ export function Navbar() {
 
             <div className="flex lg:hidden">
               <Sheet open={menuOpen} onOpenChange={setMenuOpen}>
-                <SheetTrigger aria-label="Open menu" className="-ml-1 p-1">
+                <SheetTrigger aria-label="Open menu" className="-ml-3 grid h-11 w-11 place-items-center">
                   <Menu className="h-5 w-5" strokeWidth={1.25} />
                 </SheetTrigger>
+
                 <SheetContent side="left" className="w-[86vw] max-w-sm overflow-y-auto bg-background p-0">
                   <SheetTitle className="sr-only">Menu</SheetTitle>
                   <div className="px-6 pb-10 pt-8">
