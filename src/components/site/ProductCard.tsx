@@ -75,7 +75,7 @@ export function ProductCard({ product, priority }: { product: Product; priority?
           }}
           aria-label={wishlisted ? `Remove ${product.name} from wishlist` : `Save ${product.name} to wishlist`}
           aria-pressed={wishlisted}
-          className="absolute right-3 top-3 grid h-9 w-9 place-items-center rounded-full bg-background/85 text-foreground backdrop-blur transition-colors hover:bg-background"
+          className="absolute right-2 top-2 grid h-11 w-11 place-items-center rounded-full bg-background/85 text-foreground backdrop-blur transition-colors hover:bg-background md:right-3 md:top-3 md:h-9 md:w-9"
         >
           <Heart
             className={cn("h-4 w-4", wishlisted && "fill-foreground")}
@@ -83,7 +83,7 @@ export function ProductCard({ product, priority }: { product: Product; priority?
           />
         </button>
 
-        <div className="absolute inset-x-3 bottom-3 flex translate-y-2 gap-2 opacity-0 transition-all duration-500 group-hover:translate-y-0 group-hover:opacity-100 max-md:translate-y-0 max-md:opacity-100">
+        <div className="pointer-events-none absolute inset-x-3 bottom-3 hidden translate-y-2 gap-2 opacity-0 transition-all duration-500 group-hover:pointer-events-auto group-hover:translate-y-0 group-hover:opacity-100 md:flex">
           <button
             type="button"
             onClick={() => setQuickView(true)}
@@ -110,8 +110,8 @@ export function ProductCard({ product, priority }: { product: Product; priority?
         </div>
       </div>
 
-      <div className="mt-3.5 flex items-baseline justify-between gap-4">
-        <h3 className="truncate font-sans text-sm font-normal">
+      <div className="mt-3.5 flex flex-col gap-x-4 gap-y-0.5 sm:flex-row sm:items-baseline sm:justify-between">
+        <h3 className="min-w-0 font-sans text-sm font-normal leading-snug sm:truncate">
           <Link to="/product/$slug" params={{ slug: product.slug }} className="link-underline">
             {product.name}
           </Link>
@@ -125,7 +125,37 @@ export function ProductCard({ product, priority }: { product: Product; priority?
           <span className={cn(product.compareAt && "text-sale")}>{formatPrice(product.price)}</span>
         </div>
       </div>
+
       <p className="mt-1 truncate text-xs text-muted-foreground">{product.fabric}</p>
+
+      <div className="mt-3 flex gap-2 md:hidden">
+        <button
+          type="button"
+          onClick={() => setQuickView(true)}
+          aria-label={`Quick view ${product.name}`}
+          className="grid h-11 w-11 shrink-0 place-items-center rounded-[8px] border border-border transition-colors active:bg-secondary"
+        >
+          <Eye className="h-4 w-4" strokeWidth={1.4} />
+        </button>
+        <button
+          type="button"
+          disabled={!product.inStock}
+          onClick={() => {
+            addToCart({
+              productId: product.id,
+              size: product.sizes[0]!,
+              color: product.colors[0]!.name,
+              quantity: 1,
+            });
+            toast("Added to bag", { description: `${product.name} · ${product.sizes[0]}` });
+          }}
+          className="h-11 flex-1 rounded-[8px] border border-foreground text-[11px] font-medium uppercase tracking-[0.14em] transition-colors active:bg-foreground active:text-background disabled:cursor-not-allowed disabled:opacity-40"
+        >
+          {product.inStock ? "Add to bag" : "Sold out"}
+        </button>
+      </div>
+
+
 
 
       <QuickView product={product} open={quickView} onOpenChange={setQuickView} />

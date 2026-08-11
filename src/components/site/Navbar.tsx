@@ -68,9 +68,10 @@ export function Navbar() {
 
             <div className="flex lg:hidden">
               <Sheet open={menuOpen} onOpenChange={setMenuOpen}>
-                <SheetTrigger aria-label="Open menu" className="-ml-1 p-1">
+                <SheetTrigger aria-label="Open menu" className="-ml-3 grid h-11 w-11 place-items-center">
                   <Menu className="h-5 w-5" strokeWidth={1.25} />
                 </SheetTrigger>
+
                 <SheetContent side="left" className="w-[86vw] max-w-sm overflow-y-auto bg-background p-0">
                   <SheetTitle className="sr-only">Menu</SheetTitle>
                   <div className="px-6 pb-10 pt-8">
@@ -88,7 +89,7 @@ export function Navbar() {
                                     to="/category/$slug"
                                     params={{ slug: c.slug }}
                                     onClick={() => setMenuOpen(false)}
-                                    className="font-display text-lg"
+                                    className="inline-block py-1 font-display text-lg"
                                   >
                                     {c.name}
                                   </Link>
@@ -97,7 +98,7 @@ export function Navbar() {
                           </ul>
                         </div>
                       ))}
-                      <div className="space-y-3 border-t border-border pt-6 text-sm">
+                      <div className="space-y-1 border-t border-border pt-6 text-sm [&_a]:py-2">
                         <Link to="/shop" onClick={() => setMenuOpen(false)} className="block">
                           All products
                         </Link>
@@ -126,30 +127,30 @@ export function Navbar() {
             </Link>
 
             {/* Right — utilities */}
-            <div className="flex items-center justify-end gap-1 md:gap-3">
+            <div className="-mr-2.5 flex items-center justify-end md:-mr-2 md:gap-1">
               <button
                 type="button"
                 aria-label="Search"
                 onClick={() => setSearchOpen(true)}
-                className="p-2 transition-opacity hover:opacity-60"
+                className="grid h-11 w-11 place-items-center transition-opacity hover:opacity-60"
               >
                 <Search className="h-[18px] w-[18px]" strokeWidth={1.25} />
               </button>
-              <Link to="/wishlist" aria-label="Wishlist" className="relative p-2 transition-opacity hover:opacity-60">
+              <Link to="/wishlist" aria-label="Wishlist" className="relative grid h-11 w-11 place-items-center transition-opacity hover:opacity-60">
                 <Heart className="h-[18px] w-[18px]" strokeWidth={1.25} />
                 {hydrated && wishlist.length > 0 ? <Dot /> : null}
               </Link>
               <Link
                 to="/profile"
                 aria-label={user ? "My account" : "Sign in"}
-                className="hidden p-2 transition-opacity hover:opacity-60 sm:block"
+                className="hidden h-11 w-11 place-items-center transition-opacity hover:opacity-60 sm:grid"
               >
                 <User className="h-[18px] w-[18px]" strokeWidth={1.25} />
               </Link>
-              <Link to="/cart" aria-label="Shopping bag" className="relative p-2 transition-opacity hover:opacity-60">
+              <Link to="/cart" aria-label="Shopping bag" className="relative grid h-11 w-11 place-items-center transition-opacity hover:opacity-60">
                 <ShoppingBag className="h-[18px] w-[18px]" strokeWidth={1.25} />
                 {hydrated && cartCount > 0 ? (
-                  <span className="absolute -right-0.5 -top-0.5 grid h-4 min-w-4 place-items-center rounded-full bg-current px-1 text-[9px] font-medium leading-none">
+                  <span className="absolute right-2 top-2 grid h-4 min-w-4 place-items-center rounded-full bg-current px-1 text-[9px] font-medium leading-none">
                     <span className={transparent ? "text-foreground" : "text-background"}>
                       {cartCount}
                     </span>
@@ -157,6 +158,7 @@ export function Navbar() {
                 ) : null}
               </Link>
             </div>
+
           </div>
         </div>
       </header>
@@ -230,7 +232,7 @@ export function Navbar() {
 }
 
 function Dot() {
-  return <span className="absolute right-1.5 top-1.5 h-1.5 w-1.5 rounded-full bg-current" />;
+  return <span className="absolute right-2.5 top-2.5 h-1.5 w-1.5 rounded-full bg-current" />;
 }
 
 function MegaMenu({ label, transparent }: { label: string; transparent: boolean }) {

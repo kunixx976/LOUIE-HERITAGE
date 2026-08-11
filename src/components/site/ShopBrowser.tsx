@@ -113,7 +113,7 @@ export function ShopBrowser({
               type="button"
               onClick={() => toggle(sizes, setSizes, s)}
               className={cn(
-                "min-w-11 rounded-[8px] border border-border px-3 py-2 text-xs transition-colors hover:border-foreground",
+                "min-h-11 min-w-11 rounded-[8px] border border-border px-3 text-xs transition-colors hover:border-foreground lg:min-h-0 lg:py-2",
                 sizes.includes(s) && "border-foreground bg-foreground text-background",
               )}
             >
@@ -135,7 +135,7 @@ export function ShopBrowser({
               onClick={() => toggle(colors, setColors, c.name)}
               style={{ backgroundColor: c.hex }}
               className={cn(
-                "h-7 w-7 rounded-full border border-border transition-all",
+                "h-9 w-9 rounded-full border border-border transition-all lg:h-7 lg:w-7",
                 colors.includes(c.name) &&
                   "ring-1 ring-foreground ring-offset-2 ring-offset-background",
               )}
@@ -188,7 +188,7 @@ export function ShopBrowser({
   );
 
   return (
-    <div className="container-editorial grid gap-12 py-12 md:py-16 lg:grid-cols-12 lg:gap-14">
+    <div className="container-editorial grid gap-12 py-10 md:py-16 lg:grid-cols-12 lg:gap-14">
       <aside className="hidden lg:col-span-3 lg:block">
         <div className="sticky top-28">{filterPanel}</div>
       </aside>
@@ -200,7 +200,7 @@ export function ShopBrowser({
           </p>
           <div className="flex items-center gap-3">
             <Sheet>
-              <SheetTrigger className="flex items-center gap-2 rounded-[8px] border border-border px-4 py-2 text-xs uppercase tracking-[0.12em] lg:hidden">
+              <SheetTrigger className="flex h-11 items-center gap-2 rounded-[8px] border border-border px-4 text-xs uppercase tracking-[0.12em] lg:hidden">
                 <SlidersHorizontal className="h-3.5 w-3.5" strokeWidth={1.4} />
                 Filters {activeCount > 0 ? `(${activeCount})` : ""}
               </SheetTrigger>
@@ -211,7 +211,7 @@ export function ShopBrowser({
             </Sheet>
 
             <Select value={sort} onValueChange={(v) => setSort(v as Sort)}>
-              <SelectTrigger className="h-9 w-[11.5rem] rounded-[8px] border-border text-xs">
+              <SelectTrigger className="h-11 w-[9.5rem] rounded-[8px] border-border text-xs sm:w-[11.5rem] lg:h-9">
                 <SelectValue placeholder="Sort" />
               </SelectTrigger>
               <SelectContent>
@@ -240,7 +240,7 @@ export function ShopBrowser({
             </button>
           </div>
         ) : (
-          <div className="mt-10 grid grid-cols-2 gap-x-6 gap-y-14 md:grid-cols-3">
+          <div className="mt-8 grid grid-cols-2 gap-x-4 gap-y-10 sm:gap-x-6 md:mt-10 md:grid-cols-3 md:gap-y-14">
             {visible.map((product) => (
               <ProductCard key={product.id} product={product} />
             ))}
@@ -262,7 +262,7 @@ export function ShopBrowser({
                   window.scrollTo({ top: 200, behavior: "smooth" });
                 }}
                 className={cn(
-                  "h-9 w-9 rounded-[8px] border border-transparent text-xs transition-colors hover:border-border",
+                  "h-11 w-11 rounded-[8px] border border-transparent text-xs transition-colors hover:border-border sm:h-9 sm:w-9",
                   n === current && "border-foreground",
                 )}
               >
