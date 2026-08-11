@@ -128,6 +128,35 @@ export function ProductCard({ product, priority }: { product: Product; priority?
 
       <p className="mt-1 truncate text-xs text-muted-foreground">{product.fabric}</p>
 
+      <div className="mt-3 flex gap-2 md:hidden">
+        <button
+          type="button"
+          onClick={() => setQuickView(true)}
+          aria-label={`Quick view ${product.name}`}
+          className="grid h-11 w-11 shrink-0 place-items-center rounded-[8px] border border-border transition-colors active:bg-secondary"
+        >
+          <Eye className="h-4 w-4" strokeWidth={1.4} />
+        </button>
+        <button
+          type="button"
+          disabled={!product.inStock}
+          onClick={() => {
+            addToCart({
+              productId: product.id,
+              size: product.sizes[0]!,
+              color: product.colors[0]!.name,
+              quantity: 1,
+            });
+            toast("Added to bag", { description: `${product.name} · ${product.sizes[0]}` });
+          }}
+          className="h-11 flex-1 rounded-[8px] border border-foreground text-[11px] font-medium uppercase tracking-[0.14em] transition-colors active:bg-foreground active:text-background disabled:cursor-not-allowed disabled:opacity-40"
+        >
+          {product.inStock ? "Add to bag" : "Sold out"}
+        </button>
+      </div>
+
+
+
 
       <QuickView product={product} open={quickView} onOpenChange={setQuickView} />
     </article>
