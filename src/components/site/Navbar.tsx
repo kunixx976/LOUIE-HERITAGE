@@ -89,7 +89,7 @@ export function Navbar() {
                                     to="/category/$slug"
                                     params={{ slug: c.slug }}
                                     onClick={() => setMenuOpen(false)}
-                                    className="font-display text-lg"
+                                    className="inline-block py-1 font-display text-lg"
                                   >
                                     {c.name}
                                   </Link>
@@ -98,7 +98,7 @@ export function Navbar() {
                           </ul>
                         </div>
                       ))}
-                      <div className="space-y-3 border-t border-border pt-6 text-sm">
+                      <div className="space-y-1 border-t border-border pt-6 text-sm [&_a]:py-2">
                         <Link to="/shop" onClick={() => setMenuOpen(false)} className="block">
                           All products
                         </Link>
@@ -232,7 +232,7 @@ export function Navbar() {
 }
 
 function Dot() {
-  return <span className="absolute right-1.5 top-1.5 h-1.5 w-1.5 rounded-full bg-current" />;
+  return <span className="absolute right-2.5 top-2.5 h-1.5 w-1.5 rounded-full bg-current" />;
 }
 
 function MegaMenu({ label, transparent }: { label: string; transparent: boolean }) {
