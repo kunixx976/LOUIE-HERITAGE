@@ -22,31 +22,31 @@ export const Route = createFileRoute("/faq")({
 const faqs = [
   {
     q: "How long does delivery take?",
-    a: "Standard delivery within the EU takes 2–4 working days and is free on orders over €150 (otherwise €6). Express delivery is €14 and arrives the next working day when ordered before 13:00 CET. Outside the EU we ship DDP, with duties and taxes included at checkout.",
+    a: "Standard delivery across India takes 3–5 working days and is free on orders over ₹1,499 (otherwise ₹79). Express delivery is ₹199 and reaches most metros the next working day when ordered before 13:00 IST. Remote pin codes may take a day or two longer.",
   },
   {
     q: "What is your returns policy?",
-    a: "Return anything unworn with its tags attached within 30 days. Print a prepaid label from your order history or ask our care team to arrange a collection. Refunds are issued to the original payment method within five working days of the parcel arriving with us.",
+    a: "Return anything unworn with its tags attached within 15 days. Raise a return from your order history and we'll arrange a free reverse pickup. Refunds are issued to the original payment method within five working days of the parcel reaching us.",
   },
   {
     q: "How do your sizes run?",
-    a: "Our tailoring and shirting run true to size. Styles described as oversized are deliberately generous — if you are between sizes or prefer a cleaner line, size down. Every product page includes a size guide with body measurements in centimetres.",
+    a: "Our tees, shirts and denim run true to size. Styles described as oversized are deliberately generous — if you are between sizes or prefer a cleaner line, size down. Every product page includes a size guide with body measurements in centimetres.",
   },
   {
     q: "Do you offer repairs?",
-    a: "Yes. All wool outerwear is covered by free repairs for two years from purchase — buttons, seams, linings and moth damage included. Send us a photograph and we'll arrange collection.",
+    a: "Yes. We repair stitching, buttons and zips free of charge for six months from purchase. Send us a photograph on WhatsApp and we'll arrange a pickup from your address.",
   },
   {
     q: "Which payment methods do you accept?",
-    a: "Visa, Mastercard, American Express, PayPal, Apple Pay and Klarna. All payments are encrypted; we never store card details on our servers.",
+    a: "UPI, all major debit and credit cards, net banking, Paytm and cash on delivery on orders under ₹5,000. All payments are encrypted; we never store card details on our servers.",
   },
   {
     q: "Where are your clothes made?",
-    a: "Everything is made within Europe: wool woven in Biella, linen in Kortrijk, knitwear in Hawick, and garments assembled in Portugal, Italy and Denmark. We publish our full supplier list annually.",
+    a: "Everything is made in India. Our T-shirts and knitwear come from Tirupur in Tamil Nadu, denim from the mills of Ahmedabad and Bhilwara, sarees and ethnic wear from Surat, sweaters from Ludhiana, and home textiles from Panipat. Everything is checked and packed at our warehouse in Meerut.",
   },
   {
     q: "Can I change or cancel an order?",
-    a: "Orders can be amended within one hour of being placed, before they enter the packing queue. Email care@mishraclothings.in with your order number and we'll do our best.",
+    a: "Orders can be amended within one hour of being placed, before they enter the packing queue. Email care@mishraclothings.in or WhatsApp us on +91 98370 44120 with your order number and we'll do our best.",
   },
   {
     q: "Do you restock sold-out pieces?",

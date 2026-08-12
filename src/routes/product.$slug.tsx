@@ -293,11 +293,11 @@ function ProductPage() {
             <div className="mt-6 space-y-2 text-xs text-muted-foreground">
               <p className="flex items-center gap-2">
                 <Truck className="h-3.5 w-3.5" strokeWidth={1.4} />
-                Free carbon-neutral delivery on orders over €150 — arrives in 2–4 working days
+                Free delivery on orders over ₹1,499 — arrives in 3–5 working days
               </p>
               <p className="flex items-center gap-2">
                 <RotateCcw className="h-3.5 w-3.5" strokeWidth={1.4} />
-                Free returns within 30 days, unworn with tags attached
+                Free reverse pickup within 15 days, unworn with tags attached
               </p>
             </div>
 
@@ -320,9 +320,9 @@ function ProductPage() {
                   Delivery
                 </AccordionTrigger>
                 <AccordionContent className="text-sm text-muted-foreground">
-                  Standard delivery across the EU takes 2–4 working days (€6, free over €150).
-                  Express delivery is €14 and arrives next working day when ordered before 13:00
-                  CET. Orders outside the EU are shipped DDP with duties included.
+                  Standard delivery across India takes 3–5 working days (₹79, free over ₹1,499). Express
+                  delivery is ₹199 and reaches most metros the next working day when ordered
+                  before 13:00 IST. Cash on delivery is available under ₹5,000.
                 </AccordionContent>
               </AccordionItem>
               <AccordionItem value="returns">
@@ -330,9 +330,9 @@ function ProductPage() {
                   Returns
                 </AccordionTrigger>
                 <AccordionContent className="text-sm text-muted-foreground">
-                  Return anything unworn with tags attached within 30 days for a full refund.
-                  Print a prepaid label from your order history, or arrange a collection with our
-                  care team. Refunds are processed within five working days of arrival.
+                  Return anything unworn with tags attached within 15 days for a full refund.
+                  Raise the return from your order history and we'll send a courier to your
+                  address. Refunds are processed within five working days of arrival.
                 </AccordionContent>
               </AccordionItem>
               <AccordionItem value="care">

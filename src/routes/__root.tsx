@@ -81,11 +81,11 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "MishraClothings — Considered Clothing, Made in Europe" },
+      { title: "MishraClothings — Everyday Cotton & Ethnic Wear from Meerut" },
       {
         name: "description",
         content:
-          "MishraClothings makes considered clothing in limited runs from natural fibres. Designed in Copenhagen, made in Europe.",
+          "MishraClothings brings you cotton tees, denim, sarees, woollens and home textiles sourced directly from India's textile hubs and shipped from Meerut.",
       },
       { name: "author", content: "MishraClothings" },
       { property: "og:site_name", content: "MishraClothings" },

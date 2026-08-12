@@ -165,7 +165,7 @@ function CartPage() {
                 </dl>
 
                 <p className="mt-3 text-xs text-muted-foreground">
-                  Delivered to Denmark in 2–4 working days. Duties included within the EU.
+                  Delivered across India in 3–5 working days. All prices include GST.
                 </p>
 
                 <Link

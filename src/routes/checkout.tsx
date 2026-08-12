@@ -32,14 +32,14 @@ function CheckoutPage() {
     line1: "",
     city: "",
     postcode: "",
-    country: "Denmark",
+    country: "India",
     method: "standard",
     card: "",
     expiry: "",
     cvc: "",
   });
 
-  const shipping = form.method === "express" ? 14 : subtotal > 150 ? 0 : 6;
+  const shipping = form.method === "express" ? 199 : subtotal > 1499 ? 0 : 79;
   const total = subtotal + shipping;
   const set = (key: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement>) =>
     setForm((f) => ({ ...f, [key]: e.target.value }));
@@ -53,7 +53,7 @@ function CheckoutPage() {
           </div>
           <h1 className="mt-8 text-3xl">Thank you — your order is confirmed</h1>
           <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
-            Order {orderId} is being prepared in our Copenhagen studio. You'll receive tracking
+            Order {orderId} is being packed at our Meerut warehouse. You'll receive tracking
             by email within 24 hours.
           </p>
           <div className="mt-9 flex flex-wrap justify-center gap-3">
@@ -160,15 +160,15 @@ function CheckoutPage() {
                 <input required placeholder="Address" value={form.line1} onChange={set("line1")} className={field} />
                 <div className="grid gap-4 sm:grid-cols-2">
                   <input required placeholder="City" value={form.city} onChange={set("city")} className={field} />
-                  <input required placeholder="Postcode" value={form.postcode} onChange={set("postcode")} className={field} />
+                  <input required placeholder="PIN code" value={form.postcode} onChange={set("postcode")} className={field} />
                 </div>
                 <input required placeholder="Country" value={form.country} onChange={set("country")} className={field} />
 
                 <div className="space-y-3 pt-4">
                   <p className="eyebrow">Delivery method</p>
                   {[
-                    { id: "standard", label: "Standard — 2–4 working days", price: subtotal > 150 ? "Free" : "€6" },
-                    { id: "express", label: "Express — next working day", price: "€14" },
+                    { id: "standard", label: "Standard — 3–5 working days", price: subtotal > 1499 ? "Free" : "₹79" },
+                    { id: "express", label: "Express — next working day", price: "₹199" },
                   ].map((m) => (
                     <label
                       key={m.id}

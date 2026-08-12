@@ -10,7 +10,7 @@ export const Route = createFileRoute("/shop")({
       {
         name: "description",
         content:
-          "Browse the full MishraClothings collection: wool coats, linen shirting, knitwear, leather footwear and accessories. Filter by size, colour and price.",
+          "Browse the full MishraClothings range: cotton T-shirts, denim, sarees and ethnic wear, woollens, home textiles and accessories. Filter by size, colour and price.",
       },
       { property: "og:title", content: "Shop All — MishraClothings" },
       {
