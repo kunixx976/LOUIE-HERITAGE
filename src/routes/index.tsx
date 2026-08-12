@@ -291,9 +291,9 @@ function Home() {
       <section className="border-t border-border">
         <div className="container-editorial section-y">
           <SectionHeading
-            eyebrow="@ateliernord"
+            eyebrow="@mishraclothings"
             title="Worn by you"
-            description="Tag your pieces with #AtelierNord for a chance to be featured."
+            description="Tag your pieces with #MishraClothings for a chance to be featured."
             align="center"
           />
           <div className="mt-12 grid grid-cols-2 gap-2 md:grid-cols-3 lg:grid-cols-6">

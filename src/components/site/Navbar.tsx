@@ -123,7 +123,7 @@ export function Navbar() {
               to="/"
               className="justify-self-center text-center font-display text-lg tracking-[0.1em] uppercase md:text-xl"
             >
-              Atelier&nbsp;Nord
+              MishraAtelier&nbsp;Nordnbsp;Clothings
             </Link>
 
             {/* Right — utilities */}

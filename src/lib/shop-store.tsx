@@ -46,7 +46,7 @@ type State = {
   orders: Order[];
 };
 
-const STORAGE_KEY = "atelier-nord-state";
+const STORAGE_KEY = "mishraclothings-state";
 
 const seedOrders: Order[] = [
   {
