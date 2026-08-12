@@ -8,9 +8,9 @@ export const Route = createFileRoute("/about")({
   head: () => ({
     meta: [
       { title: "Our Story — MishraClothings" },
-      { name: "description", content: "MishraClothings is a Copenhagen clothing studio making limited runs from natural fibres in European mills and workshops." },
+      { name: "description", content: "MishraClothings is a Meerut-based clothing business sourcing cotton, denim, ethnic wear and home textiles directly from India's textile hubs." },
       { property: "og:title", content: "Our Story — MishraClothings" },
-      { property: "og:description", content: "A Copenhagen studio making limited runs from natural fibres in European workshops." },
+      { property: "og:description", content: "A family business in Meerut, buying directly from Indian mills and knitting units." },
     ],
   }),
   component: AboutPage,
@@ -20,9 +20,9 @@ function AboutPage() {
   return (
     <>
       <PageHeader
-        eyebrow="Since 2014"
-        title="A studio, not a season machine"
-        description="We release two collections a year and keep the pieces that work. Everything is made within Europe, in workshops we visit."
+        eyebrow="A family business"
+        title="Bought from the source, sold without the mark-up"
+        description="We travel to the mills and knitting units ourselves, buy in small lots, and ship from our own warehouse in Meerut."
         crumbs={[{ label: "About" }]}
       />
 
@@ -31,7 +31,7 @@ function AboutPage() {
           <Reveal className="lg:col-span-5">
             <img
               src={editorial}
-              alt="Model in tailored stone-coloured suiting"
+              alt="Cotton shirting and denim from our current range"
               width={1600}
               height={912}
               loading="lazy"
