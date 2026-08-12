@@ -341,7 +341,7 @@ function ProductPage() {
                 </AccordionTrigger>
                 <AccordionContent className="text-sm text-muted-foreground">
                   Wash less, wash cool. Air knitwear between wears and store folded rather than
-                  hung. We offer free repairs on all wool outerwear for two years from purchase.
+                  hung. We repair stitching, buttons and zips free of charge for six months from purchase.
                 </AccordionContent>
               </AccordionItem>
             </Accordion>

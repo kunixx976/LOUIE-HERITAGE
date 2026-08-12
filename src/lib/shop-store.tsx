@@ -55,8 +55,8 @@ const seedOrders: Order[] = [
     status: "Delivered",
     total: 660,
     items: [
-      { name: "Hanne Double-Faced Wool Coat", quantity: 1, price: 495, image: products[1]!.images[0]! },
-      { name: "Aro Cashmere Scarf", quantity: 1, price: 135, image: products[7]!.images[0]! },
+      { name: "Oversized Drop-Shoulder Tee", quantity: 1, price: 1099, image: products[1]!.images[0]! },
+      { name: "Ludhiana Long Cardigan", quantity: 1, price: 2199, image: products[7]!.images[0]! },
     ],
   },
   {

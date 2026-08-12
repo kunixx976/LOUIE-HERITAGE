@@ -15,7 +15,7 @@ export const Route = createFileRoute("/shop")({
       { property: "og:title", content: "Shop All — MishraClothings" },
       {
         property: "og:description",
-        content: "The full collection — wool coats, linen shirting, knitwear and accessories.",
+        content: "The full range — cotton tees, denim, sarees, woollens and home textiles.",
       },
     ],
   }),

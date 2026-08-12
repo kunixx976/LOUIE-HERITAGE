@@ -94,7 +94,7 @@ export function Footer() {
               </li>
               <li>
                 <Link to="/about" className="transition-colors hover:text-foreground">
-                  Materials
+                  Sourcing
                 </Link>
               </li>
               <li>

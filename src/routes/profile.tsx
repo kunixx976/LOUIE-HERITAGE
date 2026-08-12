@@ -76,7 +76,7 @@ function ProfilePage() {
               ))}
             </div>
             <p className="mt-8 max-w-lg text-sm leading-relaxed text-muted-foreground">
-              Members get free repairs on wool outerwear for two years, and early access to each
+              Members get free repairs for six months, faster support on WhatsApp, and early access to each
               collection 48 hours before release.
             </p>
           </TabsContent>
