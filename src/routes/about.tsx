@@ -41,20 +41,20 @@ function AboutPage() {
           <div className="space-y-6 text-sm leading-relaxed text-muted-foreground lg:col-span-6 lg:col-start-7">
             <h2 className="font-display text-3xl text-foreground">How we work</h2>
             <p>
-              MishraClothings began in a one-room studio in Nørrebro with a single wool coat and a
-              conviction that most clothing is made too quickly. Twelve years later the method
-              hasn't changed: we develop a pattern until it stops needing adjustment, then produce
-              it in runs small enough that our makers can inspect every piece.
+              MishraClothings started as a single counter on Abu Lane in Sadar Bazar, Meerut,
+              selling cotton basics to families who came back every season. The method hasn't
+              changed since: buy directly from the people who make the cloth, keep the range small,
+              and price it honestly.
             </p>
             <p>
-              Our wool comes from Biella, our linen from Kortrijk, our knitwear from a family mill
-              in Hawick that has run the same gauge machines for forty years. We publish the name
-              of every factory we work with, along with the wage floor we require.
+              Our T-shirts and knitwear come from Tirupur, denim from the mills of Ahmedabad and
+              Bhilwara, sarees and ethnic wear from Surat, sweaters from Ludhiana, and bedsheets
+              and throws from Panipat. Every lot is checked, folded and dispatched from our own
+              warehouse in Meerut.
             </p>
             <p>
-              Nothing is designed to be replaced. We repair wool outerwear free of charge for two
-              years, and we'll take back any MishraClothings garment at the end of its life to be
-              re-spun into insulation.
+              No showroom mark-up and no middlemen — that difference stays in the price. If
+              stitching, a button or a zip gives way within six months, we repair or replace it.
             </p>
             <Link to="/shop" className="inline-block text-xs uppercase tracking-[0.14em] text-foreground link-underline">
               Shop the collection
@@ -66,10 +66,11 @@ function AboutPage() {
       <section className="border-y border-border bg-secondary/50">
         <div className="container-editorial section-y grid gap-10 md:grid-cols-3">
           {[
-            { n: "42", label: "Styles in the permanent collection" },
-            { n: "9", label: "European workshops we produce with" },
-            { n: "2 yrs", label: "Free repairs on all wool outerwear" },
+            { n: "6", label: "Textile hubs we buy from directly" },
+            { n: "12k+", label: "Orders shipped across India" },
+            { n: "6 mths", label: "Free repairs on stitching, buttons and zips" },
           ].map((stat) => (
+
             <Reveal key={stat.label}>
               <p className="font-display text-5xl">{stat.n}</p>
               <p className="mt-3 text-sm text-muted-foreground">{stat.label}</p>
