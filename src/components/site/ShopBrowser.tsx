@@ -149,7 +149,7 @@ export function ShopBrowser({
           value={price}
           min={0}
           max={3000}
-          step={10}
+          step={50}
           onValueChange={(v) => {
             setPrice(v);
             setPage(1);
