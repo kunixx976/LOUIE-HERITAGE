@@ -29,7 +29,7 @@ export function ShopBrowser({
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [sizes, setSizes] = useState<string[]>([]);
   const [colors, setColors] = useState<string[]>([]);
-  const [price, setPrice] = useState<number[]>([0, 700]);
+  const [price, setPrice] = useState<number[]>([0, 3000]);
   const [inStockOnly, setInStockOnly] = useState(false);
   const [sort, setSort] = useState<Sort>("featured");
   const [page, setPage] = useState(1);
@@ -148,7 +148,7 @@ export function ShopBrowser({
         <Slider
           value={price}
           min={0}
-          max={700}
+          max={3000}
           step={10}
           onValueChange={(v) => {
             setPrice(v);
