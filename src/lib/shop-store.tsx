@@ -46,7 +46,7 @@ type State = {
   orders: Order[];
 };
 
-const STORAGE_KEY = "atelier-nord-state";
+const STORAGE_KEY = "mishraclothings-state";
 
 const seedOrders: Order[] = [
   {
@@ -55,8 +55,8 @@ const seedOrders: Order[] = [
     status: "Delivered",
     total: 660,
     items: [
-      { name: "Hanne Double-Faced Wool Coat", quantity: 1, price: 495, image: products[1]!.images[0]! },
-      { name: "Aro Cashmere Scarf", quantity: 1, price: 135, image: products[7]!.images[0]! },
+      { name: "Oversized Drop-Shoulder Tee", quantity: 1, price: 1099, image: products[1]!.images[0]! },
+      { name: "Ludhiana Long Cardigan", quantity: 1, price: 2199, image: products[7]!.images[0]! },
     ],
   },
   {
@@ -80,11 +80,11 @@ const initialState: State = {
     {
       id: "a1",
       label: "Home",
-      name: "Alex Meyer",
-      line1: "Rosenvængets Allé 18, 2. th",
-      city: "Copenhagen",
-      postcode: "2100",
-      country: "Denmark",
+      name: "Ananya Mishra",
+      line1: "12 Abu Lane, Sadar Bazar",
+      city: "Meerut",
+      postcode: "250001",
+      country: "India",
       isDefault: true,
     },
   ],
@@ -205,7 +205,7 @@ export function ShopProvider({ children }: { children: ReactNode }) {
         orders: [
           {
             id,
-            date: new Date().toLocaleDateString("en-GB", {
+            date: new Date().toLocaleDateString("en-IN", {
               day: "numeric",
               month: "long",
               year: "numeric",
@@ -259,9 +259,9 @@ export function useShop() {
 }
 
 export function formatPrice(value: number) {
-  return new Intl.NumberFormat("en-GB", {
+  return new Intl.NumberFormat("en-IN", {
     style: "currency",
-    currency: "EUR",
+    currency: "INR",
     minimumFractionDigits: 0,
   }).format(value);
 }

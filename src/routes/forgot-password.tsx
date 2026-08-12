@@ -5,9 +5,9 @@ import { toast } from "sonner";
 export const Route = createFileRoute("/forgot-password")({
   head: () => ({
     meta: [
-      { title: "Reset Password — Atelier Nord" },
-      { name: "description", content: "Reset the password for your Atelier Nord account." },
-      { property: "og:title", content: "Reset Password — Atelier Nord" },
+      { title: "Reset Password — MishraClothings" },
+      { name: "description", content: "Reset the password for your MishraClothings account." },
+      { property: "og:title", content: "Reset Password — MishraClothings" },
       { property: "og:description", content: "Reset the password for your account." },
     ],
   }),

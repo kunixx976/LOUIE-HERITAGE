@@ -6,8 +6,9 @@ const shop = [
   { label: "New arrivals", to: "/shop" as const },
   { label: "Women", slug: "women" },
   { label: "Men", slug: "men" },
-  { label: "Accessories", slug: "accessories" },
-  { label: "Shoes", slug: "shoes" },
+  { label: "T-Shirts", slug: "tshirts" },
+  { label: "Denim", slug: "denim" },
+  { label: "Ethnic Wear", slug: "ethnic" },
 ];
 
 export function Footer() {
@@ -16,13 +17,13 @@ export function Footer() {
       <div className="container-editorial">
         <div className="grid grid-cols-2 gap-x-6 gap-y-10 py-14 md:grid-cols-12 md:gap-12 md:py-20">
           <div className="col-span-2 md:col-span-4">
-            <p className="font-display text-lg uppercase tracking-[0.28em]">Atelier Nord</p>
+            <p className="font-display text-lg uppercase tracking-[0.28em]">MishraClothings</p>
             <p className="mt-4 max-w-xs text-sm leading-relaxed text-muted-foreground">
-              Considered clothing made in limited runs from natural fibres. Designed in
-              Copenhagen, made in Europe.
+              Cotton, denim, ethnic wear and home textiles bought directly from India's textile
+              hubs and shipped from Meerut.
             </p>
             <div className="mt-8">
-              <p className="eyebrow mb-3">Collection previews & studio notes</p>
+              <p className="eyebrow mb-3">New arrivals & offers</p>
               <NewsletterForm />
             </div>
           </div>
@@ -93,7 +94,7 @@ export function Footer() {
               </li>
               <li>
                 <Link to="/about" className="transition-colors hover:text-foreground">
-                  Materials
+                  Sourcing
                 </Link>
               </li>
               <li>
@@ -112,19 +113,19 @@ export function Footer() {
           <div className="md:col-span-2">
             <p className="eyebrow mb-4">Follow</p>
             <div className="-ml-3 flex text-muted-foreground md:ml-0 md:gap-4">
-              <a href="https://instagram.com" aria-label="Instagram" className="grid h-11 w-11 place-items-center transition-colors hover:text-foreground md:h-auto md:w-auto">
+              <a href="https://www.instagram.com/mishraclothings" aria-label="Instagram" className="grid h-11 w-11 place-items-center transition-colors hover:text-foreground md:h-auto md:w-auto">
                 <Instagram className="h-[18px] w-[18px]" strokeWidth={1.25} />
               </a>
-              <a href="https://facebook.com" aria-label="Facebook" className="grid h-11 w-11 place-items-center transition-colors hover:text-foreground md:h-auto md:w-auto">
+              <a href="https://www.facebook.com/mishraclothings" aria-label="Facebook" className="grid h-11 w-11 place-items-center transition-colors hover:text-foreground md:h-auto md:w-auto">
                 <Facebook className="h-[18px] w-[18px]" strokeWidth={1.25} />
               </a>
-              <a href="https://youtube.com" aria-label="YouTube" className="grid h-11 w-11 place-items-center transition-colors hover:text-foreground md:h-auto md:w-auto">
+              <a href="https://www.youtube.com/@mishraclothings" aria-label="YouTube" className="grid h-11 w-11 place-items-center transition-colors hover:text-foreground md:h-auto md:w-auto">
                 <Youtube className="h-[18px] w-[18px]" strokeWidth={1.25} />
               </a>
             </div>
             <p className="eyebrow mb-3 mt-8">We accept</p>
             <div className="flex flex-wrap gap-1.5">
-              {["Visa", "Mastercard", "Amex", "PayPal", "Klarna"].map((m) => (
+              {["UPI", "Visa", "Mastercard", "RuPay", "Net banking", "Cash on delivery"].map((m) => (
                 <span
                   key={m}
                   className="rounded-[4px] border border-border px-2 py-1 text-[10px] uppercase tracking-[0.1em] text-muted-foreground"
@@ -137,7 +138,7 @@ export function Footer() {
         </div>
 
         <div className="flex flex-col gap-3 border-t border-border py-7 text-xs text-muted-foreground md:flex-row md:items-center md:justify-between">
-          <p>© {new Date().getFullYear()} Atelier Nord ApS. All rights reserved.</p>
+          <p>© {new Date().getFullYear()} Mishra Clothings. All rights reserved.</p>
           <div className="flex gap-6 [&_a]:inline-block [&_a]:py-1 md:[&_a]:py-0">
             <Link to="/privacy" className="transition-colors hover:text-foreground">
               Privacy
@@ -145,7 +146,7 @@ export function Footer() {
             <Link to="/terms" className="transition-colors hover:text-foreground">
               Terms
             </Link>
-            <span>Copenhagen, Denmark</span>
+            <span>Meerut, Uttar Pradesh</span>
           </div>
         </div>
       </div>

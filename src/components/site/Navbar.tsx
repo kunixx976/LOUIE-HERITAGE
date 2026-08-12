@@ -75,7 +75,7 @@ export function Navbar() {
                 <SheetContent side="left" className="w-[86vw] max-w-sm overflow-y-auto bg-background p-0">
                   <SheetTitle className="sr-only">Menu</SheetTitle>
                   <div className="px-6 pb-10 pt-8">
-                    <p className="font-display text-xl">Atelier Nord</p>
+                    <p className="font-display text-xl">MishraClothings</p>
                     <div className="mt-8 space-y-8">
                       {groups.map((group) => (
                         <div key={group}>
@@ -123,7 +123,7 @@ export function Navbar() {
               to="/"
               className="justify-self-center text-center font-display text-lg tracking-[0.1em] uppercase md:text-xl"
             >
-              Atelier&nbsp;Nord
+              MishraAtelier&nbsp;Nordnbsp;Clothings
             </Link>
 
             {/* Right — utilities */}
@@ -174,7 +174,7 @@ export function Navbar() {
               autoFocus
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder="Search coats, knitwear, linen…"
+              placeholder="Search tees, denim, sarees…"
               className="h-14 w-full bg-transparent text-sm outline-none placeholder:text-muted-foreground"
             />
             <button type="button" onClick={() => setSearchOpen(false)} aria-label="Close search">
@@ -184,7 +184,7 @@ export function Navbar() {
           <div className="max-h-[50vh] overflow-y-auto p-3">
             {query && results.length === 0 ? (
               <p className="px-3 py-6 text-sm text-muted-foreground">
-                No pieces match “{query}”. Try “wool”, “linen” or “coat”.
+                No pieces match “{query}”. Try “t-shirt”, “denim” or “saree”.
               </p>
             ) : null}
             {results.map((p) => (
@@ -211,7 +211,7 @@ export function Navbar() {
               <div className="px-3 py-4">
                 <p className="eyebrow mb-3">Popular searches</p>
                 <div className="flex flex-wrap gap-2">
-                  {["Wool coat", "Linen", "Oversized shirt", "Sneakers", "Cashmere"].map((t) => (
+                  {["T-shirt", "Denim", "Saree", "Kurta set", "Bedsheet"].map((t) => (
                     <button
                       key={t}
                       type="button"

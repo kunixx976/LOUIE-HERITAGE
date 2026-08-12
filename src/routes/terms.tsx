@@ -4,9 +4,9 @@ import { PageHeader } from "@/components/site/PageHeader";
 export const Route = createFileRoute("/terms")({
   head: () => ({
     meta: [
-      { title: "Terms & Conditions — Atelier Nord" },
-      { name: "description", content: "The terms governing purchases from Atelier Nord: orders, pricing, delivery, returns and warranty." },
-      { property: "og:title", content: "Terms & Conditions — Atelier Nord" },
+      { title: "Terms & Conditions — MishraClothings" },
+      { name: "description", content: "The terms governing purchases from MishraClothings: orders, pricing, delivery, returns and warranty." },
+      { property: "og:title", content: "Terms & Conditions — MishraClothings" },
       { property: "og:description", content: "Terms governing orders, pricing, delivery, returns and warranty." },
     ],
   }),
@@ -16,7 +16,7 @@ export const Route = createFileRoute("/terms")({
 const sections = [
   {
     title: "1. These terms",
-    body: "By placing an order with Atelier Nord ApS (CVR 38 45 21 07) you accept these terms. They do not affect your statutory rights as a consumer under Danish and EU law.",
+    body: "By placing an order with Mishra Clothings, Meerut (GSTIN 09ABCDE1234F1Z5) you accept these terms. They do not affect your statutory rights as a consumer under the Consumer Protection Act, 2019.",
   },
   {
     title: "2. Orders",
@@ -24,27 +24,27 @@ const sections = [
   },
   {
     title: "3. Pricing",
-    body: "Prices are shown in euro and include VAT at the applicable rate. Orders shipped outside the EU are sold DDP, with duties calculated at checkout. We reserve the right to change prices for future orders.",
+    body: "Prices are shown in Indian rupees and are inclusive of GST. We reserve the right to change prices for future orders.",
   },
   {
     title: "4. Delivery",
-    body: "Estimated delivery times are indicative and not guaranteed. Risk passes to you on delivery. If a parcel arrives damaged, contact our care team within seven days with photographs.",
+    body: "Estimated delivery times are indicative and not guaranteed. Risk passes to you on delivery. If a parcel arrives damaged, contact our care team within 48 hours with photographs and an unboxing video where possible.",
   },
   {
     title: "5. Returns and cancellation",
-    body: "You may cancel within 14 days of receipt under EU distance-selling rules; we extend this to 30 days for unworn items with tags attached. Return shipping is free within the EU using our prepaid label.",
+    body: "You may cancel an order any time before dispatch. Unworn items with tags attached can be returned within 15 days of delivery, with free reverse pickup across serviceable pin codes.",
   },
   {
     title: "6. Warranty",
-    body: "All garments are guaranteed against manufacturing faults for two years. Wear consistent with normal use, and alterations made by third parties, are not covered.",
+    body: "All garments are guaranteed against manufacturing faults for six months. Normal wear, and alterations made by third parties, are not covered.",
   },
   {
     title: "7. Intellectual property",
-    body: "All imagery, patterns, text and the Atelier Nord name remain our property. They may not be reproduced commercially without written permission.",
+    body: "All imagery, patterns, text and the MishraClothings name remain our property. They may not be reproduced commercially without written permission.",
   },
   {
     title: "8. Governing law",
-    body: "These terms are governed by Danish law. Disputes may be brought before the Danish Consumer Complaints Board or the EU Online Dispute Resolution platform.",
+    body: "These terms are governed by Indian law, and the courts of Meerut, Uttar Pradesh have exclusive jurisdiction over any dispute.",
   },
 ];
 

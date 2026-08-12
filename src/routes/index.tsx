@@ -12,17 +12,17 @@ import { NewsletterForm } from "@/components/site/NewsletterForm";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Atelier Nord — Considered Clothing, Made in Europe" },
+      { title: "MishraClothings — Everyday Cotton, Denim & Ethnic Wear" },
       {
         name: "description",
         content:
-          "Wool coats, linen shirting and quiet tailoring in limited runs. Designed in Copenhagen, made in Europe. Free shipping over €150.",
+          "Cotton T-shirts from Tirupur, denim from Ahmedabad, sarees from Surat and woollens from Ludhiana — shipped from Meerut. Free delivery over ₹1,499.",
       },
-      { property: "og:title", content: "Atelier Nord — Considered Clothing, Made in Europe" },
+      { property: "og:title", content: "MishraClothings — Everyday Cotton, Denim & Ethnic Wear" },
       {
         property: "og:description",
         content:
-          "Wool coats, linen shirting and quiet tailoring in limited runs. Designed in Copenhagen, made in Europe.",
+          "Cotton, denim, ethnic wear and home textiles sourced straight from India's textile hubs.",
       },
     ],
   }),
@@ -30,9 +30,9 @@ export const Route = createFileRoute("/")({
 });
 
 const promos = [
-  { title: "Shop Women", slug: "women", copy: "Fluid tailoring & knitwear" },
-  { title: "Shop Men", slug: "men", copy: "Softly structured staples" },
-  { title: "New Collection", slug: "winter", copy: "Autumn / Winter 26" },
+  { title: "Shop Women", slug: "women", copy: "Cotton, denim & ethnic wear" },
+  { title: "Shop Men", slug: "men", copy: "Tees, shirts & straight-fit denim" },
+  { title: "Winter Edit", slug: "winter", copy: "Ludhiana woollens & layers" },
 ];
 
 function Home() {
@@ -43,7 +43,7 @@ function Home() {
         <div className="relative h-[88vh] min-h-[560px] w-full overflow-hidden">
           <img
             src={hero}
-            alt="Two models in double-breasted wool coats inside a minimal concrete gallery"
+            alt="Two models in relaxed cotton shirting and straight-fit denim"
             width={1920}
             height={1088}
             fetchPriority="high"
@@ -52,15 +52,15 @@ function Home() {
           <div className="absolute inset-0 bg-black/25" />
           <div className="container-editorial relative flex h-full items-end pb-16 md:pb-24">
             <div className="max-w-2xl text-white animate-fade-up">
-              <p className="eyebrow text-white/80">Autumn / Winter 2026</p>
+              <p className="eyebrow text-white/80">New Season 2026</p>
               <h1 className="mt-5 text-[2.75rem] leading-[1.06] md:text-6xl lg:text-7xl">
-                Clothes that outlast
+                Everyday clothing,
                 <br />
-                the season they arrive in
+                straight from the mill
               </h1>
               <p className="mt-6 max-w-md text-sm leading-relaxed text-white/90">
-                Double-faced wool, washed linen and lambswool knits, cut in limited runs by
-                makers we've worked with for a decade.
+                Combed cotton tees, honest denim and festive ethnic wear — sourced directly from
+                Tirupur, Ahmedabad and Surat, and shipped from our Meerut warehouse.
               </p>
 
               <div className="mt-9 flex flex-wrap gap-3">
@@ -129,7 +129,7 @@ function Home() {
           <SectionHeading
             eyebrow="Browse"
             title="Featured categories"
-            description="Ten edits, from tailored formalwear to loop-back cotton. Each piece is produced in runs of fewer than four hundred."
+            description="Eleven edits, from combed cotton tees to Panipat home textiles — each sourced from the Indian town that does it best."
           />
           <div className="mt-12 grid grid-cols-2 gap-x-5 gap-y-10 md:grid-cols-3 lg:grid-cols-5">
             {categories.map((category, i) => (
@@ -162,7 +162,7 @@ function Home() {
         <SectionHeading
           eyebrow="Most wanted"
           title="Best sellers"
-          description="The pieces our customers return for, season after season."
+          description="The pieces our customers keep re-ordering, size after size."
           action={
             <Link to="/shop" className="text-sm font-medium transition-colors hover:text-muted-foreground">
               View all
@@ -183,7 +183,7 @@ function Home() {
         <div className="relative h-[70vh] min-h-[460px] w-full overflow-hidden">
           <img
             src={editorial}
-            alt="Model in a stone-coloured tailored suit walking through a minimal corridor"
+            alt="Model in a cotton shirt and straight-fit denim in daylight"
             width={1600}
             height={912}
             loading="lazy"
@@ -192,13 +192,14 @@ function Home() {
           <div className="absolute inset-0 bg-gradient-to-r from-black/40 via-black/10 to-transparent" />
           <div className="container-editorial relative flex h-full items-center">
             <Reveal className="max-w-lg text-white">
-              <p className="eyebrow text-white/70">The Tailoring Project</p>
+              <p className="eyebrow text-white/70">Where it comes from</p>
               <h2 className="mt-4 text-3xl leading-[1.15] md:text-5xl">
-                Six weeks in Biella, one jacket
+                From the mill floor
+                to your door
               </h2>
               <p className="mt-5 text-sm leading-relaxed text-white/80">
-                We spent the spring in the Italian mills that spin our wool, reworking a single
-                jacket pattern until the shoulder sat right without padding.
+                We buy directly from the knitting units of Tirupur, the denim mills of Ahmedabad and
+                the looms of Surat — no middlemen, no marked-up showroom price.
               </p>
               <Link
                 to="/about"
@@ -238,11 +239,11 @@ function Home() {
             <Reveal className="md:col-span-4">
               <p className="eyebrow">Seasonal edit</p>
               <h2 className="mt-4 text-3xl leading-[1.15] md:text-[2.6rem]">
-                Winter, in three weights
+                Winter, the Ludhiana way
               </h2>
               <p className="mt-5 text-sm leading-relaxed text-muted-foreground">
-                Brushed alpaca for the mornings, double-faced wool for the walk in, and a
-                cashmere scarf that folds into nothing. Built to layer without bulk.
+                Fine-gauge merino crews, long cardigans and a handloom throw from Panipat. Warm
+                enough for a north Indian December, light enough to layer.
               </p>
               <Link
                 to="/category/$slug"
@@ -290,16 +291,16 @@ function Home() {
       <section className="border-t border-border">
         <div className="container-editorial section-y">
           <SectionHeading
-            eyebrow="@ateliernord"
+            eyebrow="@mishraclothings"
             title="Worn by you"
-            description="Tag your pieces with #AtelierNord for a chance to be featured."
+            description="Tag your pieces with #MishraClothings for a chance to be featured."
             align="center"
           />
           <div className="mt-12 grid grid-cols-2 gap-2 md:grid-cols-3 lg:grid-cols-6">
             {galleryImages.map((image, i) => (
               <Reveal key={i} delay={(i % 6) * 0.04}>
                 <a
-                  href="https://instagram.com"
+                  href="https://www.instagram.com/mishraclothings"
                   className="group block overflow-hidden rounded-[8px] bg-secondary"
                   aria-label="View on Instagram"
                 >

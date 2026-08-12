@@ -8,9 +8,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 export const Route = createFileRoute("/profile")({
   head: () => ({
     meta: [
-      { title: "My Account — Atelier Nord" },
-      { name: "description", content: "Manage your Atelier Nord orders, wishlist, addresses and account settings." },
-      { property: "og:title", content: "My Account — Atelier Nord" },
+      { title: "My Account — MishraClothings" },
+      { name: "description", content: "Manage your MishraClothings orders, wishlist, addresses and account settings." },
+      { property: "og:title", content: "My Account — MishraClothings" },
       { property: "og:description", content: "Manage orders, wishlist, addresses and settings." },
       { name: "robots", content: "noindex" },
     ],
@@ -76,7 +76,7 @@ function ProfilePage() {
               ))}
             </div>
             <p className="mt-8 max-w-lg text-sm leading-relaxed text-muted-foreground">
-              Members get free repairs on wool outerwear for two years, and early access to each
+              Members get free repairs for six months, faster support on WhatsApp, and early access to each
               collection 48 hours before release.
             </p>
           </TabsContent>

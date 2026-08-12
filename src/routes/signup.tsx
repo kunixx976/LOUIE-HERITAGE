@@ -6,9 +6,9 @@ import { useShop } from "@/lib/shop-store";
 export const Route = createFileRoute("/signup")({
   head: () => ({
     meta: [
-      { title: "Create Account — Atelier Nord" },
-      { name: "description", content: "Create an Atelier Nord account for faster checkout, order tracking and early access to collections." },
-      { property: "og:title", content: "Create Account — Atelier Nord" },
+      { title: "Create Account — MishraClothings" },
+      { name: "description", content: "Create an MishraClothings account for faster checkout, order tracking and early access to collections." },
+      { property: "og:title", content: "Create Account — MishraClothings" },
       { property: "og:description", content: "Faster checkout, order tracking and early access." },
     ],
   }),
