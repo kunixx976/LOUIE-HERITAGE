@@ -83,7 +83,7 @@ function AboutPage() {
         <div className="relative h-[60vh] min-h-[380px] overflow-hidden">
           <img
             src={seasonal}
-            alt="Model in a heavy oatmeal wool scarf and coat"
+            alt="Ludhiana wool-blend knitwear from the winter edit"
             width={1600}
             height={912}
             loading="lazy"
