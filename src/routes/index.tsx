@@ -300,7 +300,7 @@ function Home() {
             {galleryImages.map((image, i) => (
               <Reveal key={i} delay={(i % 6) * 0.04}>
                 <a
-                  href="https://instagram.com"
+                  href="https://www.instagram.com/mishraclothings"
                   className="group block overflow-hidden rounded-[8px] bg-secondary"
                   aria-label="View on Instagram"
                 >
