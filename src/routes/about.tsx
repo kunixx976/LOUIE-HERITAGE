@@ -7,9 +7,9 @@ import { Reveal } from "@/components/site/Reveal";
 export const Route = createFileRoute("/about")({
   head: () => ({
     meta: [
-      { title: "Our Story — Atelier Nord" },
-      { name: "description", content: "Atelier Nord is a Copenhagen clothing studio making limited runs from natural fibres in European mills and workshops." },
-      { property: "og:title", content: "Our Story — Atelier Nord" },
+      { title: "Our Story — MishraClothings" },
+      { name: "description", content: "MishraClothings is a Copenhagen clothing studio making limited runs from natural fibres in European mills and workshops." },
+      { property: "og:title", content: "Our Story — MishraClothings" },
       { property: "og:description", content: "A Copenhagen studio making limited runs from natural fibres in European workshops." },
     ],
   }),
@@ -41,7 +41,7 @@ function AboutPage() {
           <div className="space-y-6 text-sm leading-relaxed text-muted-foreground lg:col-span-6 lg:col-start-7">
             <h2 className="font-display text-3xl text-foreground">How we work</h2>
             <p>
-              Atelier Nord began in a one-room studio in Nørrebro with a single wool coat and a
+              MishraClothings began in a one-room studio in Nørrebro with a single wool coat and a
               conviction that most clothing is made too quickly. Twelve years later the method
               hasn't changed: we develop a pattern until it stops needing adjustment, then produce
               it in runs small enough that our makers can inspect every piece.
@@ -53,7 +53,7 @@ function AboutPage() {
             </p>
             <p>
               Nothing is designed to be replaced. We repair wool outerwear free of charge for two
-              years, and we'll take back any Atelier Nord garment at the end of its life to be
+              years, and we'll take back any MishraClothings garment at the end of its life to be
               re-spun into insulation.
             </p>
             <Link to="/shop" className="inline-block text-xs uppercase tracking-[0.14em] text-foreground link-underline">

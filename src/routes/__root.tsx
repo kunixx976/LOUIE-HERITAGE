@@ -81,14 +81,14 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Atelier Nord — Considered Clothing, Made in Europe" },
+      { title: "MishraClothings — Considered Clothing, Made in Europe" },
       {
         name: "description",
         content:
-          "Atelier Nord makes considered clothing in limited runs from natural fibres. Designed in Copenhagen, made in Europe.",
+          "MishraClothings makes considered clothing in limited runs from natural fibres. Designed in Copenhagen, made in Europe.",
       },
-      { name: "author", content: "Atelier Nord" },
-      { property: "og:site_name", content: "Atelier Nord" },
+      { name: "author", content: "MishraClothings" },
+      { property: "og:site_name", content: "MishraClothings" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],

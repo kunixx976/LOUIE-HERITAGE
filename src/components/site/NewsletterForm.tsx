@@ -14,7 +14,7 @@ export function NewsletterForm({ className }: { className?: string }) {
           toast("Please enter a valid email address");
           return;
         }
-        toast("Welcome to Atelier Nord", {
+        toast("Welcome to MishraClothings", {
           description: "Look out for the collection preview in your inbox.",
         });
         setEmail("");

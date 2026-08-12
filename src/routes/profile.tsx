@@ -8,9 +8,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 export const Route = createFileRoute("/profile")({
   head: () => ({
     meta: [
-      { title: "My Account — Atelier Nord" },
-      { name: "description", content: "Manage your Atelier Nord orders, wishlist, addresses and account settings." },
-      { property: "og:title", content: "My Account — Atelier Nord" },
+      { title: "My Account — MishraClothings" },
+      { name: "description", content: "Manage your MishraClothings orders, wishlist, addresses and account settings." },
+      { property: "og:title", content: "My Account — MishraClothings" },
       { property: "og:description", content: "Manage orders, wishlist, addresses and settings." },
       { name: "robots", content: "noindex" },
     ],

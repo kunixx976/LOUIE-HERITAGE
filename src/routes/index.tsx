@@ -12,13 +12,13 @@ import { NewsletterForm } from "@/components/site/NewsletterForm";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Atelier Nord — Considered Clothing, Made in Europe" },
+      { title: "MishraClothings — Considered Clothing, Made in Europe" },
       {
         name: "description",
         content:
           "Wool coats, linen shirting and quiet tailoring in limited runs. Designed in Copenhagen, made in Europe. Free shipping over €150.",
       },
-      { property: "og:title", content: "Atelier Nord — Considered Clothing, Made in Europe" },
+      { property: "og:title", content: "MishraClothings — Considered Clothing, Made in Europe" },
       {
         property: "og:description",
         content:

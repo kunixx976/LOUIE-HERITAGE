@@ -16,7 +16,7 @@ export function Footer() {
       <div className="container-editorial">
         <div className="grid grid-cols-2 gap-x-6 gap-y-10 py-14 md:grid-cols-12 md:gap-12 md:py-20">
           <div className="col-span-2 md:col-span-4">
-            <p className="font-display text-lg uppercase tracking-[0.28em]">Atelier Nord</p>
+            <p className="font-display text-lg uppercase tracking-[0.28em]">MishraClothings</p>
             <p className="mt-4 max-w-xs text-sm leading-relaxed text-muted-foreground">
               Considered clothing made in limited runs from natural fibres. Designed in
               Copenhagen, made in Europe.
@@ -137,7 +137,7 @@ export function Footer() {
         </div>
 
         <div className="flex flex-col gap-3 border-t border-border py-7 text-xs text-muted-foreground md:flex-row md:items-center md:justify-between">
-          <p>© {new Date().getFullYear()} Atelier Nord ApS. All rights reserved.</p>
+          <p>© {new Date().getFullYear()} Mishra Clothings. All rights reserved.</p>
           <div className="flex gap-6 [&_a]:inline-block [&_a]:py-1 md:[&_a]:py-0">
             <Link to="/privacy" className="transition-colors hover:text-foreground">
               Privacy

@@ -10,9 +10,9 @@ import {
 export const Route = createFileRoute("/faq")({
   head: () => ({
     meta: [
-      { title: "FAQ, Shipping & Returns — Atelier Nord" },
-      { name: "description", content: "Answers on sizing, delivery times, returns, repairs and payment at Atelier Nord." },
-      { property: "og:title", content: "FAQ, Shipping & Returns — Atelier Nord" },
+      { title: "FAQ, Shipping & Returns — MishraClothings" },
+      { name: "description", content: "Answers on sizing, delivery times, returns, repairs and payment at MishraClothings." },
+      { property: "og:title", content: "FAQ, Shipping & Returns — MishraClothings" },
       { property: "og:description", content: "Sizing, delivery, returns, repairs and payment." },
     ],
   }),
@@ -46,7 +46,7 @@ const faqs = [
   },
   {
     q: "Can I change or cancel an order?",
-    a: "Orders can be amended within one hour of being placed, before they enter the packing queue. Email care@ateliernord.com with your order number and we'll do our best.",
+    a: "Orders can be amended within one hour of being placed, before they enter the packing queue. Email care@mishraclothings.in with your order number and we'll do our best.",
   },
   {
     q: "Do you restock sold-out pieces?",

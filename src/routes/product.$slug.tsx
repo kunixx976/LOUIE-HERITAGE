@@ -26,11 +26,11 @@ export const Route = createFileRoute("/product/$slug")({
   head: ({ loaderData }) => {
     if (!loaderData) {
       return {
-        meta: [{ title: "Product unavailable — Atelier Nord" }, { name: "robots", content: "noindex" }],
+        meta: [{ title: "Product unavailable — MishraClothings" }, { name: "robots", content: "noindex" }],
       };
     }
     const { product } = loaderData;
-    const title = `${product.name} — Atelier Nord`;
+    const title = `${product.name} — MishraClothings`;
     return {
       meta: [
         { title },

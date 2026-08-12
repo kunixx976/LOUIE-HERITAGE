@@ -5,9 +5,9 @@ import { PageHeader } from "@/components/site/PageHeader";
 export const Route = createFileRoute("/contact")({
   head: () => ({
     meta: [
-      { title: "Contact — Atelier Nord" },
-      { name: "description", content: "Reach the Atelier Nord care team in Copenhagen for sizing advice, orders, repairs and press enquiries." },
-      { property: "og:title", content: "Contact — Atelier Nord" },
+      { title: "Contact — MishraClothings" },
+      { name: "description", content: "Reach the MishraClothings care team in Copenhagen for sizing advice, orders, repairs and press enquiries." },
+      { property: "og:title", content: "Contact — MishraClothings" },
       { property: "og:description", content: "Sizing advice, orders, repairs and press enquiries." },
     ],
   }),
@@ -57,12 +57,12 @@ function ContactPage() {
         <aside className="space-y-8 text-sm lg:col-span-4 lg:col-start-9">
           <div>
             <p className="eyebrow mb-2">Customer care</p>
-            <p className="text-muted-foreground">care@ateliernord.com</p>
+            <p className="text-muted-foreground">care@mishraclothings.in</p>
             <p className="text-muted-foreground">+45 33 12 45 90</p>
           </div>
           <div>
             <p className="eyebrow mb-2">Press & wholesale</p>
-            <p className="text-muted-foreground">studio@ateliernord.com</p>
+            <p className="text-muted-foreground">studio@mishraclothings.in</p>
           </div>
           <div>
             <p className="eyebrow mb-2">Studio & showroom</p>

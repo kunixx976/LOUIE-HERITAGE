@@ -6,13 +6,13 @@ import { ShopBrowser } from "@/components/site/ShopBrowser";
 export const Route = createFileRoute("/shop")({
   head: () => ({
     meta: [
-      { title: "Shop All — Atelier Nord" },
+      { title: "Shop All — MishraClothings" },
       {
         name: "description",
         content:
-          "Browse the full Atelier Nord collection: wool coats, linen shirting, knitwear, leather footwear and accessories. Filter by size, colour and price.",
+          "Browse the full MishraClothings collection: wool coats, linen shirting, knitwear, leather footwear and accessories. Filter by size, colour and price.",
       },
-      { property: "og:title", content: "Shop All — Atelier Nord" },
+      { property: "og:title", content: "Shop All — MishraClothings" },
       {
         property: "og:description",
         content: "The full collection — wool coats, linen shirting, knitwear and accessories.",

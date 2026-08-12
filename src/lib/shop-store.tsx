@@ -80,11 +80,11 @@ const initialState: State = {
     {
       id: "a1",
       label: "Home",
-      name: "Alex Meyer",
-      line1: "Rosenvængets Allé 18, 2. th",
-      city: "Copenhagen",
-      postcode: "2100",
-      country: "Denmark",
+      name: "Ananya Mishra",
+      line1: "12 Abu Lane, Sadar Bazar",
+      city: "Meerut",
+      postcode: "250001",
+      country: "India",
       isDefault: true,
     },
   ],
@@ -205,7 +205,7 @@ export function ShopProvider({ children }: { children: ReactNode }) {
         orders: [
           {
             id,
-            date: new Date().toLocaleDateString("en-GB", {
+            date: new Date().toLocaleDateString("en-IN", {
               day: "numeric",
               month: "long",
               year: "numeric",
@@ -259,9 +259,9 @@ export function useShop() {
 }
 
 export function formatPrice(value: number) {
-  return new Intl.NumberFormat("en-GB", {
+  return new Intl.NumberFormat("en-IN", {
     style: "currency",
-    currency: "EUR",
+    currency: "INR",
     minimumFractionDigits: 0,
   }).format(value);
 }

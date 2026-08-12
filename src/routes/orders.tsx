@@ -5,9 +5,9 @@ import { PageHeader } from "@/components/site/PageHeader";
 export const Route = createFileRoute("/orders")({
   head: () => ({
     meta: [
-      { title: "Order History — Atelier Nord" },
-      { name: "description", content: "View your Atelier Nord order history, delivery status and returns." },
-      { property: "og:title", content: "Order History — Atelier Nord" },
+      { title: "Order History — MishraClothings" },
+      { name: "description", content: "View your MishraClothings order history, delivery status and returns." },
+      { property: "og:title", content: "Order History — MishraClothings" },
       { property: "og:description", content: "Order history, delivery status and returns." },
       { name: "robots", content: "noindex" },
     ],
