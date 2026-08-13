@@ -80,10 +80,10 @@ const initialState: State = {
     {
       id: "a1",
       label: "Home",
-      name: "Ananya Mishra",
+      name: "Anmol Mishra",
       line1: "12 Abu Lane, Sadar Bazar",
       city: "Meerut",
-      postcode: "250001",
+      postcode: "250101",
       country: "India",
       isDefault: true,
     },
