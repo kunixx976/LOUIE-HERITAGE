@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { toast } from "sonner";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
-import type { Product } from "@/lib/data";
+import { getDefaultVariant, getProductVariant, type Product } from "@/lib/data";
 import { formatPrice, useShop } from "@/lib/shop-store";
 import { cn } from "@/lib/utils";
 import { StarRating } from "./StarRating";
@@ -17,8 +17,11 @@ export function QuickView({
   onOpenChange: (open: boolean) => void;
 }) {
   const { addToCart } = useShop();
-  const [size, setSize] = useState(product.sizes[0]!);
-  const [color, setColor] = useState(product.colors[0]!.name);
+  const defaultVariant = getDefaultVariant(product) ?? product.variants[0] ?? null;
+  const [size, setSize] = useState(defaultVariant?.size ?? product.sizes[0]!);
+  const [color, setColor] = useState(defaultVariant?.color ?? product.colors[0]!.name);
+  const selectedVariant = getProductVariant(product, size, color) ?? defaultVariant;
+  const selectedVariantInStock = Boolean(selectedVariant && selectedVariant.stockCount > 0);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -87,15 +90,21 @@ export function QuickView({
 
             <button
               type="button"
-              disabled={!product.inStock}
+              disabled={!product.inStock || !selectedVariantInStock}
               onClick={() => {
+                if (!selectedVariant || selectedVariant.stockCount <= 0) {
+                  toast("Selected variant is sold out", {
+                    description: `${product.name} · ${size} · ${color}`,
+                  });
+                  return;
+                }
                 addToCart({ productId: product.id, size, color, quantity: 1 });
                 toast("Added to bag", { description: `${product.name} · ${size} · ${color}` });
                 onOpenChange(false);
               }}
               className="mt-8 w-full rounded-[8px] bg-foreground py-3.5 text-[11px] font-medium uppercase tracking-[0.16em] text-background transition-colors hover:bg-hover-accent disabled:opacity-40"
             >
-              {product.inStock ? "Add to bag" : "Sold out"}
+              {product.inStock && selectedVariantInStock ? "Add to bag" : "Sold out"}
             </button>
             <Link
               to="/product/$slug"

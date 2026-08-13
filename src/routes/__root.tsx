@@ -81,14 +81,14 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "MishraClothings — Everyday Cotton & Ethnic Wear from Meerut" },
+      { title: "LOUIE HERITAGE — Everyday Cotton & Ethnic Wear from Meerut" },
       {
         name: "description",
         content:
-          "MishraClothings brings you cotton tees, denim, sarees, woollens and home textiles sourced directly from India's textile hubs and shipped from Meerut.",
+          "LOUIE HERITAGE brings you cotton tees, denim, sarees, woollens and home textiles sourced directly from India's textile hubs and shipped from Meerut.",
       },
-      { name: "author", content: "MishraClothings" },
-      { property: "og:site_name", content: "MishraClothings" },
+      { name: "author", content: "LOUIE HERITAGE" },
+      { property: "og:site_name", content: "LOUIE HERITAGE" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],

@@ -5,9 +5,9 @@ import { PageHeader } from "@/components/site/PageHeader";
 export const Route = createFileRoute("/contact")({
   head: () => ({
     meta: [
-      { title: "Contact — MishraClothings" },
-      { name: "description", content: "Reach the MishraClothings care team in Meerut for sizing advice, orders, exchanges and wholesale enquiries." },
-      { property: "og:title", content: "Contact — MishraClothings" },
+      { title: "Contact — LOUIE HERITAGE" },
+      { name: "description", content: "Reach the LOUIE HERITAGE care team in Meerut for sizing advice, orders, exchanges and wholesale enquiries." },
+      { property: "og:title", content: "Contact — LOUIE HERITAGE" },
       { property: "og:description", content: "Sizing advice, orders, repairs and press enquiries." },
     ],
   }),
@@ -57,12 +57,12 @@ function ContactPage() {
         <aside className="space-y-8 text-sm lg:col-span-4 lg:col-start-9">
           <div>
             <p className="eyebrow mb-2">Customer care</p>
-            <p className="text-muted-foreground">care@mishraclothings.in</p>
+            <p className="text-muted-foreground">care@louieheritage.in</p>
             <p className="text-muted-foreground">+91 98370 44120 (call or WhatsApp)</p>
           </div>
           <div>
             <p className="eyebrow mb-2">Wholesale & bulk orders</p>
-            <p className="text-muted-foreground">studio@mishraclothings.in</p>
+            <p className="text-muted-foreground">studio@louieheritage.in</p>
           </div>
           <div>
             <p className="eyebrow mb-2">Studio & showroom</p>

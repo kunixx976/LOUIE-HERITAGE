@@ -2,7 +2,14 @@ import { useEffect, useState } from "react";
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { Heart, Minus, Plus, Truck, RotateCcw, Ruler } from "lucide-react";
 import { toast } from "sonner";
-import { getProduct, products, reviews as globalReviews, type Product } from "@/lib/data";
+import {
+  getDefaultVariant,
+  getProduct,
+  getProductVariant,
+  products,
+  reviews as globalReviews,
+  type Product,
+} from "@/lib/data";
 import { formatPrice, useShop } from "@/lib/shop-store";
 import { cn } from "@/lib/utils";
 import { Breadcrumbs } from "@/components/site/PageHeader";
@@ -26,11 +33,11 @@ export const Route = createFileRoute("/product/$slug")({
   head: ({ loaderData }) => {
     if (!loaderData) {
       return {
-        meta: [{ title: "Product unavailable — MishraClothings" }, { name: "robots", content: "noindex" }],
+        meta: [{ title: "Product unavailable — LOUIE HERITAGE" }, { name: "robots", content: "noindex" }],
       };
     }
     const { product } = loaderData;
-    const title = `${product.name} — MishraClothings`;
+    const title = `${product.name} — LOUIE HERITAGE`;
     return {
       meta: [
         { title },
@@ -55,19 +62,23 @@ function ProductPage() {
   const { product } = Route.useLoaderData() as { product: Product };
   const { addToCart, toggleWishlist, isWishlisted, markViewed, recentlyViewed } = useShop();
 
+  const defaultVariant = getDefaultVariant(product) ?? product.variants[0] ?? null;
   const [active, setActive] = useState(0);
-  const [size, setSize] = useState(product.sizes[0]!);
-  const [color, setColor] = useState(product.colors[0]!.name);
+  const [size, setSize] = useState(defaultVariant?.size ?? product.sizes[0]!);
+  const [color, setColor] = useState(defaultVariant?.color ?? product.colors[0]!.name);
   const [quantity, setQuantity] = useState(1);
 
   useEffect(() => {
+    const nextDefault = getDefaultVariant(product) ?? product.variants[0] ?? null;
     setActive(0);
-    setSize(product.sizes[0]!);
-    setColor(product.colors[0]!.name);
+    setSize(nextDefault?.size ?? product.sizes[0]!);
+    setColor(nextDefault?.color ?? product.colors[0]!.name);
     setQuantity(1);
     markViewed(product.id);
   }, [product, markViewed]);
 
+  const selectedVariant = getProductVariant(product, size, color) ?? defaultVariant;
+  const selectedVariantInStock = Boolean(selectedVariant && selectedVariant.stockCount > 0);
   const wishlisted = isWishlisted(product.id);
   const gallery = product.images.length > 1 ? product.images : [product.images[0]!, product.images[0]!];
   const related = products
@@ -269,14 +280,20 @@ function ProductPage() {
 
               <button
                 type="button"
-                disabled={!product.inStock}
+                disabled={!product.inStock || !selectedVariantInStock}
                 onClick={() => {
+                  if (!selectedVariant || selectedVariant.stockCount <= 0) {
+                    toast("Selected variant is sold out", {
+                      description: `${product.name} · ${size} · ${color}`,
+                    });
+                    return;
+                  }
                   addToCart({ productId: product.id, size, color, quantity });
                   toast("Added to bag", { description: `${product.name} · ${size} · ${color}` });
                 }}
                 className="h-12 flex-1 rounded-[8px] bg-foreground px-8 text-[11px] font-medium uppercase tracking-[0.16em] text-background transition-colors hover:bg-hover-accent disabled:cursor-not-allowed disabled:opacity-40"
               >
-                {product.inStock ? "Add to bag" : "Sold out"}
+                {product.inStock && selectedVariantInStock ? "Add to bag" : "Sold out"}
               </button>
 
               <button

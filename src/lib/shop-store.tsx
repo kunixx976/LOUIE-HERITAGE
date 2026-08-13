@@ -46,7 +46,7 @@ type State = {
   orders: Order[];
 };
 
-const STORAGE_KEY = "mishraclothings-state";
+const STORAGE_KEY = "louie-heritage-state";
 
 const seedOrders: Order[] = [
   {
@@ -80,7 +80,7 @@ const initialState: State = {
     {
       id: "a1",
       label: "Home",
-      name: "Anmol Mishra",
+      name: "Louie Heritage Customer",
       line1: "12 Abu Lane, Sadar Bazar",
       city: "Meerut",
       postcode: "250101",

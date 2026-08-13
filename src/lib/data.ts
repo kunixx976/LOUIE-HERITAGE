@@ -18,6 +18,126 @@ export type Category = {
   group: "Collections" | "Clothing" | "Seasonal";
 };
 
+export type ProductColor = { name: string; hex: string };
+
+export type ProductVariant = {
+  id: string;
+  sku: string;
+  size: string;
+  color: string;
+  colorHex: string;
+  stockCount: number;
+  price: number;
+  images: string[];
+};
+
+export type Product = {
+  id: string;
+  slug: string;
+  name: string;
+  price: number;
+  compareAt?: number;
+  images: string[];
+  categories: string[];
+  colors: ProductColor[];
+  sizes: string[];
+  variants: ProductVariant[];
+  inStock: boolean;
+  inventoryStatus: "in_stock" | "low_stock" | "out_of_stock";
+  inventoryUpdatedAt: string;
+  rating: number;
+  reviewCount: number;
+  tags: ("new" | "best-seller" | "seasonal")[];
+  fabric: string;
+  description: string;
+  details: string[];
+};
+
+const SIZES = ["XS", "S", "M", "L", "XL"];
+const WAISTS = ["28", "30", "32", "34", "36", "38"];
+const ONE_SIZE = ["One size"];
+
+const NEUTRALS = [
+  { name: "Ecru", hex: "#EFEAE1" },
+  { name: "Stone", hex: "#C9C2B6" },
+  { name: "Black", hex: "#111111" },
+];
+
+const brandInventoryTimestamp = "2026-08-13T00:00:00.000Z";
+
+function buildVariants(
+  productId: string,
+  colors: ProductColor[],
+  sizes: string[],
+  stockTable: Record<string, Record<string, number>>,
+  images: string[],
+  price: number,
+): ProductVariant[] {
+  return colors.flatMap((color) =>
+    sizes.map((size) => {
+      const sizeStock = stockTable[color.name]?.[size] ?? 0;
+      const variantId = `${productId}-${color.name.toLowerCase().replace(/\s+/g, "-")}-${size.toLowerCase()}`;
+      return {
+        id: variantId,
+        sku: `LH-${productId}-${color.name.slice(0, 3).toUpperCase()}-${size}`,
+        size,
+        color: color.name,
+        colorHex: color.hex,
+        stockCount: sizeStock,
+        price,
+        images,
+      };
+    }),
+  );
+}
+
+function normalizeProduct(
+  product: Omit<Product, "colors" | "sizes" | "variants" | "inStock" | "inventoryStatus"> & {
+    colors: ProductColor[];
+    sizes: string[];
+    variants?: ProductVariant[];
+    inventoryUpdatedAt?: string;
+  },
+): Product {
+  const variants =
+    product.variants ??
+    buildVariants(
+      product.id,
+      product.colors,
+      product.sizes,
+      Object.fromEntries(
+        product.colors.map((color) => [
+          color.name,
+          Object.fromEntries(product.sizes.map((size) => [size, 5])),
+        ]),
+      ),
+      product.images,
+      product.price,
+    );
+
+  const totalStock = variants.reduce((sum, variant) => sum + Math.max(0, variant.stockCount), 0);
+  const inStock = totalStock > 0;
+  const inventoryStatus = totalStock === 0 ? "out_of_stock" : totalStock <= 8 ? "low_stock" : "in_stock";
+
+  return {
+    ...product,
+    colors: product.colors,
+    sizes: product.sizes,
+    variants,
+    inStock,
+    inventoryStatus,
+    inventoryUpdatedAt: product.inventoryUpdatedAt ?? brandInventoryTimestamp,
+  };
+}
+
+export function getProductVariant(product: Product, size: string, color: string) {
+  return product.variants.find((variant) => variant.size === size && variant.color === color) ?? null;
+}
+
+export function getDefaultVariant(product: Product) {
+  return product.variants.find((variant) => variant.stockCount > 0) ?? product.variants[0] ?? null;
+}
+
 export const categories: Category[] = [
   {
     slug: "women",
@@ -100,35 +220,7 @@ export const categories: Category[] = [
   },
 ];
 
-export type Product = {
-  id: string;
-  slug: string;
-  name: string;
-  price: number;
-  compareAt?: number;
-  images: string[];
-  categories: string[];
-  colors: { name: string; hex: string }[];
-  sizes: string[];
-  inStock: boolean;
-  rating: number;
-  reviewCount: number;
-  tags: ("new" | "best-seller" | "seasonal")[];
-  fabric: string;
-  description: string;
-  details: string[];
-};
-
-const SIZES = ["XS", "S", "M", "L", "XL"];
-const WAISTS = ["28", "30", "32", "34", "36", "38"];
-
-const NEUTRALS = [
-  { name: "Ecru", hex: "#EFEAE1" },
-  { name: "Stone", hex: "#C9C2B6" },
-  { name: "Black", hex: "#111111" },
-];
-
-export const products: Product[] = [
+const rawProducts = [
   {
     id: "1",
     slug: "tirupur-classic-cotton-tee",
@@ -139,7 +231,7 @@ export const products: Product[] = [
     categories: ["tshirts", "men", "women", "casual", "summer"],
     colors: NEUTRALS,
     sizes: SIZES,
-    inStock: true,
+    inventoryUpdatedAt: brandInventoryTimestamp,
     rating: 4.8,
     reviewCount: 412,
     tags: ["best-seller", "new"],
@@ -152,6 +244,18 @@ export const products: Product[] = [
       "Knitted and stitched in Tirupur, Tamil Nadu",
       "Machine wash cold, do not bleach",
     ],
+    variants: buildVariants(
+      "1",
+      NEUTRALS,
+      SIZES,
+      {
+        Ecru: { XS: 12, S: 18, M: 20, L: 15, XL: 10 },
+        Stone: { XS: 8, S: 14, M: 16, L: 12, XL: 7 },
+        Black: { XS: 6, S: 10, M: 12, L: 8, XL: 4 },
+      },
+      [p1, p2],
+      799,
+    ),
   },
   {
     id: "2",
@@ -165,7 +269,6 @@ export const products: Product[] = [
       { name: "Charcoal", hex: "#3A3A3A" },
     ],
     sizes: SIZES,
-    inStock: true,
     rating: 4.7,
     reviewCount: 236,
     tags: ["new"],
@@ -178,6 +281,20 @@ export const products: Product[] = [
       "Garment-dyed and pre-shrunk",
       "Machine wash cold, inside out",
     ],
+    variants: buildVariants(
+      "2",
+      [
+        { name: "Off White", hex: "#F2EFE9" },
+        { name: "Charcoal", hex: "#3A3A3A" },
+      ],
+      SIZES,
+      {
+        "Off White": { XS: 7, S: 12, M: 15, L: 11, XL: 8 },
+        Charcoal: { XS: 5, S: 11, M: 13, L: 10, XL: 6 },
+      },
+      [p2, p1],
+      1099,
+    ),
   },
   {
     id: "3",
@@ -192,7 +309,6 @@ export const products: Product[] = [
       { name: "Jet Black", hex: "#1A1A1A" },
     ],
     sizes: WAISTS,
-    inStock: true,
     rating: 4.6,
     reviewCount: 187,
     tags: ["best-seller"],
@@ -205,6 +321,20 @@ export const products: Product[] = [
       "Denim woven in Ahmedabad, Gujarat",
       "Machine wash cold, inside out",
     ],
+    variants: buildVariants(
+      "3",
+      [
+        { name: "Mid Indigo", hex: "#3C5878" },
+        { name: "Jet Black", hex: "#1A1A1A" },
+      ],
+      WAISTS,
+      {
+        "Mid Indigo": { "28": 4, "30": 8, "32": 10, "34": 8, "36": 5, "38": 3 },
+        "Jet Black": { "28": 3, "30": 7, "32": 9, "34": 7, "36": 4, "38": 2 },
+      },
+      [p3, p4],
+      1899,
+    ),
   },
   {
     id: "4",
@@ -218,7 +348,6 @@ export const products: Product[] = [
       { name: "Deep Indigo", hex: "#2E4463" },
     ],
     sizes: WAISTS,
-    inStock: true,
     rating: 4.7,
     reviewCount: 143,
     tags: ["new", "best-seller"],
@@ -231,6 +360,20 @@ export const products: Product[] = [
       "Denim from Bhilwara, Rajasthan",
       "Machine wash cold, line dry",
     ],
+    variants: buildVariants(
+      "4",
+      [
+        { name: "Light Wash", hex: "#8FA6BE" },
+        { name: "Deep Indigo", hex: "#2E4463" },
+      ],
+      WAISTS,
+      {
+        "Light Wash": { "28": 5, "30": 7, "32": 9, "34": 6, "36": 3, "38": 2 },
+        "Deep Indigo": { "28": 4, "30": 7, "32": 8, "34": 7, "36": 5, "38": 2 },
+      },
+      [p4, p3],
+      2099,
+    ),
   },
   {
     id: "5",
@@ -244,8 +387,7 @@ export const products: Product[] = [
       { name: "Deep Maroon", hex: "#6E1F2A" },
       { name: "Ivory", hex: "#EFE9DE" },
     ],
-    sizes: ["One size"],
-    inStock: true,
+    sizes: ONE_SIZE,
     rating: 4.9,
     reviewCount: 168,
     tags: ["best-seller", "seasonal"],
@@ -258,6 +400,20 @@ export const products: Product[] = [
       "Woven and finished in Surat, Gujarat",
       "Dry clean recommended",
     ],
+    variants: buildVariants(
+      "5",
+      [
+        { name: "Deep Maroon", hex: "#6E1F2A" },
+        { name: "Ivory", hex: "#EFE9DE" },
+      ],
+      ONE_SIZE,
+      {
+        "Deep Maroon": { "One size": 6 },
+        Ivory: { "One size": 8 },
+      },
+      [p5, p2],
+      2499,
+    ),
   },
   {
     id: "6",
@@ -271,7 +427,6 @@ export const products: Product[] = [
       { name: "Clay", hex: "#C08A6E" },
     ],
     sizes: SIZES,
-    inStock: true,
     rating: 4.8,
     reviewCount: 91,
     tags: ["new"],
@@ -284,6 +439,20 @@ export const products: Product[] = [
       "Stitched in Surat, Gujarat",
       "Gentle machine wash, dry in shade",
     ],
+    variants: buildVariants(
+      "6",
+      [
+        { name: "Powder Blue", hex: "#B7C7D6" },
+        { name: "Clay", hex: "#C08A6E" },
+      ],
+      SIZES,
+      {
+        "Powder Blue": { XS: 6, S: 9, M: 8, L: 7, XL: 4 },
+        Clay: { XS: 5, S: 8, M: 7, L: 6, XL: 3 },
+      },
+      [catWomen, p5],
+      2899,
+    ),
   },
   {
     id: "7",
@@ -297,7 +466,6 @@ export const products: Product[] = [
       { name: "Bottle Green", hex: "#2F4A3C" },
     ],
     sizes: SIZES,
-    inStock: true,
     rating: 4.6,
     reviewCount: 204,
     tags: ["best-seller", "seasonal"],
@@ -310,6 +478,20 @@ export const products: Product[] = [
       "Knitted in Ludhiana, Punjab",
       "Hand wash cool, dry flat",
     ],
+    variants: buildVariants(
+      "7",
+      [
+        { name: "Oatmeal", hex: "#DCD3C3" },
+        { name: "Bottle Green", hex: "#2F4A3C" },
+      ],
+      SIZES,
+      {
+        Oatmeal: { XS: 5, S: 8, M: 10, L: 8, XL: 4 },
+        "Bottle Green": { XS: 4, S: 7, M: 9, L: 7, XL: 3 },
+      },
+      [p6, p4],
+      1799,
+    ),
   },
   {
     id: "8",
@@ -324,7 +506,6 @@ export const products: Product[] = [
       { name: "Grey Melange", hex: "#B9BDC1" },
     ],
     sizes: SIZES,
-    inStock: true,
     rating: 4.7,
     reviewCount: 76,
     tags: ["seasonal"],
@@ -337,6 +518,20 @@ export const products: Product[] = [
       "Knitted in Ludhiana, Punjab",
       "Hand wash cool, dry flat",
     ],
+    variants: buildVariants(
+      "8",
+      [
+        { name: "Camel", hex: "#B48450" },
+        { name: "Grey Melange", hex: "#B9BDC1" },
+      ],
+      SIZES,
+      {
+        Camel: { XS: 3, S: 7, M: 9, L: 7, XL: 4 },
+        "Grey Melange": { XS: 2, S: 6, M: 8, L: 6, XL: 3 },
+      },
+      [catOversized, p6],
+      2199,
+    ),
   },
   {
     id: "9",
@@ -350,7 +545,6 @@ export const products: Product[] = [
       { name: "Sage", hex: "#A8B3A0" },
     ],
     sizes: ["Single", "Double", "King"],
-    inStock: true,
     rating: 4.8,
     reviewCount: 259,
     tags: ["best-seller"],
@@ -363,6 +557,20 @@ export const products: Product[] = [
       "Woven in Panipat, Haryana",
       "Machine wash warm, tumble dry low",
     ],
+    variants: buildVariants(
+      "9",
+      [
+        { name: "Ivory", hex: "#EFE9DE" },
+        { name: "Sage", hex: "#A8B3A0" },
+      ],
+      ["Single", "Double", "King"],
+      {
+        Ivory: { Single: 8, Double: 11, King: 6 },
+        Sage: { Single: 7, Double: 10, King: 5 },
+      },
+      [p8, p7],
+      1499,
+    ),
   },
   {
     id: "10",
@@ -375,8 +583,7 @@ export const products: Product[] = [
       { name: "Taupe", hex: "#B39C86" },
       { name: "Indigo", hex: "#33445E" },
     ],
-    sizes: ["One size"],
-    inStock: false,
+    sizes: ONE_SIZE,
     rating: 4.9,
     reviewCount: 64,
     tags: ["seasonal"],
@@ -389,6 +596,20 @@ export const products: Product[] = [
       "Handloom woven in Panipat, Haryana",
       "Machine wash gentle, dry in shade",
     ],
+    variants: buildVariants(
+      "10",
+      [
+        { name: "Taupe", hex: "#B39C86" },
+        { name: "Indigo", hex: "#33445E" },
+      ],
+      ONE_SIZE,
+      {
+        Taupe: { "One size": 0 },
+        Indigo: { "One size": 0 },
+      },
+      [p7, p8],
+      1199,
+    ),
   },
   {
     id: "11",
@@ -402,7 +623,6 @@ export const products: Product[] = [
       { name: "Slate", hex: "#6E7176" },
     ],
     sizes: SIZES,
-    inStock: true,
     rating: 4.5,
     reviewCount: 118,
     tags: ["new"],
@@ -415,6 +635,20 @@ export const products: Product[] = [
       "Stitched in Delhi NCR",
       "Machine wash cold, iron warm",
     ],
+    variants: buildVariants(
+      "11",
+      [
+        { name: "White", hex: "#F4F2ED" },
+        { name: "Slate", hex: "#6E7176" },
+      ],
+      SIZES,
+      {
+        White: { XS: 6, S: 9, M: 11, L: 10, XL: 6 },
+        Slate: { XS: 4, S: 7, M: 9, L: 8, XL: 5 },
+      },
+      [catMen, p3],
+      1299,
+    ),
   },
   {
     id: "12",
@@ -427,8 +661,7 @@ export const products: Product[] = [
       { name: "Bone", hex: "#EDE7DB" },
       { name: "Rust", hex: "#A45A38" },
     ],
-    sizes: ["One size"],
-    inStock: true,
+    sizes: ONE_SIZE,
     rating: 4.6,
     reviewCount: 87,
     tags: ["new"],
@@ -441,8 +674,24 @@ export const products: Product[] = [
       "Handloom woven in Uttar Pradesh",
       "Hand wash separately first time",
     ],
+    variants: buildVariants(
+      "12",
+      [
+        { name: "Bone", hex: "#EDE7DB" },
+        { name: "Rust", hex: "#A45A38" },
+      ],
+      ONE_SIZE,
+      {
+        Bone: { "One size": 9 },
+        Rust: { "One size": 7 },
+      },
+      [p1, p5],
+      649,
+    ),
   },
-];
+].map(normalizeProduct);
+
+export const products: Product[] = rawProducts;
 
 export const bestSellers = products.filter((p) => p.tags.includes("best-seller"));
 export const newArrivals = products.filter((p) => p.tags.includes("new"));

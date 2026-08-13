@@ -7,9 +7,9 @@ import { Reveal } from "@/components/site/Reveal";
 export const Route = createFileRoute("/about")({
   head: () => ({
     meta: [
-      { title: "Our Story — MishraClothings" },
-      { name: "description", content: "MishraClothings is a Meerut-based clothing business sourcing cotton, denim, ethnic wear and home textiles directly from India's textile hubs." },
-      { property: "og:title", content: "Our Story — MishraClothings" },
+      { title: "Our Story — LOUIE HERITAGE" },
+      { name: "description", content: "LOUIE HERITAGE is a Meerut-based clothing business sourcing cotton, denim, ethnic wear and home textiles directly from India's textile hubs." },
+      { property: "og:title", content: "Our Story — LOUIE HERITAGE" },
       { property: "og:description", content: "A family business in Meerut, buying directly from Indian mills and knitting units." },
     ],
   }),
@@ -41,7 +41,7 @@ function AboutPage() {
           <div className="space-y-6 text-sm leading-relaxed text-muted-foreground lg:col-span-6 lg:col-start-7">
             <h2 className="font-display text-3xl text-foreground">How we work</h2>
             <p>
-              MishraClothings started as a single counter on Abu Lane in Sadar Bazar, Meerut,
+              LOUIE HERITAGE started as a single counter on Abu Lane in Sadar Bazar, Meerut,
               selling cotton basics to families who came back every season. The method hasn't
               changed since: buy directly from the people who make the cloth, keep the range small,
               and price it honestly.

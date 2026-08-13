@@ -12,13 +12,13 @@ import { NewsletterForm } from "@/components/site/NewsletterForm";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "MishraClothings — Everyday Cotton, Denim & Ethnic Wear" },
+      { title: "LOUIE HERITAGE — Everyday Cotton, Denim & Ethnic Wear" },
       {
         name: "description",
         content:
           "Cotton T-shirts from Tirupur, denim from Ahmedabad, sarees from Surat and woollens from Ludhiana — shipped from Meerut. Free delivery over ₹1,499.",
       },
-      { property: "og:title", content: "MishraClothings — Everyday Cotton, Denim & Ethnic Wear" },
+      { property: "og:title", content: "LOUIE HERITAGE — Everyday Cotton, Denim & Ethnic Wear" },
       {
         property: "og:description",
         content:
@@ -291,16 +291,16 @@ function Home() {
       <section className="border-t border-border">
         <div className="container-editorial section-y">
           <SectionHeading
-            eyebrow="@mishraclothings"
+            eyebrow="@louieheritage"
             title="Worn by you"
-            description="Tag your pieces with #MishraClothings for a chance to be featured."
+            description="Tag your pieces with #LOUIEHERITAGE for a chance to be featured."
             align="center"
           />
           <div className="mt-12 grid grid-cols-2 gap-2 md:grid-cols-3 lg:grid-cols-6">
             {galleryImages.map((image, i) => (
               <Reveal key={i} delay={(i % 6) * 0.04}>
                 <a
-                  href="https://www.instagram.com/mishraclothings"
+                  href="https://www.instagram.com/louieheritage"
                   className="group block overflow-hidden rounded-[8px] bg-secondary"
                   aria-label="View on Instagram"
                 >

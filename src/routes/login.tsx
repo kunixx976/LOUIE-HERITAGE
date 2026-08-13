@@ -6,9 +6,9 @@ import { useShop } from "@/lib/shop-store";
 export const Route = createFileRoute("/login")({
   head: () => ({
     meta: [
-      { title: "Sign In — MishraClothings" },
-      { name: "description", content: "Sign in to your MishraClothings account to track orders, manage addresses and view your wishlist." },
-      { property: "og:title", content: "Sign In — MishraClothings" },
+      { title: "Sign In — LOUIE HERITAGE" },
+      { name: "description", content: "Sign in to your LOUIE HERITAGE account to track orders, manage addresses and view your wishlist." },
+      { property: "og:title", content: "Sign In — LOUIE HERITAGE" },
       { property: "og:description", content: "Sign in to track orders and manage your account." },
     ],
   }),

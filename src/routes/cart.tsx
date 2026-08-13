@@ -10,9 +10,9 @@ import { ProductCard } from "@/components/site/ProductCard";
 export const Route = createFileRoute("/cart")({
   head: () => ({
     meta: [
-      { title: "Shopping Bag — MishraClothings" },
-      { name: "description", content: "Review the pieces in your MishraClothings bag before checkout." },
-      { property: "og:title", content: "Shopping Bag — MishraClothings" },
+      { title: "Shopping Bag — LOUIE HERITAGE" },
+      { name: "description", content: "Review the pieces in your LOUIE HERITAGE bag before checkout." },
+      { property: "og:title", content: "Shopping Bag — LOUIE HERITAGE" },
       { property: "og:description", content: "Review the pieces in your bag before checkout." },
     ],
   }),

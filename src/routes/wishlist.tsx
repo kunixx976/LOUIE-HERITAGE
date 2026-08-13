@@ -7,9 +7,9 @@ import { ProductCard } from "@/components/site/ProductCard";
 export const Route = createFileRoute("/wishlist")({
   head: () => ({
     meta: [
-      { title: "Wishlist — MishraClothings" },
-      { name: "description", content: "The MishraClothings pieces you've saved for later." },
-      { property: "og:title", content: "Wishlist — MishraClothings" },
+      { title: "Wishlist — LOUIE HERITAGE" },
+      { name: "description", content: "The LOUIE HERITAGE pieces you've saved for later." },
+      { property: "og:title", content: "Wishlist — LOUIE HERITAGE" },
       { property: "og:description", content: "The pieces you've saved for later." },
     ],
   }),

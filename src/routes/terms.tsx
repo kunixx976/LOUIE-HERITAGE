@@ -4,9 +4,9 @@ import { PageHeader } from "@/components/site/PageHeader";
 export const Route = createFileRoute("/terms")({
   head: () => ({
     meta: [
-      { title: "Terms & Conditions — MishraClothings" },
-      { name: "description", content: "The terms governing purchases from MishraClothings: orders, pricing, delivery, returns and warranty." },
-      { property: "og:title", content: "Terms & Conditions — MishraClothings" },
+      { title: "Terms & Conditions — LOUIE HERITAGE" },
+      { name: "description", content: "The terms governing purchases from LOUIE HERITAGE: orders, pricing, delivery, returns and warranty." },
+      { property: "og:title", content: "Terms & Conditions — LOUIE HERITAGE" },
       { property: "og:description", content: "Terms governing orders, pricing, delivery, returns and warranty." },
     ],
   }),
@@ -16,7 +16,7 @@ export const Route = createFileRoute("/terms")({
 const sections = [
   {
     title: "1. These terms",
-    body: "By placing an order with Mishra Clothings, Meerut (GSTIN 09ABCDE1234F1Z5) you accept these terms. They do not affect your statutory rights as a consumer under the Consumer Protection Act, 2019.",
+    body: "By placing an order with LOUIE HERITAGE, Meerut (GSTIN 09ABCDE1234F1Z5) you accept these terms. They do not affect your statutory rights as a consumer under the Consumer Protection Act, 2019.",
   },
   {
     title: "2. Orders",
@@ -40,7 +40,7 @@ const sections = [
   },
   {
     title: "7. Intellectual property",
-    body: "All imagery, patterns, text and the MishraClothings name remain our property. They may not be reproduced commercially without written permission.",
+    body: "All imagery, patterns, text and the LOUIE HERITAGE name remain our property. They may not be reproduced commercially without written permission.",
   },
   {
     title: "8. Governing law",

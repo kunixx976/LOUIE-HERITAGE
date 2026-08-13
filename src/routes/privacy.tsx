@@ -4,9 +4,9 @@ import { PageHeader } from "@/components/site/PageHeader";
 export const Route = createFileRoute("/privacy")({
   head: () => ({
     meta: [
-      { title: "Privacy Policy — MishraClothings" },
-      { name: "description", content: "How MishraClothings collects, uses and protects your personal data under India's Digital Personal Data Protection Act." },
-      { property: "og:title", content: "Privacy Policy — MishraClothings" },
+      { title: "Privacy Policy — LOUIE HERITAGE" },
+      { name: "description", content: "How LOUIE HERITAGE collects, uses and protects your personal data under India's Digital Personal Data Protection Act." },
+      { property: "og:title", content: "Privacy Policy — LOUIE HERITAGE" },
       { property: "og:description", content: "How we collect, use and protect your personal data." },
     ],
   }),
@@ -24,7 +24,7 @@ const sections = [
   },
   {
     title: "Payment data",
-    body: "Card details are handled entirely by our PCI-DSS compliant payment processor. MishraClothings never sees or stores full card numbers.",
+    body: "Card details are handled entirely by our PCI-DSS compliant payment processor. LOUIE HERITAGE never sees or stores full card numbers.",
   },
   {
     title: "Cookies",
@@ -32,7 +32,7 @@ const sections = [
   },
   {
     title: "Your rights",
-    body: "Under India's Digital Personal Data Protection Act you may request a copy of your data, ask us to correct or erase it, object to processing, or withdraw consent at any time. Email privacy@mishraclothings.in and we will respond within 30 days.",
+    body: "Under India's Digital Personal Data Protection Act you may request a copy of your data, ask us to correct or erase it, object to processing, or withdraw consent at any time. Email privacy@louieheritage.in and we will respond within 30 days.",
   },
   {
     title: "Retention",
@@ -46,7 +46,7 @@ function PrivacyPage() {
       <PageHeader
         eyebrow="Legal"
         title="Privacy policy"
-        description="Last updated 1 June 2026. Mishra Clothings, 12 Abu Lane, Sadar Bazar, Meerut 250001, is the data fiduciary."
+        description="Last updated 1 June 2026. LOUIE HERITAGE, 12 Abu Lane, Sadar Bazar, Meerut 250001, is the data fiduciary."
         crumbs={[{ label: "Privacy" }]}
       />
       <div className="container-editorial py-12 md:py-16">

@@ -17,7 +17,7 @@ export function Footer() {
       <div className="container-editorial">
         <div className="grid grid-cols-2 gap-x-6 gap-y-10 py-14 md:grid-cols-12 md:gap-12 md:py-20">
           <div className="col-span-2 md:col-span-4">
-            <p className="font-display text-lg uppercase tracking-[0.28em]">MishraClothings</p>
+            <p className="font-display text-lg uppercase tracking-[0.28em]">LOUIE HERITAGE</p>
             <p className="mt-4 max-w-xs text-sm leading-relaxed text-muted-foreground">
               Cotton, denim, ethnic wear and home textiles bought directly from India's textile
               hubs and shipped from Meerut.
@@ -113,13 +113,13 @@ export function Footer() {
           <div className="md:col-span-2">
             <p className="eyebrow mb-4">Follow</p>
             <div className="-ml-3 flex text-muted-foreground md:ml-0 md:gap-4">
-              <a href="https://www.instagram.com/mishraclothings" aria-label="Instagram" className="grid h-11 w-11 place-items-center transition-colors hover:text-foreground md:h-auto md:w-auto">
+              <a href="https://www.instagram.com/louieheritage" aria-label="Instagram" className="grid h-11 w-11 place-items-center transition-colors hover:text-foreground md:h-auto md:w-auto">
                 <Instagram className="h-[18px] w-[18px]" strokeWidth={1.25} />
               </a>
-              <a href="https://www.facebook.com/mishraclothings" aria-label="Facebook" className="grid h-11 w-11 place-items-center transition-colors hover:text-foreground md:h-auto md:w-auto">
+              <a href="https://www.facebook.com/louieheritage" aria-label="Facebook" className="grid h-11 w-11 place-items-center transition-colors hover:text-foreground md:h-auto md:w-auto">
                 <Facebook className="h-[18px] w-[18px]" strokeWidth={1.25} />
               </a>
-              <a href="https://www.youtube.com/@mishraclothings" aria-label="YouTube" className="grid h-11 w-11 place-items-center transition-colors hover:text-foreground md:h-auto md:w-auto">
+              <a href="https://www.youtube.com/@louieheritage" aria-label="YouTube" className="grid h-11 w-11 place-items-center transition-colors hover:text-foreground md:h-auto md:w-auto">
                 <Youtube className="h-[18px] w-[18px]" strokeWidth={1.25} />
               </a>
             </div>
@@ -138,7 +138,7 @@ export function Footer() {
         </div>
 
         <div className="flex flex-col gap-3 border-t border-border py-7 text-xs text-muted-foreground md:flex-row md:items-center md:justify-between">
-          <p>© {new Date().getFullYear()} Mishra Clothings. All rights reserved.</p>
+          <p>© {new Date().getFullYear()} LOUIE HERITAGE. All rights reserved.</p>
           <div className="flex gap-6 [&_a]:inline-block [&_a]:py-1 md:[&_a]:py-0">
             <Link to="/privacy" className="transition-colors hover:text-foreground">
               Privacy

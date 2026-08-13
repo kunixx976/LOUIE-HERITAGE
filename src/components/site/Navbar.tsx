@@ -75,7 +75,7 @@ export function Navbar() {
                 <SheetContent side="left" className="w-[86vw] max-w-sm overflow-y-auto bg-background p-0">
                   <SheetTitle className="sr-only">Menu</SheetTitle>
                   <div className="px-6 pb-10 pt-8">
-                    <p className="font-display text-xl">MishraClothings</p>
+                    <p className="font-display text-xl">LOUIE HERITAGE</p>
                     <div className="mt-8 space-y-8">
                       {groups.map((group) => (
                         <div key={group}>
@@ -123,7 +123,7 @@ export function Navbar() {
               to="/"
               className="justify-self-center text-center font-display text-lg tracking-[0.1em] uppercase md:text-xl"
             >
-              MishraAtelier&nbsp;Nordnbsp;Clothings
+              LOUIE HERITAGE
             </Link>
 
             {/* Right — utilities */}
