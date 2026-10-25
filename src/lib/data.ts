@@ -169,7 +169,7 @@ export const categories: Category[] = [
     slug: "denim",
     name: "Denim",
     description: "Mill-woven denim from Ahmedabad and Bhilwara, finished in true-to-size fits.",
-    image: p3,
+    image: p1,
     group: "Clothing",
   },
   {

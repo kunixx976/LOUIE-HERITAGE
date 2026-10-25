@@ -174,11 +174,13 @@ export function Navbar() {
               </Link>
               <Link
                 to="/cart"
-                aria-label="Shopping bag"
+                aria-label={`Shopping bag, ${hydrated ? cartCount : 0} ${
+                  hydrated && cartCount === 1 ? "item" : "items"
+                }`}
                 className="relative grid h-11 w-11 place-items-center transition-opacity hover:opacity-60"
               >
                 <ShoppingBag className="h-[18px] w-[18px]" strokeWidth={1.25} />
-                {hydrated && cartCount > 0 ? (
+                {hydrated ? (
                   <span className="absolute right-2 top-2 grid h-4 min-w-4 place-items-center rounded-full bg-current px-1 text-[9px] font-medium leading-none">
                     <span className={transparent ? "text-foreground" : "text-background"}>
                       {cartCount}

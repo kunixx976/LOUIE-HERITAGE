@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { SlidersHorizontal, X } from "lucide-react";
-import { allColors, allSizes, categories, type Product } from "@/lib/data";
+import { categories, type Product } from "@/lib/data";
 import { formatPrice } from "@/lib/shop-store";
 import { cn } from "@/lib/utils";
 import { ProductCard } from "./ProductCard";
@@ -33,6 +33,23 @@ export function ShopBrowser({
   const [inStockOnly, setInStockOnly] = useState(false);
   const [sort, setSort] = useState<Sort>("featured");
   const [page, setPage] = useState(1);
+
+  const facetProducts = useMemo(
+    () =>
+      products.filter(
+        (product) =>
+          (!lockedCategory || product.categories.includes(lockedCategory)) &&
+          (!selectedCategories.length ||
+            selectedCategories.some((category) => product.categories.includes(category))),
+      ),
+    [products, lockedCategory, selectedCategories],
+  );
+  const availableSizes = [...new Set(facetProducts.flatMap((product) => product.sizes))];
+  const availableColors = [
+    ...new Map(
+      facetProducts.flatMap((product) => product.colors).map((color) => [color.name, color]),
+    ).values(),
+  ];
 
   const toggle = (list: string[], setList: (v: string[]) => void, value: string) => {
     setList(list.includes(value) ? list.filter((v) => v !== value) : [...list, value]);
@@ -71,13 +88,17 @@ export function ShopBrowser({
   const visible = filtered.slice((current - 1) * PER_PAGE, current * PER_PAGE);
 
   const activeCount =
-    selectedCategories.length + sizes.length + colors.length + (inStockOnly ? 1 : 0);
+    selectedCategories.length +
+    sizes.length +
+    colors.length +
+    (price[0] !== 0 || price[1] !== 3000 ? 1 : 0) +
+    (inStockOnly ? 1 : 0);
 
   const clearAll = () => {
     setSelectedCategories([]);
     setSizes([]);
     setColors([]);
-    setPrice([0, 700]);
+    setPrice([0, 3000]);
     setInStockOnly(false);
     setPage(1);
   };
@@ -107,7 +128,7 @@ export function ShopBrowser({
 
       <FilterGroup title="Size">
         <div className="flex flex-wrap gap-2">
-          {allSizes.map((s) => (
+          {availableSizes.map((s) => (
             <button
               key={s}
               type="button"
@@ -125,21 +146,27 @@ export function ShopBrowser({
 
       <FilterGroup title="Colour">
         <div className="flex flex-wrap gap-3">
-          {allColors.map((c) => (
+          {availableColors.map((c) => (
             <button
               key={c.name}
               type="button"
               title={c.name}
-              aria-label={c.name}
+              aria-label={`Filter by ${c.name}`}
               aria-pressed={colors.includes(c.name)}
               onClick={() => toggle(colors, setColors, c.name)}
-              style={{ backgroundColor: c.hex }}
-              className={cn(
-                "h-9 w-9 rounded-full border border-border transition-all lg:h-7 lg:w-7",
-                colors.includes(c.name) &&
-                  "ring-1 ring-foreground ring-offset-2 ring-offset-background",
-              )}
-            />
+              className="flex items-center gap-2 text-xs text-muted-foreground hover:text-foreground"
+            >
+              <span
+                aria-hidden="true"
+                style={{ backgroundColor: c.hex }}
+                className={cn(
+                  "h-7 w-7 rounded-full border border-border transition-all",
+                  colors.includes(c.name) &&
+                    "ring-1 ring-foreground ring-offset-2 ring-offset-background",
+                )}
+              />
+              {c.name}
+            </button>
           ))}
         </div>
       </FilterGroup>
@@ -210,7 +237,13 @@ export function ShopBrowser({
               </SheetContent>
             </Sheet>
 
-            <Select value={sort} onValueChange={(v) => setSort(v as Sort)}>
+            <Select
+              value={sort}
+              onValueChange={(v) => {
+                setSort(v as Sort);
+                setPage(1);
+              }}
+            >
               <SelectTrigger className="h-11 w-[9.5rem] rounded-[8px] border-border text-xs sm:w-[11.5rem] lg:h-9">
                 <SelectValue placeholder="Sort" />
               </SelectTrigger>
@@ -240,18 +273,33 @@ export function ShopBrowser({
             </button>
           </div>
         ) : (
-          <div className="mt-8 grid grid-cols-2 gap-x-4 gap-y-10 sm:gap-x-6 md:mt-10 md:grid-cols-3 md:gap-y-14">
-            {visible.map((product) => (
-              <ProductCard key={product.id} product={product} />
-            ))}
+          <div>
+            <p className="mt-5 text-xs text-muted-foreground" aria-live="polite">
+              Showing {(current - 1) * PER_PAGE + 1}–{Math.min(current * PER_PAGE, filtered.length)}{" "}
+              of {filtered.length} pieces
+            </p>
+            <div className="mt-4 grid grid-cols-2 gap-x-4 gap-y-10 sm:gap-x-6 md:mt-6 md:grid-cols-3 md:gap-y-14">
+              {visible.map((product) => (
+                <ProductCard key={product.id} product={product} />
+              ))}
+            </div>
           </div>
         )}
 
         {pages > 1 ? (
           <nav
             aria-label="Pagination"
-            className="mt-16 flex items-center justify-center gap-2 border-t border-border pt-10"
+            className="mt-10 flex items-center justify-center gap-2 border-t border-border pt-8"
           >
+            <button
+              type="button"
+              aria-label="Previous page"
+              disabled={current === 1}
+              onClick={() => setPage((value) => Math.max(1, value - 1))}
+              className="h-11 rounded-[8px] border border-border px-4 text-xs disabled:opacity-40 sm:h-9"
+            >
+              Previous
+            </button>
             {Array.from({ length: pages }, (_, i) => i + 1).map((n) => (
               <button
                 key={n}
@@ -269,6 +317,15 @@ export function ShopBrowser({
                 {n}
               </button>
             ))}
+            <button
+              type="button"
+              aria-label="Next page"
+              disabled={current === pages}
+              onClick={() => setPage((value) => Math.min(pages, value + 1))}
+              className="h-11 rounded-[8px] border border-border px-4 text-xs disabled:opacity-40 sm:h-9"
+            >
+              Next
+            </button>
           </nav>
         ) : null}
       </div>

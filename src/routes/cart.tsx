@@ -24,9 +24,18 @@ export const Route = createFileRoute("/cart")({
 });
 
 function CartPage() {
-  const { cartProducts, updateQuantity, removeLine, subtotal, hydrated } = useShop();
+  const {
+    cartProducts,
+    updateQuantity,
+    removeLine,
+    subtotal,
+    discount,
+    couponCode,
+    applyCoupon,
+    clearCoupon,
+    hydrated,
+  } = useShop();
   const [coupon, setCoupon] = useState("");
-  const [discount, setDiscount] = useState(0);
   const shipping =
     subtotal === 0 ? 0 : subtotal > FREE_DELIVERY_THRESHOLD ? 0 : STANDARD_DELIVERY_FEE;
   const total = Math.max(0, subtotal - discount) + shipping;
@@ -134,11 +143,16 @@ function CartPage() {
                   className="mt-6 flex gap-2"
                   onSubmit={(e) => {
                     e.preventDefault();
-                    if (coupon.trim().toUpperCase() === "STUDIO10") {
-                      setDiscount(Math.round(subtotal * 0.1));
-                      toast("Coupon applied", { description: "10% off your order" });
+                    if (applyCoupon(coupon)) {
+                      toast("Coupon applied", {
+                        description: "10% off your order",
+                        duration: 1800,
+                      });
                     } else {
-                      toast("That code isn't valid", { description: "Try STUDIO10" });
+                      toast("That code isn't valid", {
+                        description: "Try STUDIO10",
+                        duration: 1800,
+                      });
                     }
                   }}
                 >
@@ -159,6 +173,14 @@ function CartPage() {
                     Apply
                   </button>
                 </form>
+                {couponCode ? (
+                  <p className="mt-3 flex items-center justify-between text-xs text-muted-foreground">
+                    <span>{couponCode} applied — 10% off</span>
+                    <button type="button" onClick={clearCoupon} className="link-underline">
+                      Remove
+                    </button>
+                  </p>
+                ) : null}
 
                 <dl className="mt-7 space-y-3 border-t border-border pt-6 text-sm">
                   <div className="flex justify-between">

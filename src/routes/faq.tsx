@@ -1,19 +1,16 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { PageHeader } from "@/components/site/PageHeader";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
 
 export const Route = createFileRoute("/faq")({
   head: () => ({
     meta: [
-      { title: "FAQ, Shipping & Returns — LOUIE HERITAGE" },
-      { name: "description", content: "Answers on sizing, delivery times, returns, repairs and payment at LOUIE HERITAGE." },
-      { property: "og:title", content: "FAQ, Shipping & Returns — LOUIE HERITAGE" },
-      { property: "og:description", content: "Sizing, delivery, returns, repairs and payment." },
+      { title: "FAQ — LOUIE HERITAGE" },
+      {
+        name: "description",
+        content: "Answers to common questions about sizing, repairs, payments and restocks.",
+      },
+      { property: "og:title", content: "FAQ — LOUIE HERITAGE" },
+      { property: "og:description", content: "Sizing, repairs, payment and restock information." },
     ],
   }),
   component: FaqPage,
@@ -38,7 +35,7 @@ const faqs = [
   },
   {
     q: "Which payment methods do you accept?",
-    a: "UPI, all major debit and credit cards, net banking, Paytm and cash on delivery on orders under ₹5,000. All payments are encrypted; we never store card details on our servers.",
+    a: "Payment options will appear here once a payment provider is connected. This storefront preview records test orders locally and does not collect payments or financial details.",
   },
   {
     q: "Where are your clothes made?",
@@ -64,18 +61,16 @@ function FaqPage() {
         crumbs={[{ label: "FAQ" }]}
       />
       <div className="container-editorial py-12 md:py-16">
-        <Accordion type="single" collapsible className="mx-auto max-w-3xl">
+        <div className="mx-auto max-w-3xl divide-y divide-border border-y border-border">
           {faqs.map((item) => (
-            <AccordionItem key={item.q} value={item.q}>
-              <AccordionTrigger className="text-left font-display text-lg font-normal hover:no-underline">
-                {item.q}
-              </AccordionTrigger>
-              <AccordionContent className="max-w-2xl text-sm leading-relaxed text-muted-foreground">
+            <section key={item.q} className="py-6">
+              <h2 className="font-display text-lg font-normal">{item.q}</h2>
+              <p className="mt-3 max-w-2xl text-sm leading-relaxed text-muted-foreground">
                 {item.a}
-              </AccordionContent>
-            </AccordionItem>
+              </p>
+            </section>
           ))}
-        </Accordion>
+        </div>
       </div>
     </>
   );

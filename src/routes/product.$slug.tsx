@@ -14,6 +14,7 @@ import { formatPrice, useShop } from "@/lib/shop-store";
 import { cn } from "@/lib/utils";
 import { Breadcrumbs } from "@/components/site/PageHeader";
 import { ProductCard } from "@/components/site/ProductCard";
+import { SizeGuideTable } from "@/components/site/SizeGuideTable";
 import { StarRating } from "@/components/site/StarRating";
 import { Reveal } from "@/components/site/Reveal";
 import {
@@ -33,7 +34,10 @@ export const Route = createFileRoute("/product/$slug")({
   head: ({ loaderData }) => {
     if (!loaderData) {
       return {
-        meta: [{ title: "Product unavailable — LOUIE HERITAGE" }, { name: "robots", content: "noindex" }],
+        meta: [
+          { title: "Product unavailable — LOUIE HERITAGE" },
+          { name: "robots", content: "noindex" },
+        ],
       };
     }
     const { product } = loaderData;
@@ -49,14 +53,6 @@ export const Route = createFileRoute("/product/$slug")({
   },
   component: ProductPage,
 });
-
-const sizeGuide = [
-  ["XS", "82–86", "62–66", "88–92"],
-  ["S", "86–90", "66–70", "92–96"],
-  ["M", "90–96", "70–76", "96–102"],
-  ["L", "96–102", "76–82", "102–108"],
-  ["XL", "102–110", "82–90", "108–116"],
-];
 
 function ProductPage() {
   const { product } = Route.useLoaderData() as { product: Product };
@@ -80,7 +76,8 @@ function ProductPage() {
   const selectedVariant = getProductVariant(product, size, color) ?? defaultVariant;
   const selectedVariantInStock = Boolean(selectedVariant && selectedVariant.stockCount > 0);
   const wishlisted = isWishlisted(product.id);
-  const gallery = product.images.length > 1 ? product.images : [product.images[0]!, product.images[0]!];
+  const gallery =
+    product.images.length > 1 ? product.images : [product.images[0]!, product.images[0]!];
   const related = products
     .filter((p) => p.id !== product.id && p.categories.some((c) => product.categories.includes(c)))
     .slice(0, 4);
@@ -93,12 +90,7 @@ function ProductPage() {
   return (
     <>
       <div className="container-editorial py-6">
-        <Breadcrumbs
-          items={[
-            { label: "Shop", to: "/shop" },
-            { label: product.name },
-          ]}
-        />
+        <Breadcrumbs items={[{ label: "Shop", to: "/shop" }, { label: product.name }]} />
       </div>
 
       <article className="container-editorial grid gap-10 pb-24 lg:grid-cols-12 lg:gap-20">
@@ -173,9 +165,7 @@ function ProductPage() {
                 <StarRating rating={product.rating} />
                 <span className="nums">{`${product.rating} · ${product.reviewCount} reviews`}</span>
               </span>
-
             </div>
-
 
             <p className="mt-6 text-sm leading-relaxed text-muted-foreground">
               {product.description}
@@ -194,7 +184,8 @@ function ProductPage() {
                     style={{ backgroundColor: c.hex }}
                     className={cn(
                       "h-8 w-8 rounded-full border border-border transition-all",
-                      color === c.name && "ring-1 ring-foreground ring-offset-2 ring-offset-background",
+                      color === c.name &&
+                        "ring-1 ring-foreground ring-offset-2 ring-offset-background",
                     )}
                   />
                 ))}
@@ -210,33 +201,28 @@ function ProductPage() {
                   </DialogTrigger>
                   <DialogContent className="max-w-lg rounded-[10px] border-border">
                     <DialogTitle className="font-display text-2xl font-normal">
-                      Size guide
+                      {product.categories.includes("denim") ? "Denim size guide" : "Size guide"}
                     </DialogTitle>
-                    <p className="text-sm text-muted-foreground">
-                      Body measurements in centimetres. If you are between sizes, we recommend
-                      sizing down in oversized styles.
-                    </p>
-                    <table className="mt-4 w-full text-left text-sm">
-                      <thead>
-                        <tr className="border-b border-border text-xs uppercase tracking-[0.12em] text-muted-foreground">
-                          <th className="py-2 font-medium">Size</th>
-                          <th className="py-2 font-medium">Chest</th>
-                          <th className="py-2 font-medium">Waist</th>
-                          <th className="py-2 font-medium">Hip</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {sizeGuide.map((row) => (
-                          <tr key={row[0]} className="border-b border-border last:border-0">
-                            {row.map((cell, i) => (
-                              <td key={i} className="py-2.5">
-                                {cell}
-                              </td>
-                            ))}
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
+                    {product.sizes.includes("One size") ? (
+                      <p className="text-sm leading-relaxed text-muted-foreground">
+                        This item is available in one size. See the product details for its
+                        dimensions and included pieces.
+                      </p>
+                    ) : (
+                      <>
+                        <p className="text-sm text-muted-foreground">
+                          {product.categories.includes("denim")
+                            ? "Denim sizes are waist measurements in inches. Waist and hip ranges are body measurements in centimetres."
+                            : "Body measurements in centimetres. Measure around the fullest part of your chest and hips and your natural waist."}
+                        </p>
+                        <div className="mt-4">
+                          <SizeGuideTable
+                            kind={product.categories.includes("denim") ? "denim" : "apparel"}
+                            sizes={product.sizes}
+                          />
+                        </div>
+                      </>
+                    )}
                   </DialogContent>
                 </Dialog>
               </div>
@@ -303,7 +289,10 @@ function ProductPage() {
                 aria-label="Save to wishlist"
                 className="grid h-12 w-12 place-items-center rounded-[8px] border border-border transition-colors hover:border-foreground"
               >
-                <Heart className={cn("h-4 w-4", wishlisted && "fill-foreground")} strokeWidth={1.25} />
+                <Heart
+                  className={cn("h-4 w-4", wishlisted && "fill-foreground")}
+                  strokeWidth={1.25}
+                />
               </button>
             </div>
 
@@ -337,8 +326,8 @@ function ProductPage() {
                   Delivery
                 </AccordionTrigger>
                 <AccordionContent className="text-sm text-muted-foreground">
-                  Standard delivery across India takes 3–5 working days (₹79, free over ₹1,499). Express
-                  delivery is ₹199 and reaches most metros the next working day when ordered
+                  Standard delivery across India takes 3–5 working days (₹79, free over ₹1,499).
+                  Express delivery is ₹199 and reaches most metros the next working day when ordered
                   before 13:00 IST. Cash on delivery is available under ₹5,000.
                 </AccordionContent>
               </AccordionItem>
@@ -347,9 +336,9 @@ function ProductPage() {
                   Returns
                 </AccordionTrigger>
                 <AccordionContent className="text-sm text-muted-foreground">
-                  Return anything unworn with tags attached within 15 days for a full refund.
-                  Raise the return from your order history and we'll send a courier to your
-                  address. Refunds are processed within five working days of arrival.
+                  Return anything unworn with tags attached within 15 days for a full refund. Raise
+                  the return from your order history and we'll send a courier to your address.
+                  Refunds are processed within five working days of arrival.
                 </AccordionContent>
               </AccordionItem>
               <AccordionItem value="care">
@@ -358,7 +347,8 @@ function ProductPage() {
                 </AccordionTrigger>
                 <AccordionContent className="text-sm text-muted-foreground">
                   Wash less, wash cool. Air knitwear between wears and store folded rather than
-                  hung. We repair stitching, buttons and zips free of charge for six months from purchase.
+                  hung. We repair stitching, buttons and zips free of charge for six months from
+                  purchase.
                 </AccordionContent>
               </AccordionItem>
             </Accordion>
@@ -381,13 +371,13 @@ function ProductPage() {
                 {[5, 4, 3, 2, 1].map((star, i) => {
                   const share = [72, 19, 6, 2, 1][i]!;
                   return (
-                    <div key={star} className="flex items-center gap-3 text-xs text-muted-foreground">
+                    <div
+                      key={star}
+                      className="flex items-center gap-3 text-xs text-muted-foreground"
+                    >
                       <span className="w-3">{star}</span>
                       <span className="h-px flex-1 bg-border">
-                        <span
-                          className="block h-px bg-foreground"
-                          style={{ width: `${share}%` }}
-                        />
+                        <span className="block h-px bg-foreground" style={{ width: `${share}%` }} />
                       </span>
                       <span className="w-8 text-right">{share}%</span>
                     </div>
@@ -444,7 +434,10 @@ function ProductPage() {
                 <ProductCard key={p!.id} product={p!} />
               ))}
             </div>
-            <Link to="/shop" className="mt-10 inline-block text-xs uppercase tracking-[0.14em] link-underline">
+            <Link
+              to="/shop"
+              className="mt-10 inline-block text-xs uppercase tracking-[0.14em] link-underline"
+            >
               Continue shopping
             </Link>
           </div>

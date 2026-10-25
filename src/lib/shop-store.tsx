@@ -41,6 +41,7 @@ export type User = { id: string; name: string; email: string } | null;
 
 type State = {
   cart: CartLine[];
+  couponCode: string | null;
   wishlist: string[];
   recentlyViewed: string[];
   user: User;
@@ -52,6 +53,7 @@ const STORAGE_KEY = "louie-heritage-state";
 
 const initialState: State = {
   cart: [],
+  couponCode: null,
   wishlist: [],
   recentlyViewed: [],
   user: null,
@@ -79,6 +81,10 @@ type Ctx = State & {
   updateQuantity: (index: number, quantity: number) => void;
   removeLine: (index: number) => void;
   clearCart: () => void;
+  couponCode: string | null;
+  discount: number;
+  applyCoupon: (code: string) => boolean;
+  clearCoupon: () => void;
   toggleWishlist: (id: string) => void;
   isWishlisted: (id: string) => boolean;
   markViewed: (id: string) => void;
@@ -122,9 +128,9 @@ export function ShopProvider({ children }: { children: ReactNode }) {
     } catch (error) {
       console.error("Unable to restore the saved shopping state.", error);
     }
+    setHydrated(true);
 
     if (!supabase) {
-      setHydrated(true);
       return () => {
         active = false;
       };
@@ -153,13 +159,11 @@ export function ShopProvider({ children }: { children: ReactNode }) {
           }));
           setAuthError(null);
         }
-        setHydrated(true);
       })
       .catch((error: unknown) => {
         if (!active) return;
         console.error("Unable to restore the Supabase session.", error);
         setAuthError(error instanceof Error ? error.message : "Unable to restore your session.");
-        setHydrated(true);
       });
 
     return () => {
@@ -201,15 +205,29 @@ export function ShopProvider({ children }: { children: ReactNode }) {
       const cart = [...s.cart];
       if (quantity <= 0) cart.splice(index, 1);
       else cart[index] = { ...cart[index]!, quantity };
-      return { ...s, cart };
+      return { ...s, cart, couponCode: cart.length > 0 ? s.couponCode : null };
     });
   }, []);
 
   const removeLine = useCallback((index: number) => {
-    setState((s) => ({ ...s, cart: s.cart.filter((_, i) => i !== index) }));
+    setState((s) => {
+      const cart = s.cart.filter((_, i) => i !== index);
+      return { ...s, cart, couponCode: cart.length > 0 ? s.couponCode : null };
+    });
   }, []);
 
-  const clearCart = useCallback(() => setState((s) => ({ ...s, cart: [] })), []);
+  const clearCart = useCallback(() => setState((s) => ({ ...s, cart: [], couponCode: null })), []);
+
+  const applyCoupon = useCallback((code: string) => {
+    const normalized = code.trim().toUpperCase();
+    if (normalized !== "STUDIO10") return false;
+    setState((s) => ({ ...s, couponCode: normalized }));
+    return true;
+  }, []);
+
+  const clearCoupon = useCallback(() => {
+    setState((s) => ({ ...s, couponCode: null }));
+  }, []);
 
   const toggleWishlist = useCallback((id: string) => {
     setState((s) => ({
@@ -320,6 +338,7 @@ export function ShopProvider({ children }: { children: ReactNode }) {
       return {
         ...s,
         cart: [],
+        couponCode: null,
         orders: [
           {
             id,
@@ -346,6 +365,11 @@ export function ShopProvider({ children }: { children: ReactNode }) {
         .filter((entry) => Boolean(entry.product)),
     [state.cart],
   );
+  const subtotal = cartProducts.reduce(
+    (n, { line, product }) => n + product.price * line.quantity,
+    0,
+  );
+  const discount = state.couponCode === "STUDIO10" ? Math.round(subtotal * 0.1) : 0;
 
   const value: Ctx = {
     ...state,
@@ -357,6 +381,10 @@ export function ShopProvider({ children }: { children: ReactNode }) {
     updateQuantity,
     removeLine,
     clearCart,
+    couponCode: state.couponCode,
+    discount,
+    applyCoupon,
+    clearCoupon,
     toggleWishlist,
     isWishlisted: (id) => state.wishlist.includes(id),
     markViewed,
@@ -370,7 +398,7 @@ export function ShopProvider({ children }: { children: ReactNode }) {
     removeAddress,
     placeOrder,
     cartCount: state.cart.reduce((n, l) => n + l.quantity, 0),
-    subtotal: cartProducts.reduce((n, { line, product }) => n + product.price * line.quantity, 0),
+    subtotal,
     cartProducts,
   };
 

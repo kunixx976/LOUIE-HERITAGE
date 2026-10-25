@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Check } from "lucide-react";
 import { FREE_DELIVERY_THRESHOLD, STANDARD_DELIVERY_FEE } from "@/lib/shipping";
@@ -9,22 +9,28 @@ export const Route = createFileRoute("/checkout")({
   head: () => ({
     meta: [
       { title: "Checkout — LOUIE HERITAGE" },
-      { name: "description", content: "Secure three-step checkout: shipping, payment and review." },
+      {
+        name: "description",
+        content: "Four-step checkout: shipping, payment, review and order confirmation.",
+      },
       { property: "og:title", content: "Checkout — LOUIE HERITAGE" },
-      { property: "og:description", content: "Secure three-step checkout with guest option." },
+      {
+        property: "og:description",
+        content: "Four-step guest checkout with shipping, payment, review and confirmation.",
+      },
       { name: "robots", content: "noindex" },
     ],
   }),
   component: CheckoutPage,
 });
 
-const steps = ["Shipping", "Payment", "Review"] as const;
+const steps = ["Shipping", "Payment", "Review", "Success"] as const;
 
 const field =
   "h-12 w-full rounded-[8px] border border-border bg-background px-4 text-sm outline-none transition-colors focus:border-foreground";
 
 function CheckoutPage() {
-  const { cartProducts, subtotal, placeOrder, addresses } = useShop();
+  const { cartProducts, subtotal, discount, placeOrder, addresses, hydrated, user } = useShop();
   const [step, setStep] = useState(0);
   const [orderId, setOrderId] = useState<string | null>(null);
   const [form, setForm] = useState({
@@ -35,10 +41,16 @@ function CheckoutPage() {
     postcode: "",
     country: "India",
     method: "standard",
-    card: "",
-    expiry: "",
-    cvc: "",
   });
+
+  useEffect(() => {
+    if (!hydrated || !user) return;
+    setForm((current) => ({
+      ...current,
+      email: current.email || user.email,
+      name: current.name || user.name,
+    }));
+  }, [hydrated, user]);
 
   const shipping =
     form.method === "express"
@@ -46,21 +58,42 @@ function CheckoutPage() {
       : subtotal > FREE_DELIVERY_THRESHOLD
         ? 0
         : STANDARD_DELIVERY_FEE;
-  const total = subtotal + shipping;
+  const total = Math.max(0, subtotal - discount) + shipping;
   const set = (key: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement>) =>
     setForm((f) => ({ ...f, [key]: e.target.value }));
 
+  if (!hydrated) {
+    return (
+      <div className="container-editorial flex min-h-[60vh] items-center justify-center py-20">
+        <p className="text-sm text-muted-foreground">Loading your bag…</p>
+      </div>
+    );
+  }
+
   if (orderId) {
     return (
-      <div className="container-editorial flex min-h-[70vh] items-center justify-center py-20">
-        <div className="max-w-md text-center">
+      <div className="container-editorial min-h-[70vh] py-16 md:py-20">
+        <ol
+          aria-label="Checkout progress"
+          className="mx-auto flex max-w-3xl items-center justify-between gap-2 border-b border-border pb-5 text-[10px] uppercase tracking-[0.1em] sm:text-xs sm:tracking-[0.14em]"
+        >
+          {steps.map((label) => (
+            <li key={label} className="flex items-center gap-2">
+              <span className="grid h-6 w-6 place-items-center rounded-full border border-foreground bg-foreground text-background">
+                <Check className="h-3.5 w-3.5" />
+              </span>
+              {label}
+            </li>
+          ))}
+        </ol>
+        <div className="mx-auto mt-16 max-w-md text-center">
           <div className="mx-auto grid h-14 w-14 place-items-center rounded-full border border-border">
             <Check className="h-6 w-6" strokeWidth={1.25} />
           </div>
-          <h1 className="mt-8 text-3xl">Thank you — your order is confirmed</h1>
+          <h1 className="mt-8 text-3xl">Your test order is confirmed</h1>
           <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
-            Order {orderId} is being packed at our Meerut warehouse. You'll receive tracking by
-            email within 24 hours.
+            Order {orderId} has been saved in this browser. This demo checkout did not collect
+            payment or send the order to a fulfilment service.
           </p>
           <div className="mt-9 flex flex-wrap justify-center gap-3">
             <Link
@@ -127,17 +160,26 @@ function CheckoutPage() {
             onSubmit={(e) => {
               e.preventDefault();
               if (step < 2) setStep(step + 1);
-              else setOrderId(placeOrder(total));
+              else {
+                setOrderId(placeOrder(total));
+                setStep(3);
+              }
             }}
           >
             {step === 0 ? (
               <div className="space-y-4">
                 <p className="text-sm text-muted-foreground">
-                  Checking out as a guest.{" "}
-                  <Link to="/login" className="text-foreground link-underline">
-                    Sign in
-                  </Link>{" "}
-                  to use a saved address.
+                  {user ? (
+                    <>Signed in as {user.email}.</>
+                  ) : (
+                    <>
+                      Checking out as a guest.{" "}
+                      <Link to="/login" className="text-foreground link-underline">
+                        Sign in
+                      </Link>{" "}
+                      to use a saved address.
+                    </>
+                  )}
                 </p>
                 {addresses.length > 0 ? (
                   <button
@@ -250,34 +292,12 @@ function CheckoutPage() {
             ) : null}
 
             {step === 1 ? (
-              <div className="space-y-4">
-                <input
-                  required
-                  placeholder="Card number"
-                  value={form.card}
-                  onChange={set("card")}
-                  className={field}
-                  inputMode="numeric"
-                />
-                <div className="grid gap-4 sm:grid-cols-2">
-                  <input
-                    required
-                    placeholder="MM / YY"
-                    value={form.expiry}
-                    onChange={set("expiry")}
-                    className={field}
-                  />
-                  <input
-                    required
-                    placeholder="CVC"
-                    value={form.cvc}
-                    onChange={set("cvc")}
-                    className={field}
-                    inputMode="numeric"
-                  />
-                </div>
-                <p className="text-xs text-muted-foreground">
-                  Payments are encrypted and processed securely. We never store card details.
+              <div className="rounded-[8px] border border-border p-5">
+                <p className="eyebrow">Payment method</p>
+                <p className="mt-3 text-sm">Demo checkout — no payment will be collected.</p>
+                <p className="mt-2 text-xs leading-relaxed text-muted-foreground">
+                  This storefront does not have a payment provider connected yet. Do not enter card,
+                  UPI, or bank details.
                 </p>
               </div>
             ) : null}
@@ -292,10 +312,14 @@ function CheckoutPage() {
                   </p>
                 </div>
                 <div className="rounded-[8px] border border-border p-5">
-                  <p className="eyebrow mb-2">Paying with</p>
-                  <p className="text-muted-foreground">
-                    Card ending {form.card.slice(-4) || "••••"} ·{" "}
-                    {form.method === "express" ? "Express" : "Standard"} delivery
+                  <p className="eyebrow mb-2">Payment & delivery</p>
+                  <p>Demo checkout — no payment collected.</p>
+                  <p className="mt-2 text-muted-foreground">
+                    {form.method === "express"
+                      ? "Express delivery — ₹199"
+                      : `Standard delivery — ${
+                          shipping === 0 ? "Free" : formatPrice(STANDARD_DELIVERY_FEE)
+                        }`}
                   </p>
                 </div>
               </div>
@@ -315,7 +339,7 @@ function CheckoutPage() {
                 type="submit"
                 className="flex-1 rounded-[8px] bg-foreground py-4 text-[11px] font-medium uppercase tracking-[0.16em] text-background transition-colors hover:bg-hover-accent"
               >
-                {step === 2 ? `Place order — ${formatPrice(total)}` : "Continue"}
+                {step === 2 ? `Place test order — ${formatPrice(total)}` : "Continue"}
               </button>
             </div>
           </form>
@@ -351,6 +375,12 @@ function CheckoutPage() {
                 <dt className="text-muted-foreground">Subtotal</dt>
                 <dd>{formatPrice(subtotal)}</dd>
               </div>
+              {discount > 0 ? (
+                <div className="flex justify-between">
+                  <dt className="text-muted-foreground">Discount</dt>
+                  <dd>−{formatPrice(discount)}</dd>
+                </div>
+              ) : null}
               <div className="flex justify-between">
                 <dt className="text-muted-foreground">Shipping</dt>
                 <dd>{shipping === 0 ? "Free" : formatPrice(shipping)}</dd>

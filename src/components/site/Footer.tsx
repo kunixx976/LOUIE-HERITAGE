@@ -57,12 +57,12 @@ export function Footer() {
                 </Link>
               </li>
               <li>
-                <Link to="/faq" className="transition-colors hover:text-foreground">
+                <Link to="/shipping-returns" className="transition-colors hover:text-foreground">
                   Shipping & returns
                 </Link>
               </li>
               <li>
-                <Link to="/faq" className="transition-colors hover:text-foreground">
+                <Link to="/size-guide" className="transition-colors hover:text-foreground">
                   Size guide
                 </Link>
               </li>
@@ -112,22 +112,28 @@ export function Footer() {
                 href="https://www.instagram.com/louieheritage"
                 aria-label="Instagram"
                 className="grid h-11 w-11 place-items-center transition-colors hover:text-foreground md:h-auto md:w-auto"
+                target="_blank"
+                rel="noopener noreferrer"
               >
-                <Instagram className="h-[18px] w-[18px]" strokeWidth={1.25} />
+                <Instagram aria-hidden="true" className="h-[18px] w-[18px]" strokeWidth={1.25} />
               </a>
               <a
                 href="https://www.facebook.com/louieheritage"
                 aria-label="Facebook"
                 className="grid h-11 w-11 place-items-center transition-colors hover:text-foreground md:h-auto md:w-auto"
+                target="_blank"
+                rel="noopener noreferrer"
               >
-                <Facebook className="h-[18px] w-[18px]" strokeWidth={1.25} />
+                <Facebook aria-hidden="true" className="h-[18px] w-[18px]" strokeWidth={1.25} />
               </a>
               <a
                 href="https://www.youtube.com/@louieheritage"
                 aria-label="YouTube"
                 className="grid h-11 w-11 place-items-center transition-colors hover:text-foreground md:h-auto md:w-auto"
+                target="_blank"
+                rel="noopener noreferrer"
               >
-                <Youtube className="h-[18px] w-[18px]" strokeWidth={1.25} />
+                <Youtube aria-hidden="true" className="h-[18px] w-[18px]" strokeWidth={1.25} />
               </a>
             </div>
             <p className="eyebrow mb-3 mt-8">We accept</p>
