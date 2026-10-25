@@ -7,7 +7,9 @@ import {
   useState,
   type ReactNode,
 } from "react";
+import type { User as SupabaseUser } from "@supabase/supabase-js";
 import { products, type Product } from "./data";
+import { authConfigurationMessage, supabase, supabaseConfigured } from "./supabase";
 
 export type CartLine = {
   productId: string;
@@ -35,7 +37,7 @@ export type Order = {
   items: { name: string; quantity: number; price: number; image: string }[];
 };
 
-export type User = { name: string; email: string } | null;
+export type User = { id: string; name: string; email: string } | null;
 
 type State = {
   cart: CartLine[];
@@ -48,51 +50,31 @@ type State = {
 
 const STORAGE_KEY = "louie-heritage-state";
 
-const seedOrders: Order[] = [
-  {
-    id: "AN-24815",
-    date: "14 July 2026",
-    status: "Delivered",
-    total: 660,
-    items: [
-      { name: "Oversized Drop-Shoulder Tee", quantity: 1, price: 1099, image: products[1]!.images[0]! },
-      { name: "Ludhiana Long Cardigan", quantity: 1, price: 2199, image: products[7]!.images[0]! },
-    ],
-  },
-  {
-    id: "AN-24102",
-    date: "2 May 2026",
-    status: "In transit",
-    total: 274,
-    items: [
-      { name: "Elin Oversized Poplin Shirt", quantity: 1, price: 129, image: products[0]!.images[0]! },
-      { name: "Kavi Heavyweight Hoodie", quantity: 1, price: 145, image: products[5]!.images[0]! },
-    ],
-  },
-];
-
 const initialState: State = {
   cart: [],
   wishlist: [],
   recentlyViewed: [],
   user: null,
-  addresses: [
-    {
-      id: "a1",
-      label: "Home",
-      name: "Louie Heritage Customer",
-      line1: "12 Abu Lane, Sadar Bazar",
-      city: "Meerut",
-      postcode: "250101",
-      country: "India",
-      isDefault: true,
-    },
-  ],
-  orders: seedOrders,
+  addresses: [],
+  orders: [],
 };
+
+function getShopUser(user: SupabaseUser): NonNullable<User> {
+  const email = user.email ?? "";
+  const metadataName = user.user_metadata["full_name"] ?? user.user_metadata["name"];
+  const name =
+    typeof metadataName === "string" && metadataName.trim()
+      ? metadataName.trim()
+      : email.split("@")[0] || "there";
+
+  return { id: user.id, name, email };
+}
 
 type Ctx = State & {
   hydrated: boolean;
+  authConfigured: boolean;
+  authError: string | null;
+  passwordRecovery: boolean;
   addToCart: (line: CartLine) => void;
   updateQuantity: (index: number, quantity: number) => void;
   removeLine: (index: number) => void;
@@ -100,8 +82,11 @@ type Ctx = State & {
   toggleWishlist: (id: string) => void;
   isWishlisted: (id: string) => boolean;
   markViewed: (id: string) => void;
-  signIn: (user: NonNullable<User>) => void;
-  signOut: () => void;
+  signIn: (email: string, password: string) => Promise<void>;
+  register: (name: string, email: string, password: string) => Promise<boolean>;
+  signOut: () => Promise<void>;
+  requestPasswordReset: (email: string) => Promise<void>;
+  updatePassword: (password: string) => Promise<void>;
   addAddress: (address: Address) => void;
   removeAddress: (id: string) => void;
   placeOrder: (total: number) => string;
@@ -115,21 +100,86 @@ const ShopContext = createContext<Ctx | null>(null);
 export function ShopProvider({ children }: { children: ReactNode }) {
   const [state, setState] = useState<State>(initialState);
   const [hydrated, setHydrated] = useState(false);
+  const [authError, setAuthError] = useState<string | null>(null);
+  const [passwordRecovery, setPasswordRecovery] = useState(false);
 
   useEffect(() => {
+    let active = true;
     try {
       const raw = window.localStorage.getItem(STORAGE_KEY);
-      if (raw) setState({ ...initialState, ...JSON.parse(raw) });
-    } catch {
-      /* ignore corrupt storage */
+      if (raw) {
+        const saved = JSON.parse(raw) as Partial<State>;
+        setState({
+          ...initialState,
+          ...saved,
+          user: null,
+          addresses: saved.addresses?.filter((address) => address.id !== "a1") ?? [],
+          orders:
+            saved.orders?.filter((order) => !["AN-24815", "AN-24102"].includes(order.id)) ?? [],
+        });
+      }
+    } catch (error) {
+      console.error("Unable to restore the saved shopping state.", error);
     }
-    setHydrated(true);
+
+    if (!supabase) {
+      setHydrated(true);
+      return () => {
+        active = false;
+      };
+    }
+
+    const { data } = supabase.auth.onAuthStateChange((event, session) => {
+      if (!active) return;
+      setState((current) => ({
+        ...current,
+        user: session ? getShopUser(session.user) : null,
+      }));
+      setPasswordRecovery(event === "PASSWORD_RECOVERY");
+    });
+
+    void supabase.auth
+      .getSession()
+      .then(({ data: sessionData, error }) => {
+        if (!active) return;
+        if (error) {
+          console.error("Unable to restore the Supabase session.", error);
+          setAuthError(error.message);
+        } else {
+          setState((current) => ({
+            ...current,
+            user: sessionData.session ? getShopUser(sessionData.session.user) : null,
+          }));
+          setAuthError(null);
+        }
+        setHydrated(true);
+      })
+      .catch((error: unknown) => {
+        if (!active) return;
+        console.error("Unable to restore the Supabase session.", error);
+        setAuthError(error instanceof Error ? error.message : "Unable to restore your session.");
+        setHydrated(true);
+      });
+
+    return () => {
+      active = false;
+      data.subscription.unsubscribe();
+    };
   }, []);
 
   useEffect(() => {
     if (!hydrated) return;
-    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    try {
+      window.localStorage.setItem(STORAGE_KEY, JSON.stringify({ ...state, user: null }));
+    } catch (error) {
+      console.error("Unable to save the shopping state.", error);
+    }
   }, [state, hydrated]);
+
+  const requireSupabase = useCallback(() => {
+    if (!supabase) throw new Error(authConfigurationMessage);
+    return supabase;
+  }, []);
 
   const addToCart = useCallback((line: CartLine) => {
     setState((s) => {
@@ -163,9 +213,7 @@ export function ShopProvider({ children }: { children: ReactNode }) {
   const toggleWishlist = useCallback((id: string) => {
     setState((s) => ({
       ...s,
-      wishlist: s.wishlist.includes(id)
-        ? s.wishlist.filter((w) => w !== id)
-        : [...s.wishlist, id],
+      wishlist: s.wishlist.includes(id) ? s.wishlist.filter((w) => w !== id) : [...s.wishlist, id],
     }));
   }, []);
 
@@ -176,8 +224,66 @@ export function ShopProvider({ children }: { children: ReactNode }) {
     }));
   }, []);
 
-  const signIn = useCallback((user: NonNullable<User>) => setState((s) => ({ ...s, user })), []);
-  const signOut = useCallback(() => setState((s) => ({ ...s, user: null })), []);
+  const signIn = useCallback(
+    async (email: string, password: string) => {
+      const client = requireSupabase();
+      const { data, error } = await client.auth.signInWithPassword({ email, password });
+      if (error) throw error;
+      setState((current) => ({ ...current, user: getShopUser(data.user) }));
+      setAuthError(null);
+    },
+    [requireSupabase],
+  );
+
+  const register = useCallback(
+    async (name: string, email: string, password: string) => {
+      const client = requireSupabase();
+      const { data, error } = await client.auth.signUp({
+        email,
+        password,
+        options: {
+          data: { full_name: name },
+          emailRedirectTo: `${window.location.origin}/profile`,
+        },
+      });
+      if (error) throw error;
+      const user = data.user;
+      if (user && data.session) {
+        setState((current) => ({ ...current, user: getShopUser(user) }));
+      }
+      setAuthError(null);
+      return Boolean(data.session);
+    },
+    [requireSupabase],
+  );
+
+  const signOut = useCallback(async () => {
+    const client = requireSupabase();
+    const { error } = await client.auth.signOut();
+    if (error) throw error;
+    setState((current) => ({ ...current, user: null }));
+  }, [requireSupabase]);
+
+  const requestPasswordReset = useCallback(
+    async (email: string) => {
+      const client = requireSupabase();
+      const { error } = await client.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/forgot-password`,
+      });
+      if (error) throw error;
+    },
+    [requireSupabase],
+  );
+
+  const updatePassword = useCallback(
+    async (password: string) => {
+      const client = requireSupabase();
+      const { error } = await client.auth.updateUser({ password });
+      if (error) throw error;
+      setPasswordRecovery(false);
+    },
+    [requireSupabase],
+  );
 
   const addAddress = useCallback((address: Address) => {
     setState((s) => ({ ...s, addresses: [...s.addresses, address] }));
@@ -232,6 +338,9 @@ export function ShopProvider({ children }: { children: ReactNode }) {
   const value: Ctx = {
     ...state,
     hydrated,
+    authConfigured: supabaseConfigured,
+    authError,
+    passwordRecovery,
     addToCart,
     updateQuantity,
     removeLine,
@@ -240,7 +349,10 @@ export function ShopProvider({ children }: { children: ReactNode }) {
     isWishlisted: (id) => state.wishlist.includes(id),
     markViewed,
     signIn,
+    register,
     signOut,
+    requestPasswordReset,
+    updatePassword,
     addAddress,
     removeAddress,
     placeOrder,

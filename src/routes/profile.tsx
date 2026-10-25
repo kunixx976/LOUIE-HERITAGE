@@ -9,7 +9,10 @@ export const Route = createFileRoute("/profile")({
   head: () => ({
     meta: [
       { title: "My Account — LOUIE HERITAGE" },
-      { name: "description", content: "Manage your LOUIE HERITAGE orders, wishlist, addresses and account settings." },
+      {
+        name: "description",
+        content: "Manage your LOUIE HERITAGE orders, wishlist, addresses and account settings.",
+      },
       { property: "og:title", content: "My Account — LOUIE HERITAGE" },
       { property: "og:description", content: "Manage orders, wishlist, addresses and settings." },
       { name: "robots", content: "noindex" },
@@ -19,10 +22,38 @@ export const Route = createFileRoute("/profile")({
 });
 
 function ProfilePage() {
-  const { user, orders, wishlist, addresses, removeAddress, signOut, hydrated } = useShop();
+  const { user, orders, wishlist, addresses, removeAddress, signOut, hydrated, authError } =
+    useShop();
   const saved = products.filter((p) => wishlist.includes(p.id));
 
-  if (hydrated && !user) {
+  if (!hydrated) {
+    return (
+      <div className="container-editorial flex min-h-[60vh] items-center justify-center py-16">
+        <p className="text-sm text-muted-foreground">Loading your account…</p>
+      </div>
+    );
+  }
+
+  if (authError) {
+    return (
+      <div className="container-editorial flex min-h-[60vh] items-center justify-center py-16 text-center">
+        <div>
+          <h1 className="text-3xl">Your account could not be loaded</h1>
+          <p role="alert" className="mt-3 text-sm text-muted-foreground">
+            {authError}
+          </p>
+          <Link
+            to="/login"
+            className="mt-8 inline-block text-xs uppercase tracking-[0.14em] link-underline"
+          >
+            Return to sign in
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  if (!user) {
     return (
       <div className="container-editorial flex min-h-[60vh] items-center justify-center py-16 text-center">
         <div>
@@ -44,8 +75,8 @@ function ProfilePage() {
   return (
     <>
       <PageHeader
-        eyebrow={`Signed in as ${user?.email ?? ""}`}
-        title={`Hello, ${user?.name ?? ""}`}
+        eyebrow={`Signed in as ${user.email}`}
+        title={`Hello, ${user.name}`}
         crumbs={[{ label: "Account" }]}
       />
       <div className="container-editorial py-12 md:py-16">
@@ -76,8 +107,8 @@ function ProfilePage() {
               ))}
             </div>
             <p className="mt-8 max-w-lg text-sm leading-relaxed text-muted-foreground">
-              Members get free repairs for six months, faster support on WhatsApp, and early access to each
-              collection 48 hours before release.
+              Members get free repairs for six months, faster support on WhatsApp, and early access
+              to each collection 48 hours before release.
             </p>
           </TabsContent>
 
@@ -96,7 +127,10 @@ function ProfilePage() {
                 </li>
               ))}
             </ul>
-            <Link to="/orders" className="mt-8 inline-block text-xs uppercase tracking-[0.14em] link-underline">
+            <Link
+              to="/orders"
+              className="mt-8 inline-block text-xs uppercase tracking-[0.14em] link-underline"
+            >
               Full order history
             </Link>
           </TabsContent>
@@ -108,7 +142,14 @@ function ProfilePage() {
               <ul className="space-y-4">
                 {saved.map((p) => (
                   <li key={p.id} className="flex items-center gap-4 border-b border-border pb-4">
-                    <img src={p.images[0]} alt="" width={900} height={1200} loading="lazy" className="h-20 w-16 rounded-[6px] object-cover" />
+                    <img
+                      src={p.images[0]}
+                      alt=""
+                      width={900}
+                      height={1200}
+                      loading="lazy"
+                      className="h-20 w-16 rounded-[6px] object-cover"
+                    />
                     <Link to="/product/$slug" params={{ slug: p.slug }} className="flex-1 text-sm">
                       {p.name}
                     </Link>
@@ -123,7 +164,10 @@ function ProfilePage() {
             <div className="grid gap-5 sm:grid-cols-2">
               {addresses.map((a) => (
                 <div key={a.id} className="rounded-[10px] border border-border p-6 text-sm">
-                  <p className="eyebrow mb-2">{a.label}{a.isDefault ? " · Default" : ""}</p>
+                  <p className="eyebrow mb-2">
+                    {a.label}
+                    {a.isDefault ? " · Default" : ""}
+                  </p>
                   <p>{a.name}</p>
                   <p className="text-muted-foreground">
                     {a.line1}, {a.postcode} {a.city}, {a.country}
@@ -143,7 +187,7 @@ function ProfilePage() {
           <TabsContent value="settings" className="pt-10">
             <div className="max-w-sm space-y-4 text-sm">
               <p className="text-muted-foreground">
-                Signed in as {user?.email}. Contact our care team to change your email address.
+                Signed in as {user.email}. Contact our care team to change your email address.
               </p>
               <button
                 type="button"
@@ -154,9 +198,13 @@ function ProfilePage() {
               </button>
               <button
                 type="button"
-                onClick={() => {
-                  signOut();
-                  toast("Signed out");
+                onClick={async () => {
+                  try {
+                    await signOut();
+                    toast("Signed out");
+                  } catch (error) {
+                    toast.error(error instanceof Error ? error.message : "Unable to sign out.");
+                  }
                 }}
                 className="w-full rounded-[8px] bg-foreground py-3.5 text-[11px] uppercase tracking-[0.16em] text-background transition-colors hover:bg-hover-accent"
               >

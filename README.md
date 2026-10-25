@@ -402,3 +402,15 @@ cd <repository-name>
 npm i
 npm run dev
 ```
+
+## Authentication
+
+Login, registration, and password reset use Supabase Auth. Create a Supabase project,
+enable email authentication, and add the project URL and anon key to a local `.env`
+file using [.env.example](./.env.example) as a template. These `VITE_` values are
+public client configuration; never put a service-role key in the app.
+
+In Supabase Authentication URL Configuration, allow the app's origin and the
+`/profile` and `/forgot-password` redirect URLs. Email confirmation can be enabled
+in the Supabase authentication settings. The registration form stores the submitted
+name in the authenticated user's `full_name` metadata.
