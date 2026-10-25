@@ -1,24 +1,38 @@
-# Curated Closet
+# Louie Heritage
 
-A modern, editorial e-commerce storefront for a clothing brand, designed in the spirit of luxury minimalism (think COS, Arket, Aimé Leon Dore, Uniqlo): generous whitespace, restrained typography, a neutral palette and subtle motion.
+Everyday cotton, denim and ethnic wear, bought directly from India's textile hubs and shipped from Meerut, Uttar Pradesh. This repository is the storefront: a minimal, editorial e-commerce site with a neutral palette, generous whitespace and subtle motion.
 
-**Live app:** https://modern-heirloom.lovable.app
+**Live site:** https://modern-heirloom.vercel.app
 
----
+## The brand
 
-## Tech stack
+Louie Heritage sources straight from the mills, with no middlemen:
 
-| Area | Choice |
+| Product | Source |
 | --- | --- |
-| Framework | React + Next.js |
-| Language | TypeScript |
-| Styling | Tailwind CSS |
-| Animation | Framer Motion (fade-ins and small hover transitions only) |
-| Built with | [Lovable](https://lovable.dev) |
+| Cotton tees | Tirupur |
+| Denim | Ahmedabad, Bhilwara |
+| Sarees and kurta sets | Surat |
+| Woollens | Ludhiana |
+| Home textiles | Panipat |
+
+Prices are in INR (₹). Free delivery on orders over ₹1,499. Payments: UPI, Visa, Mastercard, RuPay, net banking and cash on delivery.
+
+## Features
+
+**Storefront**
+- Landing page with a hero, promo tiles, 11 featured categories, best sellers, new arrivals, a winter edit, a sourcing story, customer notes, a social gallery and a newsletter signup
+- Mega menu covering Women, Men, T-Shirts, Denim, Ethnic Wear, Woollens, Home Textiles, Casual, Accessories, Summer and Winter
+- Shop page with category, size, price and availability filters and pagination
+- Product cards with discount and "New" badges, quick view and add to bag
+
+**Account and purchase**
+- Cart, wishlist and profile (dashboard, orders, wishlist, addresses, settings)
+- Checkout, order tracking, contact, about and FAQ pages
+
+**Status:** the project is in progress. See [CHECKLIST.md](./CHECKLIST.md) for what's finished and what's left.
 
 ## Design system
-
-**Colors**
 
 | Token | Hex |
 | --- | --- |
@@ -29,58 +43,19 @@ A modern, editorial e-commerce storefront for a clothing brand, designed in the 
 | Accent | `#000000` |
 | Hover accent | `#444444` |
 
-**Typography:** Playfair Display for headings, Inter for body text, with minimal font weights and comfortable spacing.
+- **Type:** Playfair Display for headings, Inter for body text
+- **Layout:** 12-column grid, mobile-first, 8–12px radii, shadows only where needed
+- **Motion:** fade-ins and small hover transitions only
 
-**Layout rules**
-- Consistent 12-column grid, mobile-first
-- Generous spacing between sections
-- Rounded corners of 8–12px only where appropriate; soft shadows only when necessary
-- No loud colors, gradients or glassmorphism
+## Tech stack
 
-## Pages
+Built with [Lovable](https://lovable.dev) using React, TypeScript, Tailwind CSS and Framer Motion, and deployed on Vercel.
 
-| Area | Pages |
-| --- | --- |
-| Storefront | Landing, Shop, Category, Product Detail |
-| Purchase flow | Cart, Wishlist, Checkout (Shipping → Payment → Review → Success) |
-| Account | Login / Signup, User Profile, Order History |
-| Info | Contact, About, FAQ, Privacy Policy, Terms & Conditions |
-
-### Landing page
-Transparent navbar that turns solid on scroll, full-width hero with Shop Women / Shop Men / New Collection calls to action, featured categories, Best Sellers, New Arrivals, a seasonal collection, an editorial banner, customer reviews, an Instagram-style gallery, newsletter signup and a minimal footer.
-
-### Navigation
-Centered logo, search, wishlist, cart and account icons, a sticky bar and a mega menu covering: Women, Men, Oversized, Streetwear, Casual, Formal, Summer, Winter, Accessories and Shoes.
-
-### Shop
-Left sidebar filters (category, size, color, price slider, availability), sorting, a responsive product grid and pagination.
-
-### Product card
-Large image that swaps on hover, name, price, discount badge, favorite icon, Quick View and Add to Cart.
-
-### Product page
-Image gallery with thumbnails and zoom on hover, size / color / quantity selectors, size guide, delivery and returns information, wishlist, related products, recently viewed, ratings and reviews.
-
-### Cart and checkout
-Minimal cart with coupon field, shipping estimate, order summary and recommendations. Multi-step checkout with guest checkout and address management.
-
-### Authentication and profile
-Login, register, forgot password and a Google login placeholder. Profile sections: dashboard, orders, wishlist, addresses and settings.
-
-## Reusable components
-
-Buttons, cards, inputs, dropdowns, badges, modals, drawers, breadcrumbs, tabs, accordions, toast notifications and skeleton loaders.
-
-## Performance and accessibility
-
-- Lazy-loaded images
-- Semantic HTML and SEO-friendly markup
-- Built with WCAG accessibility in mind
-- Subtle, non-blocking animation
+> Confirm the framework and bundler against `package.json` and update this section (Vite vs Next.js affects the dev URL and scripts).
 
 ## Getting started
 
-**Prerequisites:** Node.js and npm ([install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)).
+Requires Node.js and npm ([install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)).
 
 ```sh
 git clone https://github.com/kunixx976/modern-heirloom.git
@@ -89,4 +64,18 @@ npm install
 npm run dev
 ```
 
-Then open the local URL printed in the terminal (usually `http://localhost:3000` or `http://localhost:5173`).
+Open the local URL printed in the terminal.
+
+## Project structure
+
+```
+src/
+  components/   reusable UI (buttons, cards, drawers, modals, ...)
+  pages/        route-level pages (shop, product, cart, profile, ...)
+```
+
+> Adjust to match the actual folder layout.
+
+## Editing with Lovable
+
+Continue in the [Lovable editor](https://lovable.dev/projects/52bfbbb0-755e-4368-ba01-fd1c8ae31eb2). Changes made there are committed to this repository, and pushes to `main` sync back into Lovable.
