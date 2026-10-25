@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useShop } from "@/lib/shop-store";
+import { AuthLayout } from "@/components/site/AuthLayout";
 
 export const Route = createFileRoute("/forgot-password")({
   head: () => ({
@@ -63,47 +64,84 @@ function ForgotPassword() {
   }
 
   return (
-    <div className="container-editorial flex min-h-[70vh] items-center justify-center py-16">
-      <div className="w-full max-w-sm">
-        <p className="eyebrow">Account</p>
-        <h1 className="mt-3 text-3xl">
-          {passwordRecovery ? "Choose a new password" : "Reset your password"}
-        </h1>
-        {!authConfigured ? (
-          <p
-            role="status"
-            className="mt-6 rounded-[8px] border border-border p-4 text-sm text-muted-foreground"
+    <AuthLayout
+      eyebrow="Account assistance"
+      title={passwordRecovery ? "Choose a new password" : "A fresh start"}
+      description={
+        passwordRecovery
+          ? "Choose a new password for your account."
+          : "Enter the email address connected to your account and we’ll send you a secure reset link."
+      }
+    >
+      {!authConfigured ? (
+        <p
+          role="status"
+          className="rounded-[6px] border border-border bg-surface px-4 py-3 text-sm leading-relaxed text-muted-foreground"
+        >
+          Add your Supabase project URL and anon key to the app environment to enable password
+          resets.
+        </p>
+      ) : updated ? (
+        <p
+          role="status"
+          className="rounded-[6px] border border-border bg-surface px-4 py-3 text-sm leading-relaxed text-muted-foreground"
+        >
+          Your password has been updated. You can now sign in with your new password.
+        </p>
+      ) : passwordRecovery ? (
+        <form className="space-y-5" onSubmit={handlePasswordUpdate}>
+          <input
+            required
+            minLength={8}
+            autoComplete="new-password"
+            type="password"
+            aria-label="New password"
+            placeholder="New password (at least 8 characters)"
+            value={password}
+            onChange={(event) => setPassword(event.target.value)}
+            className="h-12 w-full rounded-[6px] border border-border bg-background px-4 text-sm outline-none transition-colors placeholder:text-muted-foreground/75 hover:border-muted-foreground/60 focus:border-foreground"
+          />
+          <input
+            required
+            minLength={8}
+            autoComplete="new-password"
+            type="password"
+            aria-label="Confirm new password"
+            placeholder="Confirm new password"
+            value={confirmPassword}
+            onChange={(event) => setConfirmPassword(event.target.value)}
+            className="h-12 w-full rounded-[6px] border border-border bg-background px-4 text-sm outline-none transition-colors placeholder:text-muted-foreground/75 hover:border-muted-foreground/60 focus:border-foreground"
+          />
+          {error ? (
+            <p role="alert" className="text-sm text-destructive">
+              {error}
+            </p>
+          ) : null}
+          <button
+            type="submit"
+            disabled={submitting}
+            className="w-full rounded-[6px] bg-foreground py-4 text-[11px] font-medium uppercase tracking-[0.16em] text-background transition-colors hover:bg-hover-accent disabled:cursor-not-allowed disabled:opacity-60"
           >
-            Add your Supabase project URL and anon key to the app environment to enable password
-            resets.
-          </p>
-        ) : updated ? (
-          <p role="status" className="mt-4 text-sm leading-relaxed text-muted-foreground">
-            Your password has been updated. You can now sign in with your new password.
-          </p>
-        ) : passwordRecovery ? (
-          <form className="mt-8 space-y-4" onSubmit={handlePasswordUpdate}>
+            {submitting ? "Updating password…" : "Update password"}
+          </button>
+        </form>
+      ) : sent ? (
+        <p className="rounded-[6px] border border-border bg-surface px-4 py-3 text-sm leading-relaxed text-muted-foreground">
+          If an account exists for {email}, a reset link is on its way. Follow the link in that
+          email to choose a new password.
+        </p>
+      ) : (
+        <>
+          <form className="space-y-5" onSubmit={handleResetRequest}>
             <input
               required
-              minLength={8}
-              autoComplete="new-password"
-              type="password"
-              aria-label="New password"
-              placeholder="New password (at least 8 characters)"
-              value={password}
-              onChange={(event) => setPassword(event.target.value)}
-              className="h-12 w-full rounded-[8px] border border-border bg-background px-4 text-sm outline-none transition-colors focus:border-foreground"
-            />
-            <input
-              required
-              minLength={8}
-              autoComplete="new-password"
-              type="password"
-              aria-label="Confirm new password"
-              placeholder="Confirm new password"
-              value={confirmPassword}
-              onChange={(event) => setConfirmPassword(event.target.value)}
-              className="h-12 w-full rounded-[8px] border border-border bg-background px-4 text-sm outline-none transition-colors focus:border-foreground"
+              autoComplete="email"
+              type="email"
+              aria-label="Email address"
+              placeholder="Email address"
+              value={email}
+              onChange={(event) => setEmail(event.target.value)}
+              className="h-12 w-full rounded-[6px] border border-border bg-background px-4 text-sm outline-none transition-colors placeholder:text-muted-foreground/75 hover:border-muted-foreground/60 focus:border-foreground"
             />
             {error ? (
               <p role="alert" className="text-sm text-destructive">
@@ -113,54 +151,19 @@ function ForgotPassword() {
             <button
               type="submit"
               disabled={submitting}
-              className="w-full rounded-[8px] bg-foreground py-4 text-[11px] font-medium uppercase tracking-[0.16em] text-background transition-colors hover:bg-hover-accent disabled:cursor-not-allowed disabled:opacity-60"
+              className="w-full rounded-[6px] bg-foreground py-4 text-[11px] font-medium uppercase tracking-[0.16em] text-background transition-colors hover:bg-hover-accent disabled:cursor-not-allowed disabled:opacity-60"
             >
-              {submitting ? "Updating password…" : "Update password"}
+              {submitting ? "Sending link…" : "Send reset link"}
             </button>
           </form>
-        ) : sent ? (
-          <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
-            If an account exists for {email}, a reset link is on its way. Follow the link in that
-            email to choose a new password.
-          </p>
-        ) : (
-          <>
-            <p className="mt-3 text-sm text-muted-foreground">
-              Enter your email and we'll send a link to set a new password.
-            </p>
-            <form className="mt-8 space-y-4" onSubmit={handleResetRequest}>
-              <input
-                required
-                autoComplete="email"
-                type="email"
-                aria-label="Email address"
-                placeholder="Email address"
-                value={email}
-                onChange={(event) => setEmail(event.target.value)}
-                className="h-12 w-full rounded-[8px] border border-border bg-background px-4 text-sm outline-none transition-colors focus:border-foreground"
-              />
-              {error ? (
-                <p role="alert" className="text-sm text-destructive">
-                  {error}
-                </p>
-              ) : null}
-              <button
-                type="submit"
-                disabled={submitting}
-                className="w-full rounded-[8px] bg-foreground py-4 text-[11px] font-medium uppercase tracking-[0.16em] text-background transition-colors hover:bg-hover-accent disabled:cursor-not-allowed disabled:opacity-60"
-              >
-                {submitting ? "Sending link…" : "Send reset link"}
-              </button>
-            </form>
-          </>
-        )}
-        <Link
-          to="/login"
-          className="mt-6 block text-center text-xs text-muted-foreground link-underline"
-        >
-          Back to sign in
+        </>
+      )}
+      <p className="mt-7 border-t border-border pt-6 text-center text-sm text-muted-foreground">
+        Remembered your password?{" "}
+        <Link to="/login" className="font-medium text-foreground link-underline">
+          Sign in
         </Link>
-      </div>
-    </div>
+      </p>
+    </AuthLayout>
   );
 }

@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from "react";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useShop } from "@/lib/shop-store";
+import { AuthLayout } from "@/components/site/AuthLayout";
 
 export const Route = createFileRoute("/signup")({
   head: () => ({
@@ -19,7 +20,7 @@ export const Route = createFileRoute("/signup")({
 });
 
 const field =
-  "h-12 w-full rounded-[8px] border border-border bg-background px-4 text-sm outline-none transition-colors focus:border-foreground";
+  "mt-2 h-12 w-full rounded-[6px] border border-border bg-background px-4 text-sm outline-none transition-colors placeholder:text-muted-foreground/75 hover:border-muted-foreground/60 focus:border-foreground";
 
 function SignupPage() {
   const { register, authConfigured } = useShop();
@@ -53,79 +54,81 @@ function SignupPage() {
   }
 
   return (
-    <div className="container-editorial flex min-h-[70vh] items-center justify-center py-16">
-      <div className="w-full max-w-sm">
-        <p className="eyebrow">Account</p>
-        <h1 className="mt-3 text-3xl">Create an account</h1>
-        <p className="mt-3 text-sm text-muted-foreground">
-          Early access to collections, faster checkout and free repairs registration.
+    <AuthLayout
+      eyebrow="Become a member"
+      title="A little more personal"
+      description="Create an account for a considered shopping experience, with your saved pieces and orders all in one place."
+    >
+      {!authConfigured ? (
+        <p
+          role="status"
+          className="mb-5 rounded-[6px] border border-border bg-surface px-4 py-3 text-sm leading-relaxed text-muted-foreground"
+        >
+          Add your Supabase project URL and anon key to the app environment to enable accounts.
         </p>
-
-        {!authConfigured ? (
-          <p
-            role="status"
-            className="mt-6 rounded-[8px] border border-border p-4 text-sm text-muted-foreground"
-          >
-            Add your Supabase project URL and anon key to the app environment to enable accounts.
-          </p>
-        ) : null}
-        <form className="mt-8 space-y-4" onSubmit={handleSubmit}>
+      ) : null}
+      <form className="space-y-5" onSubmit={handleSubmit}>
+        <label className="block text-xs font-medium">
+          Full name
           <input
             required
             autoComplete="name"
-            aria-label="Full name"
-            placeholder="Full name"
+            placeholder="Your name"
             value={form.name}
             onChange={(event) => setForm({ ...form, name: event.target.value })}
             className={field}
           />
+        </label>
+        <label className="block text-xs font-medium">
+          Email address
           <input
             required
             autoComplete="email"
             type="email"
-            aria-label="Email address"
-            placeholder="Email address"
+            placeholder="you@example.com"
             value={form.email}
             onChange={(event) => setForm({ ...form, email: event.target.value })}
             className={field}
           />
+        </label>
+        <label className="block text-xs font-medium">
+          Password
           <input
             required
             minLength={8}
             autoComplete="new-password"
             type="password"
-            aria-label="Password (at least 8 characters)"
-            placeholder="Password (at least 8 characters)"
+            placeholder="At least 8 characters"
             value={form.password}
             onChange={(event) => setForm({ ...form, password: event.target.value })}
             className={field}
           />
-          {error ? (
-            <p role="alert" className="text-sm text-destructive">
-              {error}
-            </p>
-          ) : null}
-          {message ? (
-            <p role="status" className="text-sm text-muted-foreground">
-              {message}
-            </p>
-          ) : null}
-          <button
-            type="submit"
-            disabled={submitting}
-            className="w-full rounded-[8px] bg-foreground py-4 text-[11px] font-medium uppercase tracking-[0.16em] text-background transition-colors hover:bg-hover-accent disabled:cursor-not-allowed disabled:opacity-60"
-          >
-            {submitting ? "Creating account…" : "Create account"}
-          </button>
-        </form>
+        </label>
+        {error ? (
+          <p role="alert" className="text-sm text-destructive">
+            {error}
+          </p>
+        ) : null}
+        {message ? (
+          <p role="status" className="text-sm text-muted-foreground">
+            {message}
+          </p>
+        ) : null}
+        <button
+          type="submit"
+          disabled={submitting || !authConfigured}
+          className="w-full rounded-[6px] bg-foreground py-4 text-[11px] font-medium uppercase tracking-[0.16em] text-background transition-colors hover:bg-hover-accent disabled:cursor-not-allowed disabled:opacity-60"
+        >
+          {submitting ? "Creating account…" : "Create account"}
+        </button>
+      </form>
 
-        <p className="mt-6 text-center text-xs text-muted-foreground">
-          Already have an account?{" "}
-          <Link to="/login" className="text-foreground link-underline">
-            Sign in
-          </Link>
-        </p>
-      </div>
-    </div>
+      <p className="mt-7 border-t border-border pt-6 text-center text-sm text-muted-foreground">
+        Already have an account?{" "}
+        <Link to="/login" className="font-medium text-foreground link-underline">
+          Sign in
+        </Link>
+      </p>
+    </AuthLayout>
   );
 }

@@ -8,25 +8,27 @@ Everyday cotton, denim and ethnic wear, bought directly from India's textile hub
 
 Louie Heritage sources straight from the mills, with no middlemen:
 
-| Product | Source |
-| --- | --- |
-| Cotton tees | Tirupur |
-| Denim | Ahmedabad, Bhilwara |
-| Sarees and kurta sets | Surat |
-| Woollens | Ludhiana |
-| Home textiles | Panipat |
+| Product               | Source              |
+| --------------------- | ------------------- |
+| Cotton tees           | Tirupur             |
+| Denim                 | Ahmedabad, Bhilwara |
+| Sarees and kurta sets | Surat               |
+| Woollens              | Ludhiana            |
+| Home textiles         | Panipat             |
 
 Prices are in INR (₹). Free delivery on orders over ₹1,499. Payments: UPI, Visa, Mastercard, RuPay, net banking and cash on delivery.
 
 ## Features
 
 **Storefront**
+
 - Landing page with a hero, promo tiles, 11 featured categories, best sellers, new arrivals, a winter edit, a sourcing story, customer notes, a social gallery and a newsletter signup
 - Mega menu covering Women, Men, T-Shirts, Denim, Ethnic Wear, Woollens, Home Textiles, Casual, Accessories, Summer and Winter
 - Shop page with category, size, price and availability filters and pagination
 - Product cards with discount and "New" badges, quick view and add to bag
 
 **Account and purchase**
+
 - Cart, wishlist and profile (dashboard, orders, wishlist, addresses, settings)
 - Checkout, order tracking, contact, about and FAQ pages
 
@@ -34,14 +36,14 @@ Prices are in INR (₹). Free delivery on orders over ₹1,499. Payments: UPI, V
 
 ## Design system
 
-| Token | Hex |
-| --- | --- |
-| Background | `#FAFAF8` |
-| Primary text | `#111111` |
+| Token          | Hex       |
+| -------------- | --------- |
+| Background     | `#FAFAF8` |
+| Primary text   | `#111111` |
 | Secondary text | `#666666` |
-| Borders | `#E8E8E8` |
-| Accent | `#000000` |
-| Hover accent | `#444444` |
+| Borders        | `#E8E8E8` |
+| Accent         | `#000000` |
+| Hover accent   | `#444444` |
 
 - **Type:** Playfair Display for headings, Inter for body text
 - **Layout:** 12-column grid, mobile-first, 8–12px radii, shadows only where needed
@@ -63,3 +65,11 @@ cd modern-heirloom
 npm install
 npm run dev
 ```
+
+## Google sign-in
+
+Google sign-in uses Supabase Auth. In your Supabase dashboard, enable the Google
+provider under **Authentication → Providers** and add your Google OAuth client
+credentials. In **Authentication → URL Configuration**, allow your app's origin
+and set the Supabase callback URL listed in the Google provider settings as an
+authorized redirect URI in Google Cloud Console.

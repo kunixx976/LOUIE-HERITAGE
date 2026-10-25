@@ -83,6 +83,7 @@ type Ctx = State & {
   isWishlisted: (id: string) => boolean;
   markViewed: (id: string) => void;
   signIn: (email: string, password: string) => Promise<void>;
+  signInWithGoogle: () => Promise<void>;
   register: (name: string, email: string, password: string) => Promise<boolean>;
   signOut: () => Promise<void>;
   requestPasswordReset: (email: string) => Promise<void>;
@@ -235,6 +236,17 @@ export function ShopProvider({ children }: { children: ReactNode }) {
     [requireSupabase],
   );
 
+  const signInWithGoogle = useCallback(async () => {
+    const client = requireSupabase();
+    const { error } = await client.auth.signInWithOAuth({
+      provider: "google",
+      options: {
+        redirectTo: `${window.location.origin}/profile`,
+      },
+    });
+    if (error) throw error;
+  }, [requireSupabase]);
+
   const register = useCallback(
     async (name: string, email: string, password: string) => {
       const client = requireSupabase();
@@ -349,6 +361,7 @@ export function ShopProvider({ children }: { children: ReactNode }) {
     isWishlisted: (id) => state.wishlist.includes(id),
     markViewed,
     signIn,
+    signInWithGoogle,
     register,
     signOut,
     requestPasswordReset,
