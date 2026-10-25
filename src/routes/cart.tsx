@@ -3,6 +3,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { Minus, Plus, X } from "lucide-react";
 import { toast } from "sonner";
 import { bestSellers } from "@/lib/data";
+import { FREE_DELIVERY_THRESHOLD, STANDARD_DELIVERY_FEE } from "@/lib/shipping";
 import { formatPrice, useShop } from "@/lib/shop-store";
 import { PageHeader } from "@/components/site/PageHeader";
 import { ProductCard } from "@/components/site/ProductCard";
@@ -11,7 +12,10 @@ export const Route = createFileRoute("/cart")({
   head: () => ({
     meta: [
       { title: "Shopping Bag — LOUIE HERITAGE" },
-      { name: "description", content: "Review the pieces in your LOUIE HERITAGE bag before checkout." },
+      {
+        name: "description",
+        content: "Review the pieces in your LOUIE HERITAGE bag before checkout.",
+      },
       { property: "og:title", content: "Shopping Bag — LOUIE HERITAGE" },
       { property: "og:description", content: "Review the pieces in your bag before checkout." },
     ],
@@ -23,7 +27,8 @@ function CartPage() {
   const { cartProducts, updateQuantity, removeLine, subtotal, hydrated } = useShop();
   const [coupon, setCoupon] = useState("");
   const [discount, setDiscount] = useState(0);
-  const shipping = subtotal > 150 || subtotal === 0 ? 0 : 6;
+  const shipping =
+    subtotal === 0 ? 0 : subtotal > FREE_DELIVERY_THRESHOLD ? 0 : STANDARD_DELIVERY_FEE;
   const total = Math.max(0, subtotal - discount) + shipping;
 
   return (
@@ -49,7 +54,10 @@ function CartPage() {
             <div className="lg:col-span-7">
               <ul className="border-t border-border">
                 {cartProducts.map(({ line, product }, index) => (
-                  <li key={`${line.productId}-${line.size}-${line.color}`} className="flex gap-5 border-b border-border py-7">
+                  <li
+                    key={`${line.productId}-${line.size}-${line.color}`}
+                    className="flex gap-5 border-b border-border py-7"
+                  >
                     <Link to="/product/$slug" params={{ slug: product.slug }} className="shrink-0">
                       <img
                         src={product.images[0]}
@@ -101,7 +109,9 @@ function CartPage() {
                             <Plus className="h-3 w-3" strokeWidth={1.5} />
                           </button>
                         </div>
-                        <span className="text-sm">{formatPrice(product.price * line.quantity)}</span>
+                        <span className="text-sm">
+                          {formatPrice(product.price * line.quantity)}
+                        </span>
                       </div>
                     </div>
                   </li>
@@ -112,6 +122,13 @@ function CartPage() {
             <aside className="lg:col-span-5">
               <div className="rounded-[10px] border border-border p-7 lg:sticky lg:top-28">
                 <h2 className="text-xl">Order summary</h2>
+                <p className="mt-3 rounded-[6px] bg-surface px-4 py-3 text-xs leading-relaxed text-muted-foreground">
+                  {subtotal > FREE_DELIVERY_THRESHOLD
+                    ? "Your order qualifies for free delivery."
+                    : `Free delivery over ₹1,499. Add ${formatPrice(
+                        FREE_DELIVERY_THRESHOLD + 1 - subtotal,
+                      )} more to qualify.`}
+                </p>
 
                 <form
                   className="mt-6 flex gap-2"

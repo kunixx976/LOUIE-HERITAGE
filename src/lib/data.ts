@@ -117,7 +117,8 @@ function normalizeProduct(
 
   const totalStock = variants.reduce((sum, variant) => sum + Math.max(0, variant.stockCount), 0);
   const inStock = totalStock > 0;
-  const inventoryStatus = totalStock === 0 ? "out_of_stock" : totalStock <= 8 ? "low_stock" : "in_stock";
+  const inventoryStatus =
+    totalStock === 0 ? "out_of_stock" : totalStock <= 8 ? "low_stock" : "in_stock";
 
   return {
     ...product,
@@ -131,7 +132,9 @@ function normalizeProduct(
 }
 
 export function getProductVariant(product: Product, size: string, color: string) {
-  return product.variants.find((variant) => variant.size === size && variant.color === color) ?? null;
+  return (
+    product.variants.find((variant) => variant.size === size && variant.color === color) ?? null
+  );
 }
 
 export function getDefaultVariant(product: Product) {
@@ -689,13 +692,95 @@ const rawProducts = [
       649,
     ),
   },
+  {
+    id: "13",
+    slug: "tirupur-airy-cotton-shirt",
+    name: "Tirupur Airy Cotton Shirt",
+    price: 1399,
+    images: [p2, p1],
+    categories: ["women", "casual", "summer"],
+    colors: [
+      { name: "Soft White", hex: "#F4F1E9" },
+      { name: "Sage", hex: "#A8B3A0" },
+    ],
+    sizes: SIZES,
+    rating: 4.7,
+    reviewCount: 38,
+    tags: ["new", "seasonal"],
+    fabric: "Lightweight 100% cotton voile",
+    description:
+      "An easy, breathable cotton shirt with a relaxed fit and softly curved hem, made for warm days and open windows.",
+    details: [
+      "Relaxed fit with a curved hem",
+      "Lightweight cotton voile",
+      "Made in Tirupur, Tamil Nadu",
+      "Machine wash cold, line dry",
+    ],
+    variants: buildVariants(
+      "13",
+      [
+        { name: "Soft White", hex: "#F4F1E9" },
+        { name: "Sage", hex: "#A8B3A0" },
+      ],
+      SIZES,
+      {
+        "Soft White": { XS: 5, S: 8, M: 10, L: 8, XL: 5 },
+        Sage: { XS: 4, S: 7, M: 9, L: 7, XL: 4 },
+      },
+      [p2, p1],
+      1399,
+    ),
+  },
+  {
+    id: "14",
+    slug: "everyday-cotton-kurta",
+    name: "Everyday Cotton Kurta",
+    price: 1599,
+    images: [catWomen, p5],
+    categories: ["women", "ethnic", "summer"],
+    colors: [
+      { name: "Powder Blue", hex: "#B7C7D6" },
+      { name: "Clay", hex: "#C08A6E" },
+    ],
+    sizes: SIZES,
+    rating: 4.8,
+    reviewCount: 31,
+    tags: ["new", "seasonal"],
+    fabric: "Breathable cotton-viscose",
+    description:
+      "A light, straight-cut kurta with a clean neckline and easy three-quarter sleeves, designed for warm days and everyday wear.",
+    details: [
+      "Straight fit with side slits",
+      "Breathable cotton-viscose fabric",
+      "Made in Surat, Gujarat",
+      "Gentle machine wash, dry in shade",
+    ],
+    variants: buildVariants(
+      "14",
+      [
+        { name: "Powder Blue", hex: "#B7C7D6" },
+        { name: "Clay", hex: "#C08A6E" },
+      ],
+      SIZES,
+      {
+        "Powder Blue": { XS: 4, S: 7, M: 9, L: 7, XL: 4 },
+        Clay: { XS: 4, S: 6, M: 8, L: 6, XL: 3 },
+      },
+      [catWomen, p5],
+      1599,
+    ),
+  },
 ].map(normalizeProduct);
 
 export const products: Product[] = rawProducts;
 
 export const bestSellers = products.filter((p) => p.tags.includes("best-seller"));
-export const newArrivals = products.filter((p) => p.tags.includes("new"));
-export const seasonal = products.filter((p) => p.tags.includes("seasonal"));
+export const newArrivals = products.filter(
+  (p) => p.tags.includes("new") && !p.tags.includes("best-seller"),
+);
+export const summerProducts = products.filter((p) => p.categories.includes("summer") && p.inStock);
+export const winterProducts = products.filter((p) => p.categories.includes("winter") && p.inStock);
+export const seasonal = products.filter((p) => p.tags.includes("seasonal") && p.inStock);
 
 export function getProduct(slug: string) {
   return products.find((p) => p.slug === slug);
@@ -752,10 +837,18 @@ export const reviews: Review[] = [
 ];
 
 export const galleryImages = [
-  { src: p1, alt: "Combed cotton T-shirt from our Tirupur knitwear line" },
-  { src: catOversized, alt: "Oversized drop-shoulder tee in sand" },
-  { src: p5, alt: "Georgette saree photographed in studio" },
-  { src: p7, alt: "Handloom cotton stole folded on a neutral backdrop" },
-  { src: p4, alt: "Bhilwara denim jeans in a light wash" },
-  { src: catMen, alt: "Cotton poplin casual shirt with straight-fit denim" },
+  {
+    src: p1,
+    alt: "Combed cotton T-shirt from our Tirupur knitwear line",
+    slug: "tirupur-classic-cotton-tee",
+  },
+  {
+    src: catOversized,
+    alt: "Oversized drop-shoulder tee in sand",
+    slug: "oversized-drop-shoulder-tee",
+  },
+  { src: p5, alt: "Surat georgette saree with zari border", slug: "surat-georgette-saree" },
+  { src: p6, alt: "Ludhiana merino crew sweater", slug: "ludhiana-merino-crew-sweater" },
+  { src: p4, alt: "Bhilwara denim jeans in a light wash", slug: "bhilwara-high-rise-jeans" },
+  { src: catMen, alt: "Cotton poplin casual shirt", slug: "cotton-poplin-casual-shirt" },
 ];

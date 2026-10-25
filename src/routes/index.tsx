@@ -2,7 +2,15 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowRight } from "lucide-react";
 import hero from "@/assets/hero.jpg";
 import editorial from "@/assets/editorial.jpg";
-import { bestSellers, categories, galleryImages, newArrivals, reviews, seasonal } from "@/lib/data";
+import {
+  bestSellers,
+  categories,
+  galleryImages,
+  newArrivals,
+  reviews,
+  summerProducts,
+  winterProducts,
+} from "@/lib/data";
 import { ProductCard } from "@/components/site/ProductCard";
 import { SectionHeading } from "@/components/site/SectionHeading";
 import { Reveal } from "@/components/site/Reveal";
@@ -32,7 +40,7 @@ export const Route = createFileRoute("/")({
 const promos = [
   { title: "Shop Women", slug: "women", copy: "Cotton, denim & ethnic wear" },
   { title: "Shop Men", slug: "men", copy: "Tees, shirts & straight-fit denim" },
-  { title: "Winter Edit", slug: "winter", copy: "Ludhiana woollens & layers" },
+  { title: "Summer Edit", slug: "summer", copy: "Light cottons for warmer days" },
 ];
 
 function Home() {
@@ -129,16 +137,12 @@ function Home() {
           <SectionHeading
             eyebrow="Browse"
             title="Featured categories"
-            description="Eleven edits, from combed cotton tees to Panipat home textiles — each sourced from the Indian town that does it best."
+            description="Explore considered edits in cotton, denim, ethnic wear and home textiles, sourced from India's textile hubs."
           />
           <div className="mt-12 grid grid-cols-2 gap-x-5 gap-y-10 md:grid-cols-3 lg:grid-cols-5">
             {categories.map((category, i) => (
               <Reveal key={category.slug} delay={(i % 5) * 0.05}>
-                <Link
-                  to="/category/$slug"
-                  params={{ slug: category.slug }}
-                  className="group block"
-                >
+                <Link to="/category/$slug" params={{ slug: category.slug }} className="group block">
                   <div className="overflow-hidden rounded-[10px] bg-background">
                     <img
                       src={category.image}
@@ -164,7 +168,10 @@ function Home() {
           title="Best sellers"
           description="The pieces our customers keep re-ordering, size after size."
           action={
-            <Link to="/shop" className="text-sm font-medium transition-colors hover:text-muted-foreground">
+            <Link
+              to="/shop"
+              className="text-sm font-medium transition-colors hover:text-muted-foreground"
+            >
               View all
             </Link>
           }
@@ -194,8 +201,7 @@ function Home() {
             <Reveal className="max-w-lg text-white">
               <p className="eyebrow text-white/70">Where it comes from</p>
               <h2 className="mt-4 text-3xl leading-[1.15] md:text-5xl">
-                From the mill floor
-                to your door
+                From the mill floor to your door
               </h2>
               <p className="mt-5 text-sm leading-relaxed text-white/80">
                 We buy directly from the knitting units of Tirupur, the denim mills of Ahmedabad and
@@ -218,7 +224,10 @@ function Home() {
           eyebrow="Just landed"
           title="New arrivals"
           action={
-            <Link to="/shop" className="text-sm font-medium transition-colors hover:text-muted-foreground">
+            <Link
+              to="/shop"
+              className="text-sm font-medium transition-colors hover:text-muted-foreground"
+            >
               View all
             </Link>
           }
@@ -237,13 +246,13 @@ function Home() {
         <div className="container-editorial section-y">
           <div className="grid items-center gap-12 md:grid-cols-12">
             <Reveal className="md:col-span-4">
-              <p className="eyebrow">Seasonal edit</p>
+              <p className="eyebrow">Winter edit</p>
               <h2 className="mt-4 text-3xl leading-[1.15] md:text-[2.6rem]">
-                Winter, the Ludhiana way
+                Layers from Ludhiana
               </h2>
               <p className="mt-5 text-sm leading-relaxed text-muted-foreground">
-                Fine-gauge merino crews, long cardigans and a handloom throw from Panipat. Warm
-                enough for a north Indian December, light enough to layer.
+                Fine-gauge knits and easy layers, made for the cooler months and simple to wear
+                every day.
               </p>
               <Link
                 to="/category/$slug"
@@ -254,13 +263,38 @@ function Home() {
               </Link>
             </Reveal>
             <div className="grid grid-cols-2 gap-5 md:col-span-8 lg:grid-cols-3">
-              {seasonal.slice(0, 3).map((product, i) => (
+              {winterProducts.slice(0, 3).map((product, i) => (
                 <Reveal key={product.id} delay={i * 0.06}>
                   <ProductCard product={product} />
                 </Reveal>
               ))}
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* Summer collection */}
+      <section className="container-editorial section-y">
+        <SectionHeading
+          eyebrow="Light layers"
+          title="The summer edit"
+          description="Airy cotton, relaxed shapes and easy pieces for warmer days."
+          action={
+            <Link
+              to="/category/$slug"
+              params={{ slug: "summer" }}
+              className="text-sm font-medium transition-colors hover:text-muted-foreground"
+            >
+              Shop summer
+            </Link>
+          }
+        />
+        <div className="mt-12 grid grid-cols-2 gap-x-5 gap-y-12 lg:grid-cols-4">
+          {summerProducts.slice(0, 4).map((product, i) => (
+            <Reveal key={product.id} delay={i * 0.06}>
+              <ProductCard product={product} />
+            </Reveal>
+          ))}
         </div>
       </section>
 
@@ -271,7 +305,12 @@ function Home() {
           {reviews.map((review, i) => (
             <Reveal key={review.name} delay={i * 0.08}>
               <figure className="flex h-full flex-col border-t border-border pt-7">
-                <StarRating rating={review.rating} />
+                <div className="flex items-center gap-3">
+                  <StarRating rating={review.rating} />
+                  <span className="text-xs text-muted-foreground">
+                    {review.rating.toFixed(1)} / 5
+                  </span>
+                </div>
                 <blockquote className="mt-5 flex-1">
                   <p className="font-display text-lg leading-snug">{review.title}</p>
                   <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
@@ -291,18 +330,19 @@ function Home() {
       <section className="border-t border-border">
         <div className="container-editorial section-y">
           <SectionHeading
-            eyebrow="@louieheritage"
-            title="Worn by you"
-            description="Tag your pieces with #LOUIEHERITAGE for a chance to be featured."
+            eyebrow="Shop the collection"
+            title="From the collection"
+            description="A closer look at the fabrics, fits and finishing in our current edit."
             align="center"
           />
           <div className="mt-12 grid grid-cols-2 gap-2 md:grid-cols-3 lg:grid-cols-6">
             {galleryImages.map((image, i) => (
-              <Reveal key={i} delay={(i % 6) * 0.04}>
-                <a
-                  href="https://www.instagram.com/louieheritage"
+              <Reveal key={image.slug} delay={(i % 6) * 0.04}>
+                <Link
+                  to="/product/$slug"
+                  params={{ slug: image.slug }}
                   className="group block overflow-hidden rounded-[8px] bg-secondary"
-                  aria-label="View on Instagram"
+                  aria-label={`View ${image.alt}`}
                 >
                   <img
                     src={image.src}
@@ -312,7 +352,7 @@ function Home() {
                     loading="lazy"
                     className="aspect-square w-full object-cover transition-transform duration-[1200ms] ease-out group-hover:scale-105"
                   />
-                </a>
+                </Link>
               </Reveal>
             ))}
           </div>
@@ -329,8 +369,8 @@ function Home() {
                 First look at each collection
               </h2>
               <p className="mt-4 max-w-md text-sm leading-relaxed text-background/70">
-                One considered email a month: new pieces, restocks and notes from the studio.
-                No discount countdowns.
+                One considered email a month: new pieces, restocks and notes from the studio. No
+                discount countdowns.
               </p>
             </div>
             <div className="md:col-span-6 md:justify-self-end">

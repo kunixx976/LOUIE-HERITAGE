@@ -42,9 +42,12 @@ export function Navbar() {
 
   return (
     <>
+      <div className="fixed inset-x-0 top-0 z-[60] flex h-7 items-center justify-center bg-foreground px-4 text-[10px] font-medium uppercase tracking-[0.14em] text-background sm:text-[11px]">
+        Free delivery over ₹1,499
+      </div>
       <header
         className={cn(
-          "fixed inset-x-0 top-0 z-50 transition-colors duration-500",
+          "fixed inset-x-0 top-7 z-50 transition-colors duration-500",
           transparent
             ? "border-b border-transparent bg-transparent text-background"
             : "border-b border-border bg-background/95 text-foreground backdrop-blur",
@@ -55,24 +58,41 @@ export function Navbar() {
             {/* Left — navigation */}
             <nav className="hidden items-center gap-7 lg:flex" aria-label="Primary">
               <MegaMenu label="Shop" transparent={transparent} />
-              <Link to="/category/$slug" params={{ slug: "women" }} className="text-sm font-medium transition-colors hover:text-muted-foreground">
+              <Link
+                to="/category/$slug"
+                params={{ slug: "women" }}
+                className="text-sm font-medium transition-colors hover:text-muted-foreground"
+              >
                 Women
               </Link>
-              <Link to="/category/$slug" params={{ slug: "men" }} className="text-sm font-medium transition-colors hover:text-muted-foreground">
+              <Link
+                to="/category/$slug"
+                params={{ slug: "men" }}
+                className="text-sm font-medium transition-colors hover:text-muted-foreground"
+              >
                 Men
               </Link>
-              <Link to="/about" className="text-sm font-medium transition-colors hover:text-muted-foreground">
+              <Link
+                to="/about"
+                className="text-sm font-medium transition-colors hover:text-muted-foreground"
+              >
                 About
               </Link>
             </nav>
 
             <div className="flex lg:hidden">
               <Sheet open={menuOpen} onOpenChange={setMenuOpen}>
-                <SheetTrigger aria-label="Open menu" className="-ml-3 grid h-11 w-11 place-items-center">
+                <SheetTrigger
+                  aria-label="Open menu"
+                  className="-ml-3 grid h-11 w-11 place-items-center"
+                >
                   <Menu className="h-5 w-5" strokeWidth={1.25} />
                 </SheetTrigger>
 
-                <SheetContent side="left" className="w-[86vw] max-w-sm overflow-y-auto bg-background p-0">
+                <SheetContent
+                  side="left"
+                  className="w-[86vw] max-w-sm overflow-y-auto bg-background p-0"
+                >
                   <SheetTitle className="sr-only">Menu</SheetTitle>
                   <div className="px-6 pb-10 pt-8">
                     <p className="font-display text-xl">LOUIE HERITAGE</p>
@@ -132,11 +152,16 @@ export function Navbar() {
                 type="button"
                 aria-label="Search"
                 onClick={() => setSearchOpen(true)}
-                className="grid h-11 w-11 place-items-center transition-opacity hover:opacity-60"
+                className="flex h-11 items-center justify-center gap-2 px-2 transition-opacity hover:opacity-60"
               >
                 <Search className="h-[18px] w-[18px]" strokeWidth={1.25} />
+                <span className="hidden text-xs lg:inline">Search</span>
               </button>
-              <Link to="/wishlist" aria-label="Wishlist" className="relative grid h-11 w-11 place-items-center transition-opacity hover:opacity-60">
+              <Link
+                to="/wishlist"
+                aria-label="Wishlist"
+                className="relative grid h-11 w-11 place-items-center transition-opacity hover:opacity-60"
+              >
                 <Heart className="h-[18px] w-[18px]" strokeWidth={1.25} />
                 {hydrated && wishlist.length > 0 ? <Dot /> : null}
               </Link>
@@ -147,7 +172,11 @@ export function Navbar() {
               >
                 <User className="h-[18px] w-[18px]" strokeWidth={1.25} />
               </Link>
-              <Link to="/cart" aria-label="Shopping bag" className="relative grid h-11 w-11 place-items-center transition-opacity hover:opacity-60">
+              <Link
+                to="/cart"
+                aria-label="Shopping bag"
+                className="relative grid h-11 w-11 place-items-center transition-opacity hover:opacity-60"
+              >
                 <ShoppingBag className="h-[18px] w-[18px]" strokeWidth={1.25} />
                 {hydrated && cartCount > 0 ? (
                   <span className="absolute right-2 top-2 grid h-4 min-w-4 place-items-center rounded-full bg-current px-1 text-[9px] font-medium leading-none">
@@ -158,15 +187,12 @@ export function Navbar() {
                 ) : null}
               </Link>
             </div>
-
           </div>
         </div>
       </header>
 
       <Dialog open={searchOpen} onOpenChange={setSearchOpen}>
-        <DialogContent
-          className="top-24 max-w-2xl translate-y-0 rounded-[10px] border-border p-0"
-        >
+        <DialogContent className="top-24 max-w-2xl translate-y-0 rounded-[10px] border-border p-0">
           <DialogTitle className="sr-only">Search</DialogTitle>
           <div className="flex items-center gap-3 border-b border-border px-5">
             <Search className="h-4 w-4 text-muted-foreground" strokeWidth={1.25} />

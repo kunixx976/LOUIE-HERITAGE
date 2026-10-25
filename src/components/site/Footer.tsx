@@ -1,6 +1,5 @@
 import { Link } from "@tanstack/react-router";
 import { Instagram, Facebook, Youtube } from "lucide-react";
-import { NewsletterForm } from "./NewsletterForm";
 
 const shop = [
   { label: "New arrivals", to: "/shop" as const },
@@ -19,13 +18,9 @@ export function Footer() {
           <div className="col-span-2 md:col-span-4">
             <p className="font-display text-lg uppercase tracking-[0.28em]">LOUIE HERITAGE</p>
             <p className="mt-4 max-w-xs text-sm leading-relaxed text-muted-foreground">
-              Cotton, denim, ethnic wear and home textiles bought directly from India's textile
-              hubs and shipped from Meerut.
+              Cotton, denim, ethnic wear and home textiles bought directly from India's textile hubs
+              and shipped from Meerut.
             </p>
-            <div className="mt-8">
-              <p className="eyebrow mb-3">New arrivals & offers</p>
-              <NewsletterForm />
-            </div>
           </div>
 
           <nav className="md:col-span-2" aria-label="Shop">
@@ -113,26 +108,40 @@ export function Footer() {
           <div className="md:col-span-2">
             <p className="eyebrow mb-4">Follow</p>
             <div className="-ml-3 flex text-muted-foreground md:ml-0 md:gap-4">
-              <a href="https://www.instagram.com/louieheritage" aria-label="Instagram" className="grid h-11 w-11 place-items-center transition-colors hover:text-foreground md:h-auto md:w-auto">
+              <a
+                href="https://www.instagram.com/louieheritage"
+                aria-label="Instagram"
+                className="grid h-11 w-11 place-items-center transition-colors hover:text-foreground md:h-auto md:w-auto"
+              >
                 <Instagram className="h-[18px] w-[18px]" strokeWidth={1.25} />
               </a>
-              <a href="https://www.facebook.com/louieheritage" aria-label="Facebook" className="grid h-11 w-11 place-items-center transition-colors hover:text-foreground md:h-auto md:w-auto">
+              <a
+                href="https://www.facebook.com/louieheritage"
+                aria-label="Facebook"
+                className="grid h-11 w-11 place-items-center transition-colors hover:text-foreground md:h-auto md:w-auto"
+              >
                 <Facebook className="h-[18px] w-[18px]" strokeWidth={1.25} />
               </a>
-              <a href="https://www.youtube.com/@louieheritage" aria-label="YouTube" className="grid h-11 w-11 place-items-center transition-colors hover:text-foreground md:h-auto md:w-auto">
+              <a
+                href="https://www.youtube.com/@louieheritage"
+                aria-label="YouTube"
+                className="grid h-11 w-11 place-items-center transition-colors hover:text-foreground md:h-auto md:w-auto"
+              >
                 <Youtube className="h-[18px] w-[18px]" strokeWidth={1.25} />
               </a>
             </div>
             <p className="eyebrow mb-3 mt-8">We accept</p>
             <div className="flex flex-wrap gap-1.5">
-              {["UPI", "Visa", "Mastercard", "RuPay", "Net banking", "Cash on delivery"].map((m) => (
-                <span
-                  key={m}
-                  className="rounded-[4px] border border-border px-2 py-1 text-[10px] uppercase tracking-[0.1em] text-muted-foreground"
-                >
-                  {m}
-                </span>
-              ))}
+              {["UPI", "Visa", "Mastercard", "RuPay", "Net banking", "Cash on delivery"].map(
+                (m) => (
+                  <span
+                    key={m}
+                    className="rounded-[4px] border border-border px-2 py-1 text-[10px] uppercase tracking-[0.1em] text-muted-foreground"
+                  >
+                    {m}
+                  </span>
+                ),
+              )}
             </div>
           </div>
         </div>

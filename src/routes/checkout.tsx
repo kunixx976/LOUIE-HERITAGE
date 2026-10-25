@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Check } from "lucide-react";
+import { FREE_DELIVERY_THRESHOLD, STANDARD_DELIVERY_FEE } from "@/lib/shipping";
 import { formatPrice, useShop } from "@/lib/shop-store";
 import { cn } from "@/lib/utils";
 
@@ -39,7 +40,12 @@ function CheckoutPage() {
     cvc: "",
   });
 
-  const shipping = form.method === "express" ? 199 : subtotal > 1499 ? 0 : 79;
+  const shipping =
+    form.method === "express"
+      ? 199
+      : subtotal > FREE_DELIVERY_THRESHOLD
+        ? 0
+        : STANDARD_DELIVERY_FEE;
   const total = subtotal + shipping;
   const set = (key: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement>) =>
     setForm((f) => ({ ...f, [key]: e.target.value }));
@@ -53,8 +59,8 @@ function CheckoutPage() {
           </div>
           <h1 className="mt-8 text-3xl">Thank you — your order is confirmed</h1>
           <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
-            Order {orderId} is being packed at our Meerut warehouse. You'll receive tracking
-            by email within 24 hours.
+            Order {orderId} is being packed at our Meerut warehouse. You'll receive tracking by
+            email within 24 hours.
           </p>
           <div className="mt-9 flex flex-wrap justify-center gap-3">
             <Link
@@ -155,19 +161,63 @@ function CheckoutPage() {
                     </span>
                   </button>
                 ) : null}
-                <input required type="email" placeholder="Email address" value={form.email} onChange={set("email")} className={field} />
-                <input required placeholder="Full name" value={form.name} onChange={set("name")} className={field} />
-                <input required placeholder="Address" value={form.line1} onChange={set("line1")} className={field} />
+                <input
+                  required
+                  type="email"
+                  placeholder="Email address"
+                  value={form.email}
+                  onChange={set("email")}
+                  className={field}
+                />
+                <input
+                  required
+                  placeholder="Full name"
+                  value={form.name}
+                  onChange={set("name")}
+                  className={field}
+                />
+                <input
+                  required
+                  placeholder="Address"
+                  value={form.line1}
+                  onChange={set("line1")}
+                  className={field}
+                />
                 <div className="grid gap-4 sm:grid-cols-2">
-                  <input required placeholder="City" value={form.city} onChange={set("city")} className={field} />
-                  <input required placeholder="PIN code" value={form.postcode} onChange={set("postcode")} className={field} />
+                  <input
+                    required
+                    placeholder="City"
+                    value={form.city}
+                    onChange={set("city")}
+                    className={field}
+                  />
+                  <input
+                    required
+                    placeholder="PIN code"
+                    value={form.postcode}
+                    onChange={set("postcode")}
+                    className={field}
+                  />
                 </div>
-                <input required placeholder="Country" value={form.country} onChange={set("country")} className={field} />
+                <input
+                  required
+                  placeholder="Country"
+                  value={form.country}
+                  onChange={set("country")}
+                  className={field}
+                />
 
                 <div className="space-y-3 pt-4">
                   <p className="eyebrow">Delivery method</p>
                   {[
-                    { id: "standard", label: "Standard — 3–5 working days", price: subtotal > 1499 ? "Free" : "₹79" },
+                    {
+                      id: "standard",
+                      label: "Standard — 3–5 working days",
+                      price:
+                        subtotal > FREE_DELIVERY_THRESHOLD
+                          ? "Free"
+                          : formatPrice(STANDARD_DELIVERY_FEE),
+                    },
                     { id: "express", label: "Express — next working day", price: "₹199" },
                   ].map((m) => (
                     <label
@@ -191,15 +241,40 @@ function CheckoutPage() {
                     </label>
                   ))}
                 </div>
+                {form.method === "standard" && subtotal <= FREE_DELIVERY_THRESHOLD ? (
+                  <p className="text-xs leading-relaxed text-muted-foreground">
+                    Free standard delivery on orders over ₹1,499.
+                  </p>
+                ) : null}
               </div>
             ) : null}
 
             {step === 1 ? (
               <div className="space-y-4">
-                <input required placeholder="Card number" value={form.card} onChange={set("card")} className={field} inputMode="numeric" />
+                <input
+                  required
+                  placeholder="Card number"
+                  value={form.card}
+                  onChange={set("card")}
+                  className={field}
+                  inputMode="numeric"
+                />
                 <div className="grid gap-4 sm:grid-cols-2">
-                  <input required placeholder="MM / YY" value={form.expiry} onChange={set("expiry")} className={field} />
-                  <input required placeholder="CVC" value={form.cvc} onChange={set("cvc")} className={field} inputMode="numeric" />
+                  <input
+                    required
+                    placeholder="MM / YY"
+                    value={form.expiry}
+                    onChange={set("expiry")}
+                    className={field}
+                  />
+                  <input
+                    required
+                    placeholder="CVC"
+                    value={form.cvc}
+                    onChange={set("cvc")}
+                    className={field}
+                    inputMode="numeric"
+                  />
                 </div>
                 <p className="text-xs text-muted-foreground">
                   Payments are encrypted and processed securely. We never store card details.
@@ -219,7 +294,8 @@ function CheckoutPage() {
                 <div className="rounded-[8px] border border-border p-5">
                   <p className="eyebrow mb-2">Paying with</p>
                   <p className="text-muted-foreground">
-                    Card ending {form.card.slice(-4) || "••••"} · {form.method === "express" ? "Express" : "Standard"} delivery
+                    Card ending {form.card.slice(-4) || "••••"} ·{" "}
+                    {form.method === "express" ? "Express" : "Standard"} delivery
                   </p>
                 </div>
               </div>
@@ -284,6 +360,9 @@ function CheckoutPage() {
                 <dd>{formatPrice(total)}</dd>
               </div>
             </dl>
+            <p className="mt-4 text-xs leading-relaxed text-muted-foreground">
+              Free standard delivery over ₹1,499.
+            </p>
           </div>
         </aside>
       </div>

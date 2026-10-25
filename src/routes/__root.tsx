@@ -133,7 +133,7 @@ function RootComponent() {
       <ShopProvider>
         <div className="flex min-h-screen flex-col">
           <Navbar />
-          <main id="main" className="flex-1 pt-16 md:pt-[72px]">
+          <main id="main" className="flex-1 pt-[92px] md:pt-[100px]">
             {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
             <Outlet />
           </main>
