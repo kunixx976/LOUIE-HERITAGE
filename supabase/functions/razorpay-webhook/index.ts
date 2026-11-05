@@ -1,4 +1,4 @@
-import { finalizePaidOrder, json } from "../_shared/orders.ts";
+import { finalizePaidOrder, json, markPaymentFailed } from "../_shared/orders.ts";
 
 async function validSignature(body: string, signature: string, secret: string) {
   const key = await crypto.subtle.importKey(
@@ -33,9 +33,21 @@ Deno.serve(async (request) => {
     }
 
     const event = JSON.parse(rawBody);
+    const payment = event.payload?.payment?.entity;
+    if (event.event === "payment.failed") {
+      if (
+        !payment ||
+        typeof payment.order_id !== "string" ||
+        typeof payment.id !== "string" ||
+        payment.status !== "failed"
+      ) {
+        return json({ error: "Invalid failed-payment event." }, 400);
+      }
+      await markPaymentFailed(payment.order_id, payment.id);
+      return json({ received: true });
+    }
     if (event.event !== "payment.captured") return json({ received: true });
 
-    const payment = event.payload?.payment?.entity;
     if (
       !payment ||
       typeof payment.order_id !== "string" ||

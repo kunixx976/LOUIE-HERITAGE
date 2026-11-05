@@ -5,9 +5,16 @@ export const Route = createFileRoute("/terms")({
   head: () => ({
     meta: [
       { title: "Terms & Conditions — LOUIE HERITAGE" },
-      { name: "description", content: "The terms governing purchases from LOUIE HERITAGE: orders, pricing, delivery, returns and warranty." },
+      {
+        name: "description",
+        content:
+          "The terms governing purchases from LOUIE HERITAGE: orders, pricing, delivery, returns and warranty.",
+      },
       { property: "og:title", content: "Terms & Conditions — LOUIE HERITAGE" },
-      { property: "og:description", content: "Terms governing orders, pricing, delivery, returns and warranty." },
+      {
+        property: "og:description",
+        content: "Terms governing orders, pricing, delivery, returns and warranty.",
+      },
     ],
   }),
   component: TermsPage,
@@ -15,28 +22,28 @@ export const Route = createFileRoute("/terms")({
 
 const sections = [
   {
-    title: "1. These terms",
-    body: "By placing an order with LOUIE HERITAGE, Meerut (GSTIN 09ABCDE1234F1Z5) you accept these terms. They do not affect your statutory rights as a consumer under the Consumer Protection Act, 2019.",
+    title: "1. Seller details",
+    body: "The seller's registered legal name, GSTIN and business address have not been verified for this storefront. Confirm the seller and tax-invoice details before making a purchase.",
   },
   {
     title: "2. Orders",
-    body: "An order is an offer to buy. A contract is formed only when we send a dispatch confirmation. We may decline an order where a piece is unavailable, a pricing error has occurred, or payment authorisation fails.",
+    body: "Checkout displays an order total before an order is submitted. An order confirmation is shown after the order service records the purchase or verifies online payment.",
   },
   {
     title: "3. Pricing",
-    body: "Prices are shown in Indian rupees and are inclusive of GST. We reserve the right to change prices for future orders.",
+    body: "Prices are shown in Indian rupees. The final amount shown at checkout includes the configured delivery charge and any applied discount. Tax treatment has not been verified.",
   },
   {
     title: "4. Delivery",
-    body: "Estimated delivery times are indicative and not guaranteed. Risk passes to you on delivery. If a parcel arrives damaged, contact our care team within 48 hours with photographs and an unboxing video where possible.",
+    body: "Delivery options and charges are shown at checkout. Delivery estimates, service-area coverage and carrier tracking have not been verified or guaranteed.",
   },
   {
     title: "5. Returns and cancellation",
-    body: "You may cancel an order any time before dispatch. Unworn items with tags attached can be returned within 15 days of delivery, with free reverse pickup across serviceable pin codes.",
+    body: "The seller's cancellation, return and refund terms have not been confirmed. Do not send an item back without first receiving return instructions.",
   },
   {
     title: "6. Warranty",
-    body: "All garments are guaranteed against manufacturing faults for six months. Normal wear, and alterations made by third parties, are not covered.",
+    body: "Warranty and repair terms have not been confirmed by the seller.",
   },
   {
     title: "7. Intellectual property",
@@ -44,7 +51,7 @@ const sections = [
   },
   {
     title: "8. Governing law",
-    body: "These terms are governed by Indian law, and the courts of Meerut, Uttar Pradesh have exclusive jurisdiction over any dispute.",
+    body: "Applicable governing-law and dispute-resolution details have not been verified for this storefront.",
   },
 ];
 
@@ -54,7 +61,7 @@ function TermsPage() {
       <PageHeader
         eyebrow="Legal"
         title="Terms & conditions"
-        description="Last updated 1 June 2026. Please read these terms before placing an order."
+        description="Seller, delivery, return and warranty details are being verified."
         crumbs={[{ label: "Terms" }]}
       />
       <div className="container-editorial py-12 md:py-16">

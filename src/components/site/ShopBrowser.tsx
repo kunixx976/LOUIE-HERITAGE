@@ -17,7 +17,7 @@ import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/s
 
 const PER_PAGE = 8;
 
-type Sort = "featured" | "price-asc" | "price-desc" | "newest" | "rating";
+type Sort = "featured" | "price-asc" | "price-desc" | "newest";
 
 export function ShopBrowser({
   products,
@@ -72,8 +72,6 @@ export function ShopBrowser({
         return [...result].sort((a, b) => a.price - b.price);
       case "price-desc":
         return [...result].sort((a, b) => b.price - a.price);
-      case "rating":
-        return [...result].sort((a, b) => b.rating - a.rating);
       case "newest":
         return [...result].sort(
           (a, b) => Number(b.tags.includes("new")) - Number(a.tags.includes("new")),
@@ -252,7 +250,6 @@ export function ShopBrowser({
                 <SelectItem value="newest">Newest</SelectItem>
                 <SelectItem value="price-asc">Price: low to high</SelectItem>
                 <SelectItem value="price-desc">Price: high to low</SelectItem>
-                <SelectItem value="rating">Highest rated</SelectItem>
               </SelectContent>
             </Select>
           </div>

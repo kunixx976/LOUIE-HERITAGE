@@ -106,27 +106,29 @@ function ProfilePage() {
                 </div>
               ))}
             </div>
-            <p className="mt-8 max-w-lg text-sm leading-relaxed text-muted-foreground">
-              Members get free repairs for six months, faster support on WhatsApp, and early access
-              to each collection 48 hours before release.
-            </p>
           </TabsContent>
 
           <TabsContent value="orders" className="pt-10">
-            <ul className="space-y-5">
-              {orders.map((order) => (
-                <li key={order.id} className="rounded-[10px] border border-border p-6">
-                  <div className="flex flex-wrap items-center justify-between gap-3 text-sm">
-                    <span>{order.id}</span>
-                    <span className="text-muted-foreground">{order.date}</span>
-                    <span className="rounded-full border border-border px-3 py-1 text-[10px] uppercase tracking-[0.12em]">
-                      {order.status}
-                    </span>
-                    <span>{formatPrice(order.total)}</span>
-                  </div>
-                </li>
-              ))}
-            </ul>
+            {orders.length === 0 ? (
+              <p className="text-sm text-muted-foreground">
+                No orders are linked to this account yet.
+              </p>
+            ) : (
+              <ul className="space-y-5">
+                {orders.map((order) => (
+                  <li key={order.id} className="rounded-[10px] border border-border p-6">
+                    <div className="flex flex-wrap items-center justify-between gap-3 text-sm">
+                      <span>{order.id}</span>
+                      <span className="text-muted-foreground">{order.date}</span>
+                      <span className="rounded-full border border-border px-3 py-1 text-[10px] uppercase tracking-[0.12em]">
+                        {order.status}
+                      </span>
+                      <span>{formatPrice(order.total)}</span>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            )}
             <Link
               to="/orders"
               className="mt-8 inline-block text-xs uppercase tracking-[0.14em] link-underline"

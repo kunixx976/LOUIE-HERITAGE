@@ -14,6 +14,7 @@ import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { ShopProvider } from "../lib/shop-store";
 import { Navbar } from "../components/site/Navbar";
+import { CookieConsent } from "../components/site/CookieConsent";
 import { Footer } from "../components/site/Footer";
 import { Toaster } from "../components/ui/sonner";
 
@@ -91,11 +92,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "LOUIE HERITAGE — Everyday Cotton & Ethnic Wear from Meerut" },
+      { title: "LOUIE HERITAGE — Clothing & Home Textiles" },
       {
         name: "description",
-        content:
-          "LOUIE HERITAGE brings you cotton tees, denim, sarees, woollens and home textiles sourced directly from India's textile hubs and shipped from Meerut.",
+        content: "Explore clothing, accessories and home textiles from LOUIE HERITAGE.",
       },
       { name: "author", content: "LOUIE HERITAGE" },
       { property: "og:site_name", content: "LOUIE HERITAGE" },
@@ -150,6 +150,7 @@ function RootComponent() {
           <Footer />
         </div>
         <Toaster position="bottom-right" />
+        <CookieConsent />
       </ShopProvider>
     </QueryClientProvider>
   );

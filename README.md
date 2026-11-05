@@ -1,28 +1,16 @@
 # Louie Heritage
 
-Everyday cotton, denim and ethnic wear, bought directly from India's textile hubs and shipped from Meerut, Uttar Pradesh. This repository is the storefront: a minimal, editorial e-commerce site with a neutral palette, generous whitespace and subtle motion.
+Everyday clothing, accessories and home textiles. This repository is the storefront: a minimal, editorial e-commerce site with a neutral palette, generous whitespace and subtle motion.
 
 **Live site:** https://modern-heirloom.vercel.app
 
-## The brand
-
-Louie Heritage sources straight from the mills, with no middlemen:
-
-| Product               | Source              |
-| --------------------- | ------------------- |
-| Cotton tees           | Tirupur             |
-| Denim                 | Ahmedabad, Bhilwara |
-| Sarees and kurta sets | Surat               |
-| Woollens              | Ludhiana            |
-| Home textiles         | Panipat             |
-
-Prices are in INR (₹). Free delivery on orders over ₹1,499. Checkout supports UPI, cards and cash on delivery through Razorpay and Supabase Edge Functions; these services must be configured before live orders can be accepted.
+Business identity, sourcing, contact information, tax details, delivery estimates and return or warranty terms have not been independently verified. Do not treat earlier storefront claims as confirmed. Delivery charges are calculated at checkout; confirm the configured rates with the seller before accepting live orders.
 
 ## Features
 
 **Storefront**
 
-- Landing page with a hero, promo tiles, 11 featured categories, best sellers, new arrivals, a winter edit, a sourcing story, customer notes, a social gallery and a newsletter signup
+- Landing page with a hero, promo tiles, featured products, new arrivals, seasonal edits and a social gallery
 - Mega menu covering Women, Men, T-Shirts, Denim, Ethnic Wear, Woollens, Home Textiles, Casual, Accessories, Summer and Winter
 - Shop page with category, size, price and availability filters and pagination
 - Product cards with discount and "New" badges, quick view and add to bag
@@ -51,9 +39,7 @@ Prices are in INR (₹). Free delivery on orders over ₹1,499. Checkout support
 
 ## Tech stack
 
-Built with [Lovable](https://lovable.dev) using React, TypeScript, Tailwind CSS and Framer Motion, and deployed on Vercel.
-
-> Confirm the framework and bundler against `package.json` and update this section (Vite vs Next.js affects the dev URL and scripts).
+Built with React, TypeScript, Tailwind CSS, TanStack Start and Vite. The project is connected to Lovable and deployed on Vercel.
 
 ## Getting started
 
@@ -93,8 +79,8 @@ live payments.
    npx supabase db push
    ```
 
-   The migration creates the private `public.orders` table. The table has row-level security
-   enabled and is writable only by the Edge Functions' server-side service role.
+   The migrations create the private `public.orders` table and payment/tracking fields. Row-level
+   security is enabled; order data is accessed by Edge Functions using the server-side service role.
 
 3. Add credentials as Supabase Edge Function secrets (never as `VITE_` variables or in browser
    code):
@@ -112,17 +98,24 @@ live payments.
    npx supabase functions deploy create-razorpay-order
    npx supabase functions deploy verify-razorpay-payment
    npx supabase functions deploy create-cod-order
+   npx supabase functions deploy list-orders
+   npx supabase functions deploy abandon-razorpay-order
    npx supabase functions deploy razorpay-webhook --no-verify-jwt
    ```
 
 5. In Razorpay **Account & Settings → Webhooks**, add
    `https://YOUR_PROJECT_REF.supabase.co/functions/v1/razorpay-webhook`, use the same webhook
-   secret saved above, and subscribe to `payment.captured`.
-6. Keep Razorpay in test mode and verify one UPI/card payment, one cancelled/failed payment, one
-   COD order, and receipt of the confirmation emails. Switch to live Razorpay credentials only
-   after testing and completing Razorpay's account activation.
+   secret saved above, and subscribe to `payment.captured` and `payment.failed`.
+6. Keep Razorpay in test mode and verify successful payment, failed payment, closed payment
+   window, COD order, confirmation email, verified-customer order history and tracking details.
+   Do not switch to live credentials until these flows pass and the seller's business, tax,
+   shipping, return and warranty details have been confirmed.
+
+Order history is limited to the signed-in customer's verified email. Carrier and tracking details
+are optional order fields and appear after they have been supplied. Cookie preferences can be
+changed from the privacy policy; no optional analytics integration is currently active.
 
 The Razorpay secret, Resend API key and Supabase service-role key must stay in Supabase secrets.
-The browser only receives Razorpay's public Key ID from the order-creation function. If function
-deployment or secrets are missing, checkout displays an error and does not create a successful
-order in the storefront.
+The browser only receives Razorpay's public Key ID and a one-time payment-abandonment token from
+the order-creation function. If function deployment or secrets are missing, checkout displays an
+error and does not create a successful order in the storefront.

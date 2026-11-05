@@ -5,7 +5,6 @@ import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { getDefaultVariant, getProductVariant, type Product } from "@/lib/data";
 import { formatPrice, useShop } from "@/lib/shop-store";
 import { cn } from "@/lib/utils";
-import { StarRating } from "./StarRating";
 
 export function QuickView({
   product,
@@ -44,7 +43,6 @@ export function QuickView({
                   {formatPrice(product.compareAt)}
                 </span>
               ) : null}
-              <StarRating rating={product.rating} />
             </div>
             <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
               {product.description}
@@ -62,7 +60,8 @@ export function QuickView({
                     style={{ backgroundColor: c.hex }}
                     className={cn(
                       "h-7 w-7 rounded-full border border-border transition-all",
-                      color === c.name && "ring-1 ring-foreground ring-offset-2 ring-offset-background",
+                      color === c.name &&
+                        "ring-1 ring-foreground ring-offset-2 ring-offset-background",
                     )}
                   />
                 ))}

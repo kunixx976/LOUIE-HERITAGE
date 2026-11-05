@@ -5,9 +5,15 @@ export const Route = createFileRoute("/privacy")({
   head: () => ({
     meta: [
       { title: "Privacy Policy — LOUIE HERITAGE" },
-      { name: "description", content: "How LOUIE HERITAGE collects, uses and protects your personal data under India's Digital Personal Data Protection Act." },
+      {
+        name: "description",
+        content: "How order and account data is handled on the LOUIE HERITAGE storefront.",
+      },
       { property: "og:title", content: "Privacy Policy — LOUIE HERITAGE" },
-      { property: "og:description", content: "How we collect, use and protect your personal data." },
+      {
+        property: "og:description",
+        content: "How we collect, use and protect your personal data.",
+      },
     ],
   }),
   component: PrivacyPage,
@@ -16,27 +22,27 @@ export const Route = createFileRoute("/privacy")({
 const sections = [
   {
     title: "What we collect",
-    body: "When you place an order we collect your name, delivery and billing address, email address, telephone number and payment confirmation. When you browse we collect anonymised analytics: pages viewed, device type and approximate region.",
+    body: "When you place an order, the store processes your name, email address, delivery address, cart items, order amounts and payment status. Sign-in is provided by Supabase. The storefront does not request a telephone number or store card numbers.",
   },
   {
     title: "Why we collect it",
-    body: "To fulfil your order, provide customer care, prevent fraud, and — only where you have opted in — to send you collection previews. We do not sell personal data to third parties under any circumstances.",
+    body: "Order and account information is used to create and manage orders, process payment status and show order history. Marketing and analytics integrations are not currently active.",
   },
   {
     title: "Payment data",
-    body: "Card details are handled entirely by our PCI-DSS compliant payment processor. LOUIE HERITAGE never sees or stores full card numbers.",
+    body: "Razorpay processes online payments. The order service stores payment references and status, not card numbers.",
   },
   {
     title: "Cookies",
-    body: "We use strictly necessary cookies to keep your bag and session working, and optional analytics cookies you can decline without losing functionality.",
+    body: "Essential browser storage keeps your bag and sign-in working. Optional analytics are not currently active on this site. You can choose whether to allow optional analytics using Cookie preferences; your choice is saved in this browser and can be changed at any time.",
   },
   {
     title: "Your rights",
-    body: "Under India's Digital Personal Data Protection Act you may request a copy of your data, ask us to correct or erase it, object to processing, or withdraw consent at any time. Email privacy@louieheritage.in and we will respond within 30 days.",
+    body: "The privacy contact channel and request-handling process have not been verified. Confirmed contact details will be published here when available.",
   },
   {
     title: "Retention",
-    body: "Order and invoice records are kept for eight years to meet GST and income tax requirements. Marketing preferences are kept until you unsubscribe. Analytics data is anonymised after 14 months.",
+    body: "The retention periods for account and order data have not been confirmed. No analytics retention period is claimed because analytics are not currently active.",
   },
 ];
 
@@ -46,7 +52,7 @@ function PrivacyPage() {
       <PageHeader
         eyebrow="Legal"
         title="Privacy policy"
-        description="Last updated 1 June 2026. LOUIE HERITAGE, 12 Abu Lane, Sadar Bazar, Meerut 250001, is the data fiduciary."
+        description="How order and account data is handled on the LOUIE HERITAGE storefront."
         crumbs={[{ label: "Privacy" }]}
       />
       <div className="container-editorial py-12 md:py-16">
@@ -55,6 +61,15 @@ function PrivacyPage() {
             <section key={s.title}>
               <h2 className="font-display text-xl">{s.title}</h2>
               <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{s.body}</p>
+              {s.title === "Cookies" ? (
+                <button
+                  type="button"
+                  onClick={() => window.dispatchEvent(new Event("louie:open-cookie-settings"))}
+                  className="mt-4 text-xs uppercase tracking-[0.14em] link-underline"
+                >
+                  Open cookie preferences
+                </button>
+              ) : null}
             </section>
           ))}
         </div>

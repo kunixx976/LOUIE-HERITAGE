@@ -77,7 +77,8 @@ function loadRazorpay() {
 }
 
 function CheckoutPage() {
-  const { cartProducts, subtotal, discount, placeOrder, addresses, hydrated, user } = useShop();
+  const { cartProducts, subtotal, discount, placeOrder, refreshOrders, addresses, hydrated, user } =
+    useShop();
   const [step, setStep] = useState(0);
   const [orderId, setOrderId] = useState<string | null>(null);
   const [emailSent, setEmailSent] = useState(false);
@@ -118,12 +119,12 @@ function CheckoutPage() {
     setSubmitting(true);
     try {
       if (!supabase) {
-        throw new Error("Checkout is not configured yet. Please contact customer care.");
+        throw new Error("Checkout is not configured. Please try again later.");
       }
       const client = supabase;
 
       const checkout = {
-        email: form.email.trim(),
+        email: user?.email.trim() || form.email.trim(),
         name: form.name.trim(),
         line1: form.line1.trim(),
         city: form.city.trim(),
@@ -143,13 +144,13 @@ function CheckoutPage() {
         const { data, error: functionError } = await client.functions.invoke<{
           orderNumber: string;
           emailSent: boolean;
-          total: number;
           error?: string;
         }>("create-cod-order", { body: checkout });
         if (functionError) throw new Error(data?.error ?? functionError.message);
         if (!data?.orderNumber) throw new Error(data?.error ?? "Unable to place your order.");
         setEmailSent(data.emailSent);
-        setOrderId(placeOrder(data.total, data.orderNumber));
+        setOrderId(placeOrder(data.orderNumber));
+        void refreshOrders();
         setStep(3);
         return;
       }
@@ -160,10 +161,11 @@ function CheckoutPage() {
         amount: number;
         currency: string;
         keyId: string;
+        abandonmentToken: string;
         error?: string;
       }>("create-razorpay-order", { body: checkout });
       if (createError) throw new Error(paymentOrder?.error ?? createError.message);
-      if (!paymentOrder?.razorpayOrderId || !paymentOrder.keyId) {
+      if (!paymentOrder?.razorpayOrderId || !paymentOrder.keyId || !paymentOrder.abandonmentToken) {
         throw new Error(paymentOrder?.error ?? "Unable to start payment. Please try again.");
       }
 
@@ -174,6 +176,31 @@ function CheckoutPage() {
           if (settled) return;
           settled = true;
           reject(new Error(message));
+        };
+        const markAbandoned = async (reason: string) => {
+          if (settled) return;
+          try {
+            const { data: abandoned, error: abandonError } = await client.functions.invoke<{
+              abandoned: boolean;
+            }>("abandon-razorpay-order", {
+              body: {
+                razorpayOrderId: paymentOrder.razorpayOrderId,
+                abandonmentToken: paymentOrder.abandonmentToken,
+              },
+            });
+            if (abandonError) throw abandonError;
+            if (!abandoned?.abandoned) {
+              throw new Error("The payment may already have completed. Check your order history.");
+            }
+            fail(reason);
+          } catch (cause) {
+            console.error("Unable to record the cancelled payment.", cause);
+            fail(
+              cause instanceof Error
+                ? `${cause.message} Check order history before trying again.`
+                : "We couldn't update the payment status. Check order history before trying again.",
+            );
+          }
         };
         const Razorpay = window.Razorpay;
         if (!Razorpay) {
@@ -187,31 +214,32 @@ function CheckoutPage() {
           name: "LOUIE HERITAGE",
           description: `Order ${paymentOrder.orderNumber}`,
           order_id: paymentOrder.razorpayOrderId,
-          prefill: { name: form.name, email: form.email },
+          prefill: { name: form.name, email: checkout.email },
           theme: { color: "#111111" },
           modal: {
-            ondismiss: () => fail("Payment was cancelled. Your order has not been confirmed."),
+            ondismiss: () =>
+              void markAbandoned("Payment window closed. Your order has not been confirmed."),
           },
           handler: (response) => {
             void (async () => {
               const { data, error: verifyError } = await client.functions.invoke<{
                 orderNumber: string;
                 emailSent: boolean;
-                total: number;
                 error?: string;
               }>("verify-razorpay-payment", { body: response });
               if (verifyError || !data?.orderNumber) {
                 fail(
                   data?.error ??
                     verifyError?.message ??
-                    "We couldn't verify your payment. Please contact customer care.",
+                    "We couldn't verify your payment. If you were charged, check order history before trying again.",
                 );
                 return;
               }
               if (settled) return;
               settled = true;
               setEmailSent(data.emailSent);
-              setOrderId(placeOrder(data.total, data.orderNumber));
+              setOrderId(placeOrder(data.orderNumber));
+              void refreshOrders();
               setStep(3);
               resolve();
             })().catch((cause: unknown) => {
@@ -219,9 +247,9 @@ function CheckoutPage() {
             });
           },
         });
-        instance.on("payment.failed", () =>
-          fail("Payment failed. You can try again or choose cash on delivery."),
-        );
+        instance.on("payment.failed", () => {
+          void markAbandoned("Payment failed. You can try again or choose cash on delivery.");
+        });
         instance.open();
       });
     } catch (cause) {
@@ -270,7 +298,7 @@ function CheckoutPage() {
             .
             {emailSent
               ? ` A confirmation email was sent to ${form.email}.`
-              : " We couldn't send the confirmation email; please contact care@louieheritage.in."}
+              : " We couldn't send a confirmation email. Your order is saved; use Track an order to check its status."}
           </p>
           <div className="mt-9 flex flex-wrap justify-center gap-3">
             <Link
@@ -384,9 +412,10 @@ function CheckoutPage() {
                   type="email"
                   autoComplete="email"
                   maxLength={254}
+                  readOnly={Boolean(user)}
                   aria-label="Email address"
                   placeholder="Email address"
-                  value={form.email}
+                  value={user?.email || form.email}
                   onChange={set("email")}
                   className={field}
                 />
@@ -455,13 +484,13 @@ function CheckoutPage() {
                   {[
                     {
                       id: "standard",
-                      label: "Standard — 3–5 working days",
+                      label: "Standard delivery",
                       price:
                         subtotal > FREE_DELIVERY_THRESHOLD
                           ? "Free"
                           : formatPrice(STANDARD_DELIVERY_FEE),
                     },
-                    { id: "express", label: "Express — next working day", price: "₹199" },
+                    { id: "express", label: "Express delivery", price: "₹199" },
                   ].map((m) => (
                     <label
                       key={m.id}
@@ -484,11 +513,6 @@ function CheckoutPage() {
                     </label>
                   ))}
                 </div>
-                {form.method === "standard" && subtotal <= FREE_DELIVERY_THRESHOLD ? (
-                  <p className="text-xs leading-relaxed text-muted-foreground">
-                    Free standard delivery on orders over ₹1,499.
-                  </p>
-                ) : null}
               </div>
             ) : null}
 
@@ -647,7 +671,7 @@ function CheckoutPage() {
               </div>
             </dl>
             <p className="mt-4 text-xs leading-relaxed text-muted-foreground">
-              Free standard delivery over ₹1,499.
+              Delivery charges are included in the total shown above.
             </p>
           </div>
         </aside>

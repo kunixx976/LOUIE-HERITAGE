@@ -2,7 +2,7 @@ import { useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Minus, Plus, X } from "lucide-react";
 import { toast } from "sonner";
-import { bestSellers } from "@/lib/data";
+import { featuredProducts } from "@/lib/data";
 import { FREE_DELIVERY_THRESHOLD, STANDARD_DELIVERY_FEE } from "@/lib/shipping";
 import { formatPrice, useShop } from "@/lib/shop-store";
 import { PageHeader } from "@/components/site/PageHeader";
@@ -132,11 +132,7 @@ function CartPage() {
               <div className="rounded-[10px] border border-border p-7 lg:sticky lg:top-28">
                 <h2 className="text-xl">Order summary</h2>
                 <p className="mt-3 rounded-[6px] bg-surface px-4 py-3 text-xs leading-relaxed text-muted-foreground">
-                  {subtotal > FREE_DELIVERY_THRESHOLD
-                    ? "Your order qualifies for free delivery."
-                    : `Free delivery over ₹1,499. Add ${formatPrice(
-                        FREE_DELIVERY_THRESHOLD + 1 - subtotal,
-                      )} more to qualify.`}
+                  Delivery charges are shown in your checkout total.
                 </p>
 
                 <form
@@ -204,7 +200,7 @@ function CartPage() {
                 </dl>
 
                 <p className="mt-3 text-xs text-muted-foreground">
-                  Delivered across India in 3–5 working days. All prices include GST.
+                  Delivery charges and the final total are shown before you place your order.
                 </p>
 
                 <Link
@@ -229,7 +225,7 @@ function CartPage() {
         <div className="container-editorial py-16">
           <h2 className="text-2xl">Recommended for you</h2>
           <div className="mt-10 grid grid-cols-2 gap-x-5 gap-y-12 lg:grid-cols-4">
-            {bestSellers.slice(0, 4).map((p) => (
+            {featuredProducts.slice(0, 4).map((p) => (
               <ProductCard key={p.id} product={p} />
             ))}
           </div>

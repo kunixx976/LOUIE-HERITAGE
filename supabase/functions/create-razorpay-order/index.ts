@@ -1,5 +1,6 @@
 import {
   getCheckoutDetails,
+  hashPaymentToken,
   json,
   preflight,
   razorpayCredentials,
@@ -15,6 +16,9 @@ Deno.serve(async (request) => {
   try {
     const checkout = await readCheckout(request);
     const { keyId, keySecret } = razorpayCredentials();
+    const abandonmentToken = [...crypto.getRandomValues(new Uint8Array(32))]
+      .map((byte) => byte.toString(16).padStart(2, "0"))
+      .join("");
     const razorpayResponse = await fetch("https://api.razorpay.com/v1/orders", {
       method: "POST",
       headers: {
@@ -45,6 +49,7 @@ Deno.serve(async (request) => {
       payment_status: "pending",
       status: "Awaiting payment",
       razorpay_order_id: razorpayOrder.id,
+      abandonment_token_hash: await hashPaymentToken(abandonmentToken),
     });
 
     return json({
@@ -53,6 +58,7 @@ Deno.serve(async (request) => {
       amount: checkout.total * 100,
       currency: "INR",
       keyId,
+      abandonmentToken,
     });
   } catch (error) {
     console.error("Unable to create Razorpay order.", error);

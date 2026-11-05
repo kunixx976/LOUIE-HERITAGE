@@ -6,6 +6,8 @@ const headers = {
   "Access-Control-Allow-Methods": "POST, OPTIONS",
 };
 
+export class OrderAuthenticationError extends Error {}
+
 export type CheckoutItemInput = {
   productId: string;
   size: string;
@@ -134,6 +136,13 @@ export function serviceHeaders() {
   };
 }
 
+export async function hashPaymentToken(token: string) {
+  const digest = new Uint8Array(
+    await crypto.subtle.digest("SHA-256", new TextEncoder().encode(token)),
+  );
+  return [...digest].map((byte) => byte.toString(16).padStart(2, "0")).join("");
+}
+
 export async function saveOrder(values: Record<string, unknown>) {
   const { url, headers: authHeaders } = serviceHeaders();
   const response = await fetch(`${url}/rest/v1/orders`, {
@@ -228,6 +237,143 @@ export async function markEmailSent(orderNumber: string) {
   }
 }
 
+export async function getVerifiedCustomerEmail(request: Request) {
+  const authorization = request.headers.get("Authorization");
+  if (!authorization?.startsWith("Bearer ")) {
+    throw new OrderAuthenticationError(
+      "Sign in with a verified email address to view your orders.",
+    );
+  }
+
+  const { url, headers } = serviceHeaders();
+  const response = await fetch(`${url}/auth/v1/user`, {
+    headers: {
+      apikey: Deno.env.get("SUPABASE_ANON_KEY") ?? headers.apikey,
+      Authorization: authorization,
+    },
+  });
+  if (!response.ok) {
+    throw new OrderAuthenticationError("Your session could not be verified. Please sign in again.");
+  }
+
+  const user = (await response.json()) as {
+    email?: unknown;
+    email_confirmed_at?: unknown;
+    confirmed_at?: unknown;
+  };
+  if (typeof user.email !== "string" || !(user.email_confirmed_at || user.confirmed_at)) {
+    throw new OrderAuthenticationError("Verify your email address before viewing order history.");
+  }
+  return user.email.trim().toLowerCase();
+}
+
+export async function listCustomerOrders(email: string) {
+  const { url, headers } = serviceHeaders();
+  const params = new URLSearchParams({
+    select:
+      "order_number,status,total,payment_method,payment_status,items,created_at,tracking_carrier,tracking_number,tracking_url",
+    customer_email: `eq.${email}`,
+    order: "created_at.desc",
+    limit: "100",
+  });
+  const response = await fetch(`${url}/rest/v1/orders?${params}`, { headers });
+  if (!response.ok) {
+    console.error("Unable to load customer orders.", response.status, await response.text());
+    throw new Error("We couldn't load your orders. Please try again.");
+  }
+  return await response.json();
+}
+
+export async function markPaymentFailed(razorpayOrderId: string, paymentId: string) {
+  const { url, headers } = serviceHeaders();
+  const params = new URLSearchParams({
+    razorpay_order_id: `eq.${razorpayOrderId}`,
+    payment_status: "eq.pending",
+  });
+  const response = await fetch(`${url}/rest/v1/orders?${params}`, {
+    method: "PATCH",
+    headers: { ...headers, Prefer: "return=minimal" },
+    body: JSON.stringify({
+      razorpay_payment_id: paymentId,
+      payment_status: "failed",
+      status: "Payment failed",
+    }),
+  });
+  if (!response.ok) {
+    console.error("Unable to record failed payment.", response.status, await response.text());
+    throw new Error("Unable to update the failed payment status.");
+  }
+}
+
+export async function markPaymentAbandoned(razorpayOrderId: string, token: string) {
+  const tokenHash = await hashPaymentToken(token);
+  const { url, headers } = serviceHeaders();
+  const params = new URLSearchParams({
+    razorpay_order_id: `eq.${razorpayOrderId}`,
+    abandonment_token_hash: `eq.${tokenHash}`,
+    payment_status: "eq.pending",
+  });
+  const response = await fetch(`${url}/rest/v1/orders?${params}`, {
+    method: "PATCH",
+    headers: { ...headers, Prefer: "return=representation" },
+    body: JSON.stringify({
+      payment_status: "failed",
+      status: "Payment abandoned",
+    }),
+  });
+  if (!response.ok) {
+    console.error("Unable to record abandoned payment.", response.status, await response.text());
+    throw new Error("Unable to update the abandoned payment status.");
+  }
+  const updated = (await response.json()) as unknown[];
+  if (updated.length > 0) return true;
+
+  const currentResponse = await fetch(
+    `${url}/rest/v1/orders?${new URLSearchParams({
+      select: "status,payment_status",
+      razorpay_order_id: `eq.${razorpayOrderId}`,
+      abandonment_token_hash: `eq.${tokenHash}`,
+    })}`,
+    { headers },
+  );
+  if (!currentResponse.ok) {
+    console.error(
+      "Unable to check abandoned payment status.",
+      currentResponse.status,
+      await currentResponse.text(),
+    );
+    throw new Error("Unable to check payment status.");
+  }
+  const [current] = await currentResponse.json();
+  return (
+    current?.payment_status === "failed" &&
+    ["Payment failed", "Payment abandoned"].includes(current.status)
+  );
+}
+
+export async function validateOrderPayment(
+  razorpayOrderId: string,
+  amount: number,
+  currency: string,
+) {
+  const { url, headers } = serviceHeaders();
+  const params = new URLSearchParams({
+    select: "total,currency",
+    razorpay_order_id: `eq.${razorpayOrderId}`,
+  });
+  const response = await fetch(`${url}/rest/v1/orders?${params}`, { headers });
+  if (!response.ok) {
+    console.error("Unable to load payment order.", response.status, await response.text());
+    throw new Error("Unable to check the order amount before payment capture.");
+  }
+  const [order] = await response.json();
+  if (!order) return false;
+  if (amount !== order.total * 100 || currency !== order.currency) {
+    throw new Error("Payment amount does not match the saved order.");
+  }
+  return true;
+}
+
 export async function finalizePaidOrder(
   razorpayOrderId: string,
   paymentId: string,
@@ -246,6 +392,9 @@ export async function finalizePaidOrder(
     throw new Error("Payment details did not match this order.");
   }
   if (order.payment_status === "paid") {
+    if (order.razorpay_payment_id !== paymentId) {
+      throw new Error("A different payment has already been applied to this order.");
+    }
     let emailSent = Boolean(order.confirmation_email_sent_at);
     if (!emailSent) {
       emailSent = await sendOrderConfirmation({
@@ -269,20 +418,34 @@ export async function finalizePaidOrder(
     };
   }
 
-  const updateResponse = await fetch(
-    `${url}/rest/v1/orders?razorpay_order_id=eq.${encodeURIComponent(razorpayOrderId)}`,
-    {
-      method: "PATCH",
-      headers: { ...headers, Prefer: "return=minimal" },
-      body: JSON.stringify({
-        razorpay_payment_id: paymentId,
-        payment_status: "paid",
-        status: "Processing",
-      }),
-    },
-  );
+  const updateParams = new URLSearchParams({
+    razorpay_order_id: `eq.${razorpayOrderId}`,
+    payment_status: "in.(pending,failed)",
+  });
+  const updateResponse = await fetch(`${url}/rest/v1/orders?${updateParams}`, {
+    method: "PATCH",
+    headers: { ...headers, Prefer: "return=representation" },
+    body: JSON.stringify({
+      razorpay_payment_id: paymentId,
+      payment_status: "paid",
+      status: "Processing",
+    }),
+  });
   if (!updateResponse.ok)
     throw new Error("Payment was captured, but the order could not be updated.");
+  const updated = (await updateResponse.json()) as unknown[];
+  if (updated.length === 0) {
+    const retry = await fetch(
+      `${url}/rest/v1/orders?razorpay_order_id=eq.${encodeURIComponent(razorpayOrderId)}&select=*`,
+      { headers },
+    );
+    if (!retry.ok) throw new Error("Unable to verify the updated order.");
+    const [current] = await retry.json();
+    if (current?.payment_status === "paid" && current.razorpay_payment_id === paymentId) {
+      return finalizePaidOrder(razorpayOrderId, paymentId, amount, currency);
+    }
+    throw new Error("This order is no longer awaiting payment.");
+  }
 
   const emailSent = await sendOrderConfirmation({
     orderNumber: order.order_number,

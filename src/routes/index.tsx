@@ -3,19 +3,16 @@ import { ArrowRight } from "lucide-react";
 import hero from "@/assets/hero.jpg";
 import editorial from "@/assets/editorial.jpg";
 import {
-  bestSellers,
   categories,
+  featuredProducts,
   galleryImages,
   newArrivals,
-  reviews,
   summerProducts,
   winterProducts,
 } from "@/lib/data";
 import { ProductCard } from "@/components/site/ProductCard";
 import { SectionHeading } from "@/components/site/SectionHeading";
 import { Reveal } from "@/components/site/Reveal";
-import { StarRating } from "@/components/site/StarRating";
-import { NewsletterForm } from "@/components/site/NewsletterForm";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -23,14 +20,12 @@ export const Route = createFileRoute("/")({
       { title: "LOUIE HERITAGE — Everyday Cotton, Denim & Ethnic Wear" },
       {
         name: "description",
-        content:
-          "Cotton T-shirts from Tirupur, denim from Ahmedabad, sarees from Surat and woollens from Ludhiana — shipped from Meerut. Free delivery over ₹1,499.",
+        content: "Explore cotton, denim, ethnic wear and home textiles from LOUIE HERITAGE.",
       },
       { property: "og:title", content: "LOUIE HERITAGE — Everyday Cotton, Denim & Ethnic Wear" },
       {
         property: "og:description",
-        content:
-          "Cotton, denim, ethnic wear and home textiles sourced straight from India's textile hubs.",
+        content: "Explore clothing, accessories and home textiles from LOUIE HERITAGE.",
       },
     ],
   }),
@@ -64,11 +59,10 @@ function Home() {
               <h1 className="mt-5 text-[2.75rem] leading-[1.06] md:text-6xl lg:text-7xl">
                 Everyday clothing,
                 <br />
-                straight from the mill
+                thoughtfully selected
               </h1>
               <p className="mt-6 max-w-md text-sm leading-relaxed text-white/90">
-                Combed cotton tees, honest denim and festive ethnic wear — sourced directly from
-                Tirupur, Ahmedabad and Surat, and shipped from our Meerut warehouse.
+                Explore clothing, accessories and home textiles for everyday wear.
               </p>
 
               <div className="mt-9 flex flex-wrap gap-3">
@@ -137,7 +131,7 @@ function Home() {
           <SectionHeading
             eyebrow="Browse"
             title="Featured categories"
-            description="Explore considered edits in cotton, denim, ethnic wear and home textiles, sourced from India's textile hubs."
+            description="Explore clothing, accessories and home textiles."
           />
           <div className="mt-12 grid grid-cols-2 gap-x-5 gap-y-10 md:grid-cols-3 lg:grid-cols-5">
             {categories.map((category, i) => (
@@ -161,12 +155,12 @@ function Home() {
         </div>
       </section>
 
-      {/* Best sellers */}
+      {/* Featured products */}
       <section className="container-editorial section-y">
         <SectionHeading
-          eyebrow="Most wanted"
-          title="Best sellers"
-          description="The pieces our customers keep re-ordering, size after size."
+          eyebrow="Selected pieces"
+          title="Featured products"
+          description="A selection from the current collection."
           action={
             <Link
               to="/shop"
@@ -177,7 +171,7 @@ function Home() {
           }
         />
         <div className="mt-12 grid grid-cols-2 gap-x-5 gap-y-12 lg:grid-cols-4">
-          {bestSellers.slice(0, 4).map((product, i) => (
+          {featuredProducts.slice(0, 4).map((product, i) => (
             <Reveal key={product.id} delay={i * 0.06}>
               <ProductCard product={product} />
             </Reveal>
@@ -199,13 +193,10 @@ function Home() {
           <div className="absolute inset-0 bg-gradient-to-r from-black/40 via-black/10 to-transparent" />
           <div className="container-editorial relative flex h-full items-center">
             <Reveal className="max-w-lg text-white">
-              <p className="eyebrow text-white/70">Where it comes from</p>
-              <h2 className="mt-4 text-3xl leading-[1.15] md:text-5xl">
-                From the mill floor to your door
-              </h2>
+              <p className="eyebrow text-white/70">The collection</p>
+              <h2 className="mt-4 text-3xl leading-[1.15] md:text-5xl">Pieces for everyday</h2>
               <p className="mt-5 text-sm leading-relaxed text-white/80">
-                We buy directly from the knitting units of Tirupur, the denim mills of Ahmedabad and
-                the looms of Surat — no middlemen, no marked-up showroom price.
+                Explore clothing and textiles across the LOUIE HERITAGE collection.
               </p>
               <Link
                 to="/about"
@@ -247,9 +238,7 @@ function Home() {
           <div className="grid items-center gap-12 md:grid-cols-12">
             <Reveal className="md:col-span-4">
               <p className="eyebrow">Winter edit</p>
-              <h2 className="mt-4 text-3xl leading-[1.15] md:text-[2.6rem]">
-                Layers from Ludhiana
-              </h2>
+              <h2 className="mt-4 text-3xl leading-[1.15] md:text-[2.6rem]">Layered knits</h2>
               <p className="mt-5 text-sm leading-relaxed text-muted-foreground">
                 Fine-gauge knits and easy layers, made for the cooler months and simple to wear
                 every day.
@@ -298,34 +287,6 @@ function Home() {
         </div>
       </section>
 
-      {/* Reviews */}
-      <section className="container-editorial section-y">
-        <SectionHeading eyebrow="Customer notes" title="What people keep wearing" align="center" />
-        <div className="mt-14 grid gap-10 md:grid-cols-3">
-          {reviews.map((review, i) => (
-            <Reveal key={review.name} delay={i * 0.08}>
-              <figure className="flex h-full flex-col border-t border-border pt-7">
-                <div className="flex items-center gap-3">
-                  <StarRating rating={review.rating} />
-                  <span className="text-xs text-muted-foreground">
-                    {review.rating.toFixed(1)} / 5
-                  </span>
-                </div>
-                <blockquote className="mt-5 flex-1">
-                  <p className="font-display text-lg leading-snug">{review.title}</p>
-                  <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-                    {review.body}
-                  </p>
-                </blockquote>
-                <figcaption className="mt-6 text-xs text-muted-foreground">
-                  {review.name} — {review.location}
-                </figcaption>
-              </figure>
-            </Reveal>
-          ))}
-        </div>
-      </section>
-
       {/* Gallery */}
       <section className="border-t border-border">
         <div className="container-editorial section-y">
@@ -355,30 +316,6 @@ function Home() {
                 </Link>
               </Reveal>
             ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Newsletter */}
-      <section className="border-t border-border bg-foreground text-background">
-        <div className="container-editorial py-20 md:py-24">
-          <div className="grid gap-10 md:grid-cols-12 md:items-end">
-            <div className="md:col-span-6">
-              <p className="eyebrow text-background/60">Newsletter</p>
-              <h2 className="mt-4 text-3xl leading-[1.15] md:text-[2.6rem]">
-                First look at each collection
-              </h2>
-              <p className="mt-4 max-w-md text-sm leading-relaxed text-background/70">
-                One considered email a month: new pieces, restocks and notes from the studio. No
-                discount countdowns.
-              </p>
-            </div>
-            <div className="md:col-span-6 md:justify-self-end">
-              <NewsletterForm className="border-background/30 text-background md:w-[26rem]" />
-              <p className="mt-3 text-xs text-background/50">
-                By subscribing you agree to our privacy policy.
-              </p>
-            </div>
           </div>
         </div>
       </section>

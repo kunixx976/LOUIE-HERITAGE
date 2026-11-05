@@ -1,4 +1,10 @@
-import { finalizePaidOrder, json, preflight, razorpayCredentials } from "../_shared/orders.ts";
+import {
+  finalizePaidOrder,
+  json,
+  preflight,
+  razorpayCredentials,
+  validateOrderPayment,
+} from "../_shared/orders.ts";
 
 async function verifySignature(
   orderId: string,
@@ -41,7 +47,10 @@ Deno.serve(async (request) => {
 
     const { keyId, keySecret } = razorpayCredentials();
     if (!(await verifySignature(orderId, paymentId, signature, keySecret))) {
-      return json({ error: "Payment verification failed. Please contact customer care." }, 400);
+      return json(
+        { error: "Payment verification failed. If you were charged, check order history." },
+        400,
+      );
     }
 
     const paymentResponse = await fetch(
@@ -52,6 +61,9 @@ Deno.serve(async (request) => {
     if (!paymentResponse.ok || payment.order_id !== orderId || payment.currency !== "INR") {
       console.error("Razorpay payment details did not match the order.", payment);
       return json({ error: "Payment details did not match this order." }, 400);
+    }
+    if (!(await validateOrderPayment(orderId, payment.amount, payment.currency))) {
+      return json({ error: "The order for this payment could not be found." }, 404);
     }
 
     if (payment.status === "authorized" && !payment.captured) {
@@ -70,7 +82,10 @@ Deno.serve(async (request) => {
       if (!captureResponse.ok || captured.status !== "captured" || !captured.captured) {
         console.error("Razorpay capture failed.", captured);
         return json(
-          { error: "Payment is authorized but not yet captured. Please contact customer care." },
+          {
+            error:
+              "Payment is authorized but not yet captured. Check order history before trying again.",
+          },
           502,
         );
       }

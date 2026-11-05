@@ -46,9 +46,7 @@ export type Product = {
   inStock: boolean;
   inventoryStatus: "in_stock" | "low_stock" | "out_of_stock";
   inventoryUpdatedAt: string;
-  rating: number;
-  reviewCount: number;
-  tags: ("new" | "best-seller" | "seasonal")[];
+  tags: ("new" | "seasonal")[];
   fabric: string;
   description: string;
   details: string[];
@@ -164,36 +162,35 @@ export const categories: Category[] = [
   {
     slug: "tshirts",
     name: "T-Shirts",
-    description:
-      "Combed cotton knitwear from Tirupur — India's knitwear capital — in regular and oversized fits.",
+    description: "Combed cotton knitwear in regular and oversized fits.",
     image: catOversized,
     group: "Clothing",
   },
   {
     slug: "denim",
     name: "Denim",
-    description: "Mill-woven denim from Ahmedabad and Bhilwara, finished in true-to-size fits.",
+    description: "Denim in a range of washes and fits.",
     image: p1,
     group: "Clothing",
   },
   {
     slug: "ethnic",
     name: "Ethnic Wear",
-    description: "Sarees, kurta sets and festive pieces sourced from the looms of Surat.",
+    description: "Sarees, kurta sets and festive pieces.",
     image: p5,
     group: "Clothing",
   },
   {
     slug: "woollens",
     name: "Woollens",
-    description: "Sweaters and cardigans knitted in Ludhiana for north Indian winters.",
+    description: "Sweaters and cardigans for cooler weather.",
     image: p4,
     group: "Seasonal",
   },
   {
     slug: "home",
     name: "Home Textiles",
-    description: "Bedsheets, throws and towels woven in Panipat, the country's textile recycler.",
+    description: "Bedsheets, throws and towels for the home.",
     image: p8,
     group: "Clothing",
   },
@@ -207,7 +204,7 @@ export const categories: Category[] = [
   {
     slug: "accessories",
     name: "Accessories",
-    description: "Handloom stoles, scarves and the small finishing details.",
+    description: "Stoles, scarves and the small finishing details.",
     image: p7,
     group: "Clothing",
   },
@@ -221,7 +218,7 @@ export const categories: Category[] = [
   {
     slug: "winter",
     name: "Winter",
-    description: "Wool blends, layers and quilted warmth for the Meerut cold snap.",
+    description: "Wool blends, layers and quilted pieces for cooler weather.",
     image: p6,
     group: "Seasonal",
   },
@@ -231,7 +228,7 @@ const rawProducts: Parameters<typeof normalizeProduct>[0][] = [
   {
     id: "1",
     slug: "tirupur-classic-cotton-tee",
-    name: "Tirupur Classic Cotton T-Shirt",
+    name: "Classic Cotton T-Shirt",
     price: checkoutCatalog["1"].price,
     compareAt: 1099,
     images: [p1, p2],
@@ -239,16 +236,14 @@ const rawProducts: Parameters<typeof normalizeProduct>[0][] = [
     colors: NEUTRALS,
     sizes: SIZES,
     inventoryUpdatedAt: brandInventoryTimestamp,
-    rating: 4.8,
-    reviewCount: 412,
-    tags: ["best-seller", "new"],
+    tags: ["new"],
     fabric: "180 GSM combed cotton, bio-washed",
     description:
-      "Our everyday tee, knitted and stitched in Tirupur from 180 GSM combed cotton. Bio-washed so it stays soft from the first wear, with a ribbed collar that holds its shape through a hard summer.",
+      "An everyday tee in 180 GSM combed cotton with a bio-washed finish and ribbed collar.",
     details: [
       "Regular fit",
       "Ribbed collar with shoulder-to-shoulder tape",
-      "Knitted and stitched in Tirupur, Tamil Nadu",
+      "180 GSM combed cotton",
       "Machine wash cold, do not bleach",
     ],
     variants: buildVariants(
@@ -276,8 +271,6 @@ const rawProducts: Parameters<typeof normalizeProduct>[0][] = [
       { name: "Charcoal", hex: "#3A3A3A" },
     ],
     sizes: SIZES,
-    rating: 4.7,
-    reviewCount: 236,
     tags: ["new"],
     fabric: "220 GSM heavyweight cotton",
     description:
@@ -306,7 +299,7 @@ const rawProducts: Parameters<typeof normalizeProduct>[0][] = [
   {
     id: "3",
     slug: "ahmedabad-straight-fit-jeans",
-    name: "Ahmedabad Straight-Fit Jeans",
+    name: "Straight-Fit Jeans",
     price: checkoutCatalog["3"].price,
     compareAt: 2399,
     images: [p3, p4],
@@ -316,16 +309,13 @@ const rawProducts: Parameters<typeof normalizeProduct>[0][] = [
       { name: "Jet Black", hex: "#1A1A1A" },
     ],
     sizes: WAISTS,
-    rating: 4.6,
-    reviewCount: 187,
-    tags: ["best-seller"],
+    tags: [],
     fabric: "13.5 oz cotton denim with 2% stretch",
-    description:
-      "Straight through the thigh with a clean, unfussy leg. Woven on Ahmedabad mill denim, stone-washed for a broken-in feel without the fade lines.",
+    description: "Straight through the thigh with a clean leg and stone-washed finish.",
     details: [
       "Mid rise, straight fit",
       "Five-pocket construction, YKK zip",
-      "Denim woven in Ahmedabad, Gujarat",
+      "13.5 oz cotton denim with 2% stretch",
       "Machine wash cold, inside out",
     ],
     variants: buildVariants(
@@ -346,7 +336,7 @@ const rawProducts: Parameters<typeof normalizeProduct>[0][] = [
   {
     id: "4",
     slug: "bhilwara-high-rise-jeans",
-    name: "Bhilwara High-Rise Jeans",
+    name: "High-Rise Jeans",
     price: checkoutCatalog["4"].price,
     images: [p4, p3],
     categories: ["denim", "women", "casual"],
@@ -355,16 +345,14 @@ const rawProducts: Parameters<typeof normalizeProduct>[0][] = [
       { name: "Deep Indigo", hex: "#2E4463" },
     ],
     sizes: WAISTS,
-    rating: 4.7,
-    reviewCount: 143,
-    tags: ["new", "best-seller"],
-    fabric: "12 oz Bhilwara denim with 3% elastane",
+    tags: ["new"],
+    fabric: "12 oz cotton denim with 3% elastane",
     description:
       "A high-rise jean cut to sit at the waist without gaping, with a slight taper below the knee. Enough stretch for a full day, enough weight to keep its shape.",
     details: [
       "High rise, tapered leg",
       "Contoured waistband",
-      "Denim from Bhilwara, Rajasthan",
+      "12 oz cotton denim with 3% elastane",
       "Machine wash cold, line dry",
     ],
     variants: buildVariants(
@@ -385,7 +373,7 @@ const rawProducts: Parameters<typeof normalizeProduct>[0][] = [
   {
     id: "5",
     slug: "surat-georgette-saree",
-    name: "Surat Georgette Saree",
+    name: "Georgette Saree",
     price: checkoutCatalog["5"].price,
     compareAt: 3200,
     images: [p5, p2],
@@ -395,16 +383,13 @@ const rawProducts: Parameters<typeof normalizeProduct>[0][] = [
       { name: "Ivory", hex: "#EFE9DE" },
     ],
     sizes: ONE_SIZE,
-    rating: 4.9,
-    reviewCount: 168,
-    tags: ["best-seller", "seasonal"],
+    tags: ["seasonal"],
     fabric: "Poly-georgette with zari border",
-    description:
-      "Six and a half metres of fluid georgette from the Surat looms, finished with a fine zari border and matching unstitched blouse piece. Drapes cleanly and travels without creasing.",
+    description: "A fluid georgette saree with a zari border and matching unstitched blouse piece.",
     details: [
       "6.3 m saree with 0.8 m blouse piece",
       "Zari border, machine-finished edges",
-      "Woven and finished in Surat, Gujarat",
+      "6.3 m saree with 0.8 m blouse piece",
       "Dry clean recommended",
     ],
     variants: buildVariants(
@@ -425,7 +410,7 @@ const rawProducts: Parameters<typeof normalizeProduct>[0][] = [
   {
     id: "6",
     slug: "surat-anarkali-kurta-set",
-    name: "Surat Anarkali Kurta Set",
+    name: "Anarkali Kurta Set",
     price: checkoutCatalog["6"].price,
     images: [catWomen, p5],
     categories: ["ethnic", "women", "summer"],
@@ -434,8 +419,6 @@ const rawProducts: Parameters<typeof normalizeProduct>[0][] = [
       { name: "Clay", hex: "#C08A6E" },
     ],
     sizes: SIZES,
-    rating: 4.8,
-    reviewCount: 91,
     tags: ["new"],
     fabric: "Cotton-viscose blend with chikan-style embroidery",
     description:
@@ -443,7 +426,7 @@ const rawProducts: Parameters<typeof normalizeProduct>[0][] = [
     details: [
       "Kurta, churidar and dupatta included",
       "Side pockets, concealed zip",
-      "Stitched in Surat, Gujarat",
+      "Cotton-viscose blend with chikan-style embroidery",
       "Gentle machine wash, dry in shade",
     ],
     variants: buildVariants(
@@ -464,7 +447,7 @@ const rawProducts: Parameters<typeof normalizeProduct>[0][] = [
   {
     id: "7",
     slug: "ludhiana-merino-crew-sweater",
-    name: "Ludhiana Merino Crew Sweater",
+    name: "Merino Crew Sweater",
     price: checkoutCatalog["7"].price,
     images: [p6, p4],
     categories: ["woollens", "men", "winter"],
@@ -473,16 +456,13 @@ const rawProducts: Parameters<typeof normalizeProduct>[0][] = [
       { name: "Bottle Green", hex: "#2F4A3C" },
     ],
     sizes: SIZES,
-    rating: 4.6,
-    reviewCount: 204,
-    tags: ["best-seller", "seasonal"],
+    tags: ["seasonal"],
     fabric: "70% merino wool, 30% acrylic",
-    description:
-      "A fine-gauge crew knitted in Ludhiana, warm enough for a north Indian December and thin enough to layer under a jacket. Ribbed cuffs and hem hold their shape.",
+    description: "A fine-gauge crew sweater with ribbed cuffs and hem, suitable for layering.",
     details: [
       "Regular fit",
       "Fine 12-gauge knit",
-      "Knitted in Ludhiana, Punjab",
+      "70% merino wool, 30% acrylic",
       "Hand wash cool, dry flat",
     ],
     variants: buildVariants(
@@ -503,7 +483,7 @@ const rawProducts: Parameters<typeof normalizeProduct>[0][] = [
   {
     id: "8",
     slug: "ludhiana-long-cardigan",
-    name: "Ludhiana Long Cardigan",
+    name: "Long Cardigan",
     price: checkoutCatalog["8"].price,
     compareAt: 2699,
     images: [catOversized, p6],
@@ -513,8 +493,6 @@ const rawProducts: Parameters<typeof normalizeProduct>[0][] = [
       { name: "Grey Melange", hex: "#B9BDC1" },
     ],
     sizes: SIZES,
-    rating: 4.7,
-    reviewCount: 76,
     tags: ["seasonal"],
     fabric: "Wool-blend chunky knit",
     description:
@@ -522,7 +500,7 @@ const rawProducts: Parameters<typeof normalizeProduct>[0][] = [
     details: [
       "Relaxed fit, mid-thigh length",
       "Two patch pockets, no closure",
-      "Knitted in Ludhiana, Punjab",
+      "Wool-blend chunky knit",
       "Hand wash cool, dry flat",
     ],
     variants: buildVariants(
@@ -543,7 +521,7 @@ const rawProducts: Parameters<typeof normalizeProduct>[0][] = [
   {
     id: "9",
     slug: "panipat-cotton-bedsheet-set",
-    name: "Panipat Cotton Bedsheet Set",
+    name: "Cotton Bedsheet Set",
     price: checkoutCatalog["9"].price,
     images: [p8, p7],
     categories: ["home"],
@@ -552,16 +530,13 @@ const rawProducts: Parameters<typeof normalizeProduct>[0][] = [
       { name: "Sage", hex: "#A8B3A0" },
     ],
     sizes: ["Single", "Double", "King"],
-    rating: 4.8,
-    reviewCount: 259,
-    tags: ["best-seller"],
+    tags: [],
     fabric: "220 TC 100% cotton percale",
-    description:
-      "A 220 thread-count percale set woven in Panipat — one flat sheet and two pillow covers. Crisp on the first night, softer with every wash.",
+    description: "A 220 thread-count percale set with one flat sheet and two pillow covers.",
     details: [
       "1 bedsheet + 2 pillow covers",
       "Fits mattresses up to 10 inches deep",
-      "Woven in Panipat, Haryana",
+      "220 thread-count 100% cotton percale",
       "Machine wash warm, tumble dry low",
     ],
     variants: buildVariants(
@@ -582,7 +557,7 @@ const rawProducts: Parameters<typeof normalizeProduct>[0][] = [
   {
     id: "10",
     slug: "panipat-handloom-throw",
-    name: "Panipat Handloom Throw",
+    name: "Cotton Throw",
     price: checkoutCatalog["10"].price,
     images: [p7, p8],
     categories: ["home", "winter"],
@@ -591,16 +566,13 @@ const rawProducts: Parameters<typeof normalizeProduct>[0][] = [
       { name: "Indigo", hex: "#33445E" },
     ],
     sizes: ONE_SIZE,
-    rating: 4.9,
-    reviewCount: 64,
     tags: ["seasonal"],
-    fabric: "Recycled cotton handloom weave",
-    description:
-      "Woven on a handloom from recycled cotton yarn, with a hand-knotted fringe. Wide enough for a sofa, light enough to carry to the terrace.",
+    fabric: "Recycled cotton weave",
+    description: "A recycled cotton throw with a hand-knotted fringe.",
     details: [
       "150 × 200 cm",
       "Hand-knotted fringe",
-      "Handloom woven in Panipat, Haryana",
+      "Recycled cotton weave",
       "Machine wash gentle, dry in shade",
     ],
     variants: buildVariants(
@@ -630,8 +602,6 @@ const rawProducts: Parameters<typeof normalizeProduct>[0][] = [
       { name: "Slate", hex: "#6E7176" },
     ],
     sizes: SIZES,
-    rating: 4.5,
-    reviewCount: 118,
     tags: ["new"],
     fabric: "100% cotton poplin",
     description:
@@ -639,7 +609,7 @@ const rawProducts: Parameters<typeof normalizeProduct>[0][] = [
     details: [
       "Relaxed fit",
       "Soft-roll collar, single chest pocket",
-      "Stitched in Delhi NCR",
+      "100% cotton poplin",
       "Machine wash cold, iron warm",
     ],
     variants: buildVariants(
@@ -660,7 +630,7 @@ const rawProducts: Parameters<typeof normalizeProduct>[0][] = [
   {
     id: "12",
     slug: "handloom-cotton-stole",
-    name: "Handloom Cotton Stole",
+    name: "Cotton Stole",
     price: checkoutCatalog["12"].price,
     images: [p1, p5],
     categories: ["accessories", "women", "summer"],
@@ -669,16 +639,13 @@ const rawProducts: Parameters<typeof normalizeProduct>[0][] = [
       { name: "Rust", hex: "#A45A38" },
     ],
     sizes: ONE_SIZE,
-    rating: 4.6,
-    reviewCount: 87,
     tags: ["new"],
-    fabric: "100% handloom cotton",
-    description:
-      "A light handloom stole with a slubby texture and a plain selvedge. Useful in the sun, useful in over-cooled offices.",
+    fabric: "100% cotton",
+    description: "A light cotton stole with a slubby texture and a plain selvedge.",
     details: [
       "70 × 200 cm",
       "Plain selvedge, no fringe",
-      "Handloom woven in Uttar Pradesh",
+      "100% cotton",
       "Hand wash separately first time",
     ],
     variants: buildVariants(
@@ -699,7 +666,7 @@ const rawProducts: Parameters<typeof normalizeProduct>[0][] = [
   {
     id: "13",
     slug: "tirupur-airy-cotton-shirt",
-    name: "Tirupur Airy Cotton Shirt",
+    name: "Airy Cotton Shirt",
     price: checkoutCatalog["13"].price,
     images: [p2, p1],
     categories: ["women", "casual", "summer"],
@@ -708,8 +675,6 @@ const rawProducts: Parameters<typeof normalizeProduct>[0][] = [
       { name: "Sage", hex: "#A8B3A0" },
     ],
     sizes: SIZES,
-    rating: 4.7,
-    reviewCount: 38,
     tags: ["new", "seasonal"],
     fabric: "Lightweight 100% cotton voile",
     description:
@@ -717,7 +682,7 @@ const rawProducts: Parameters<typeof normalizeProduct>[0][] = [
     details: [
       "Relaxed fit with a curved hem",
       "Lightweight cotton voile",
-      "Made in Tirupur, Tamil Nadu",
+      "Lightweight cotton voile",
       "Machine wash cold, line dry",
     ],
     variants: buildVariants(
@@ -747,8 +712,6 @@ const rawProducts: Parameters<typeof normalizeProduct>[0][] = [
       { name: "Clay", hex: "#C08A6E" },
     ],
     sizes: SIZES,
-    rating: 4.8,
-    reviewCount: 31,
     tags: ["new", "seasonal"],
     fabric: "Breathable cotton-viscose",
     description:
@@ -756,7 +719,7 @@ const rawProducts: Parameters<typeof normalizeProduct>[0][] = [
     details: [
       "Straight fit with side slits",
       "Breathable cotton-viscose fabric",
-      "Made in Surat, Gujarat",
+      "Cotton-viscose fabric",
       "Gentle machine wash, dry in shade",
     ],
     variants: buildVariants(
@@ -778,10 +741,8 @@ const rawProducts: Parameters<typeof normalizeProduct>[0][] = [
 
 export const products: Product[] = rawProducts.map(normalizeProduct);
 
-export const bestSellers = products.filter((p) => p.tags.includes("best-seller"));
-export const newArrivals = products.filter(
-  (p) => p.tags.includes("new") && !p.tags.includes("best-seller"),
-);
+export const featuredProducts = products.slice(0, 8);
+export const newArrivals = products.filter((p) => p.tags.includes("new"));
 export const summerProducts = products.filter((p) => p.categories.includes("summer") && p.inStock);
 export const winterProducts = products.filter((p) => p.categories.includes("winter") && p.inStock);
 export const seasonal = products.filter((p) => p.tags.includes("seasonal") && p.inStock);
@@ -804,46 +765,10 @@ export const allColors = Array.from(
 
 export const allSizes = Array.from(new Set(products.flatMap((p) => p.sizes)));
 
-export type Review = {
-  name: string;
-  location: string;
-  rating: number;
-  title: string;
-  body: string;
-  date: string;
-};
-
-export const reviews: Review[] = [
-  {
-    name: "Ritika S.",
-    location: "Meerut",
-    rating: 5,
-    title: "The tee I keep re-ordering",
-    body: "I've washed the Tirupur tee dozens of times and the collar still sits flat. Ordered four more for the family.",
-    date: "12 January 2026",
-  },
-  {
-    name: "Arjun M.",
-    location: "Delhi",
-    rating: 5,
-    title: "Denim that actually fits",
-    body: "The Ahmedabad straight fit is exactly as described — no gimmick washes, honest weight, and the length was right off the shelf.",
-    date: "3 December 2025",
-  },
-  {
-    name: "Sneha P.",
-    location: "Lucknow",
-    rating: 4,
-    title: "Lovely saree, quick delivery",
-    body: "The georgette drapes beautifully and the zari border looks far more expensive than it was. Reached me in three days.",
-    date: "27 November 2025",
-  },
-];
-
 export const galleryImages = [
   {
     src: p1,
-    alt: "Combed cotton T-shirt from our Tirupur knitwear line",
+    alt: "Combed cotton T-shirt",
     slug: "tirupur-classic-cotton-tee",
   },
   {
@@ -851,8 +776,8 @@ export const galleryImages = [
     alt: "Oversized drop-shoulder tee in sand",
     slug: "oversized-drop-shoulder-tee",
   },
-  { src: p5, alt: "Surat georgette saree with zari border", slug: "surat-georgette-saree" },
-  { src: p6, alt: "Ludhiana merino crew sweater", slug: "ludhiana-merino-crew-sweater" },
-  { src: p4, alt: "Bhilwara denim jeans in a light wash", slug: "bhilwara-high-rise-jeans" },
+  { src: p5, alt: "Georgette saree with zari border", slug: "surat-georgette-saree" },
+  { src: p6, alt: "Merino crew sweater", slug: "ludhiana-merino-crew-sweater" },
+  { src: p4, alt: "Denim jeans in a light wash", slug: "bhilwara-high-rise-jeans" },
   { src: catMen, alt: "Cotton poplin casual shirt", slug: "cotton-poplin-casual-shirt" },
 ];

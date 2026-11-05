@@ -1,13 +1,12 @@
 import { useEffect, useState } from "react";
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
-import { Heart, Minus, Plus, Truck, RotateCcw, Ruler } from "lucide-react";
+import { Heart, Minus, Plus, Ruler } from "lucide-react";
 import { toast } from "sonner";
 import {
   getDefaultVariant,
   getProduct,
   getProductVariant,
   products,
-  reviews as globalReviews,
   type Product,
 } from "@/lib/data";
 import { formatPrice, useShop } from "@/lib/shop-store";
@@ -15,7 +14,6 @@ import { cn } from "@/lib/utils";
 import { Breadcrumbs } from "@/components/site/PageHeader";
 import { ProductCard } from "@/components/site/ProductCard";
 import { SizeGuideTable } from "@/components/site/SizeGuideTable";
-import { StarRating } from "@/components/site/StarRating";
 import { Reveal } from "@/components/site/Reveal";
 import {
   Accordion,
@@ -161,10 +159,6 @@ function ProductPage() {
                   {formatPrice(product.compareAt)}
                 </span>
               ) : null}
-              <span className="flex items-center gap-2 self-center text-xs text-muted-foreground">
-                <StarRating rating={product.rating} />
-                <span className="nums">{`${product.rating} · ${product.reviewCount} reviews`}</span>
-              </span>
             </div>
 
             <p className="mt-6 text-sm leading-relaxed text-muted-foreground">
@@ -296,17 +290,6 @@ function ProductPage() {
               </button>
             </div>
 
-            <div className="mt-6 space-y-2 text-xs text-muted-foreground">
-              <p className="flex items-center gap-2">
-                <Truck className="h-3.5 w-3.5" strokeWidth={1.4} />
-                Free delivery on orders over ₹1,499 — arrives in 3–5 working days
-              </p>
-              <p className="flex items-center gap-2">
-                <RotateCcw className="h-3.5 w-3.5" strokeWidth={1.4} />
-                Free reverse pickup within 15 days, unworn with tags attached
-              </p>
-            </div>
-
             <Accordion type="single" collapsible className="mt-8 border-t border-border">
               <AccordionItem value="details">
                 <AccordionTrigger className="text-xs uppercase tracking-[0.14em] hover:no-underline">
@@ -321,92 +304,18 @@ function ProductPage() {
                   </ul>
                 </AccordionContent>
               </AccordionItem>
-              <AccordionItem value="delivery">
-                <AccordionTrigger className="text-xs uppercase tracking-[0.14em] hover:no-underline">
-                  Delivery
-                </AccordionTrigger>
-                <AccordionContent className="text-sm text-muted-foreground">
-                  Standard delivery across India takes 3–5 working days (₹79, free over ₹1,499).
-                  Express delivery is ₹199 and reaches most metros the next working day when ordered
-                  before 13:00 IST. Cash on delivery is available under ₹5,000.
-                </AccordionContent>
-              </AccordionItem>
-              <AccordionItem value="returns">
-                <AccordionTrigger className="text-xs uppercase tracking-[0.14em] hover:no-underline">
-                  Returns
-                </AccordionTrigger>
-                <AccordionContent className="text-sm text-muted-foreground">
-                  Return anything unworn with tags attached within 15 days for a full refund. Raise
-                  the return from your order history and we'll send a courier to your address.
-                  Refunds are processed within five working days of arrival.
-                </AccordionContent>
-              </AccordionItem>
               <AccordionItem value="care">
                 <AccordionTrigger className="text-xs uppercase tracking-[0.14em] hover:no-underline">
-                  Care
+                  Garment care
                 </AccordionTrigger>
                 <AccordionContent className="text-sm text-muted-foreground">
-                  Wash less, wash cool. Air knitwear between wears and store folded rather than
-                  hung. We repair stitching, buttons and zips free of charge for six months from
-                  purchase.
+                  Follow the care instructions on the garment label.
                 </AccordionContent>
               </AccordionItem>
             </Accordion>
           </div>
         </div>
       </article>
-
-      {/* Reviews */}
-      <section className="border-t border-border">
-        <div className="container-editorial section-y">
-          <div className="grid gap-12 lg:grid-cols-12">
-            <div className="lg:col-span-4">
-              <p className="eyebrow">Reviews</p>
-              <h2 className="mt-3 text-3xl">{product.rating} out of 5</h2>
-              <StarRating rating={product.rating} size={16} className="mt-3" />
-              <p className="mt-3 text-sm text-muted-foreground">
-                Based on {product.reviewCount} verified purchases
-              </p>
-              <div className="mt-6 space-y-2">
-                {[5, 4, 3, 2, 1].map((star, i) => {
-                  const share = [72, 19, 6, 2, 1][i]!;
-                  return (
-                    <div
-                      key={star}
-                      className="flex items-center gap-3 text-xs text-muted-foreground"
-                    >
-                      <span className="w-3">{star}</span>
-                      <span className="h-px flex-1 bg-border">
-                        <span className="block h-px bg-foreground" style={{ width: `${share}%` }} />
-                      </span>
-                      <span className="w-8 text-right">{share}%</span>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-            <div className="space-y-10 lg:col-span-8">
-              {globalReviews.map((review) => (
-                <figure key={review.name} className="border-t border-border pt-7">
-                  <div className="flex flex-wrap items-center justify-between gap-3">
-                    <StarRating rating={review.rating} />
-                    <span className="text-xs text-muted-foreground">{review.date}</span>
-                  </div>
-                  <blockquote className="mt-4">
-                    <p className="font-display text-lg">{review.title}</p>
-                    <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-                      {review.body}
-                    </p>
-                  </blockquote>
-                  <figcaption className="mt-4 text-xs text-muted-foreground">
-                    {review.name} — {review.location} · Verified purchase
-                  </figcaption>
-                </figure>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
 
       {/* Related */}
       {related.length > 0 ? (

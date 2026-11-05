@@ -19,19 +19,19 @@ export const Route = createFileRoute("/faq")({
 const faqs = [
   {
     q: "How long does delivery take?",
-    a: "Standard delivery across India takes 3–5 working days and is free on orders over ₹1,499 (otherwise ₹79). Express delivery is ₹199 and reaches most metros the next working day when ordered before 13:00 IST. Remote pin codes may take a day or two longer.",
+    a: "Delivery options and charges are shown at checkout. Delivery estimates, service-area coverage and carrier tracking have not been verified or guaranteed.",
   },
   {
     q: "What is your returns policy?",
-    a: "Return anything unworn with its tags attached within 15 days. Raise a return from your order history and we'll arrange a free reverse pickup. Refunds are issued to the original payment method within five working days of the parcel reaching us.",
+    a: "The seller's return, cancellation and refund terms are being confirmed. Do not send an item back without first receiving return instructions.",
   },
   {
     q: "How do your sizes run?",
-    a: "Our tees, shirts and denim run true to size. Styles described as oversized are deliberately generous — if you are between sizes or prefer a cleaner line, size down. Every product page includes a size guide with body measurements in centimetres.",
+    a: "Use the size guide and product details on each product page. Fit can vary by style; no general fit guarantee is currently published.",
   },
   {
     q: "Do you offer repairs?",
-    a: "Yes. We repair stitching, buttons and zips free of charge for six months from purchase. Send us a photograph on WhatsApp and we'll arrange a pickup from your address.",
+    a: "Repair and warranty terms have not been confirmed by the seller.",
   },
   {
     q: "Which payment methods do you accept?",
@@ -39,15 +39,11 @@ const faqs = [
   },
   {
     q: "Where are your clothes made?",
-    a: "Everything is made in India. Our T-shirts and knitwear come from Tirupur in Tamil Nadu, denim from the mills of Ahmedabad and Bhilwara, sarees and ethnic wear from Surat, sweaters from Ludhiana, and home textiles from Panipat. Everything is checked and packed at our warehouse in Meerut.",
-  },
-  {
-    q: "Can I change or cancel an order?",
-    a: "Orders can be amended within one hour of being placed, before they enter the packing queue. Email care@louieheritage.in or WhatsApp us on +91 98370 44120 with your order number and we'll do our best.",
+    a: "Product origin, material and manufacturing details have not been independently verified. Confirm item-specific claims with the seller before purchase.",
   },
   {
     q: "Do you restock sold-out pieces?",
-    a: "Core pieces are restocked two to three times a year. Add a piece to your wishlist and sign in — we'll email you when it returns.",
+    a: "Restock dates are not currently published. Availability is shown on each product page.",
   },
 ];
 
@@ -57,7 +53,7 @@ function FaqPage() {
       <PageHeader
         eyebrow="Customer care"
         title="Frequently asked questions"
-        description="Everything on sizing, delivery, returns and repairs. If your question isn't here, our care team replies within one working day."
+        description="Current information about sizing, delivery and orders."
         crumbs={[{ label: "FAQ" }]}
       />
       <div className="container-editorial py-12 md:py-16">

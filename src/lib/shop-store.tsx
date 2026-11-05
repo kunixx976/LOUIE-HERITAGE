@@ -4,6 +4,7 @@ import {
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
   type ReactNode,
 } from "react";
@@ -32,9 +33,41 @@ export type Address = {
 export type Order = {
   id: string;
   date: string;
-  status: "Processing" | "In transit" | "Delivered";
+  status: string;
   total: number;
-  items: { name: string; quantity: number; price: number; image: string }[];
+  paymentMethod: "razorpay" | "cod";
+  paymentStatus: string;
+  trackingCarrier: string | null;
+  trackingNumber: string | null;
+  trackingUrl: string | null;
+  items: {
+    name: string;
+    quantity: number;
+    price: number;
+    image: string | null;
+    size: string;
+    color: string;
+  }[];
+};
+
+type OrderRecord = {
+  order_number: string;
+  status: string;
+  total: number;
+  payment_method: "razorpay" | "cod";
+  payment_status: string;
+  tracking_carrier: string | null;
+  tracking_number: string | null;
+  tracking_url: string | null;
+  items: {
+    productId: string;
+    name: string;
+    quantity: number;
+    unitPrice: number;
+    size: string;
+    color: string;
+  }[];
+  created_at: string;
 };
 
 export type User = { id: string; name: string; email: string } | null;
@@ -74,6 +107,8 @@ function getShopUser(user: SupabaseUser): NonNullable<User> {
 
 type Ctx = State & {
   hydrated: boolean;
+  ordersLoading: boolean;
+  ordersError: string | null;
   authConfigured: boolean;
   authError: string | null;
   passwordRecovery: boolean;
@@ -96,7 +131,8 @@ type Ctx = State & {
   updatePassword: (password: string) => Promise<void>;
   addAddress: (address: Address) => void;
   removeAddress: (id: string) => void;
-  placeOrder: (total: number, orderId?: string) => string;
+  placeOrder: (orderId: string) => string;
+  refreshOrders: () => Promise<void>;
   cartCount: number;
   subtotal: number;
   cartProducts: { line: CartLine; product: Product }[];
@@ -109,6 +145,9 @@ export function ShopProvider({ children }: { children: ReactNode }) {
   const [hydrated, setHydrated] = useState(false);
   const [authError, setAuthError] = useState<string | null>(null);
   const [passwordRecovery, setPasswordRecovery] = useState(false);
+  const [ordersLoading, setOrdersLoading] = useState(false);
+  const [ordersError, setOrdersError] = useState<string | null>(null);
+  const orderRequestId = useRef(0);
 
   useEffect(() => {
     let active = true;
@@ -120,9 +159,8 @@ export function ShopProvider({ children }: { children: ReactNode }) {
           ...initialState,
           ...saved,
           user: null,
+          orders: [],
           addresses: saved.addresses?.filter((address) => address.id !== "a1") ?? [],
-          orders:
-            saved.orders?.filter((order) => !["AN-24815", "AN-24102"].includes(order.id)) ?? [],
         });
       }
     } catch (error) {
@@ -175,7 +213,10 @@ export function ShopProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (!hydrated) return;
     try {
-      window.localStorage.setItem(STORAGE_KEY, JSON.stringify({ ...state, user: null }));
+      window.localStorage.setItem(
+        STORAGE_KEY,
+        JSON.stringify({ ...state, user: null, orders: [] }),
+      );
     } catch (error) {
       console.error("Unable to save the shopping state.", error);
     }
@@ -323,40 +364,81 @@ export function ShopProvider({ children }: { children: ReactNode }) {
     setState((s) => ({ ...s, addresses: s.addresses.filter((a) => a.id !== id) }));
   }, []);
 
-  const placeOrder = useCallback((total: number, orderId?: string) => {
-    const id = orderId ?? `AN-${Math.floor(20000 + Math.random() * 9000)}`;
-    setState((s) => {
-      const items = s.cart.map((line) => {
-        const product = products.find((p) => p.id === line.productId)!;
-        return {
-          name: product.name,
-          quantity: line.quantity,
-          price: product.price,
-          image: product.images[0]!,
-        };
-      });
-      return {
-        ...s,
-        cart: [],
-        couponCode: null,
-        orders: [
-          {
-            id,
-            date: new Date().toLocaleDateString("en-IN", {
-              day: "numeric",
-              month: "long",
-              year: "numeric",
-            }),
-            status: "Processing",
-            total,
-            items,
-          },
-          ...s.orders,
-        ],
-      };
-    });
-    return id;
+  const placeOrder = useCallback((orderId: string) => {
+    setState((current) => ({ ...current, cart: [], couponCode: null }));
+    return orderId;
   }, []);
+
+  const refreshOrders = useCallback(async () => {
+    if (!state.user) {
+      orderRequestId.current += 1;
+      setState((current) => ({ ...current, orders: [] }));
+      setOrdersError(null);
+      setOrdersLoading(false);
+      return;
+    }
+
+    const requestId = ++orderRequestId.current;
+    if (!supabase) {
+      setOrdersError(authConfigurationMessage);
+      setOrdersLoading(false);
+      return;
+    }
+
+    setOrdersLoading(true);
+    setOrdersError(null);
+    try {
+      const { data, error } = await supabase.functions.invoke<{ orders: OrderRecord[] }>(
+        "list-orders",
+      );
+      if (error) throw error;
+      if (!data || !Array.isArray(data.orders)) {
+        throw new Error("The order service returned an invalid response.");
+      }
+      if (requestId !== orderRequestId.current) return;
+
+      const orders = data.orders.map((record) => ({
+        id: record.order_number,
+        date: new Intl.DateTimeFormat("en-IN", {
+          dateStyle: "medium",
+        }).format(new Date(record.created_at)),
+        status: record.status,
+        total: record.total,
+        paymentMethod: record.payment_method,
+        paymentStatus: record.payment_status,
+        trackingCarrier: record.tracking_carrier,
+        trackingNumber: record.tracking_number,
+        trackingUrl: record.tracking_url?.startsWith("https://") ? record.tracking_url : null,
+        items: record.items.map((item) => ({
+          name: item.name,
+          quantity: item.quantity,
+          price: item.unitPrice,
+          image: products.find((product) => product.id === item.productId)?.images[0] ?? null,
+          size: item.size,
+          color: item.color,
+        })),
+      }));
+      setState((current) => ({ ...current, orders }));
+    } catch (error) {
+      if (requestId === orderRequestId.current) {
+        setOrdersError(error instanceof Error ? error.message : "Unable to load your orders.");
+      }
+    } finally {
+      if (requestId === orderRequestId.current) setOrdersLoading(false);
+    }
+  }, [state.user]);
+
+  useEffect(() => {
+    if (!hydrated) return;
+    if (!state.user) {
+      orderRequestId.current += 1;
+      setState((current) => ({ ...current, orders: [] }));
+      setOrdersError(null);
+      setOrdersLoading(false);
+      return;
+    }
+    void refreshOrders();
+  }, [hydrated, state.user, refreshOrders]);
 
   const cartProducts = useMemo(
     () =>
@@ -374,6 +456,8 @@ export function ShopProvider({ children }: { children: ReactNode }) {
   const value: Ctx = {
     ...state,
     hydrated,
+    ordersLoading,
+    ordersError,
     authConfigured: supabaseConfigured,
     authError,
     passwordRecovery,
@@ -397,6 +481,7 @@ export function ShopProvider({ children }: { children: ReactNode }) {
     addAddress,
     removeAddress,
     placeOrder,
+    refreshOrders,
     cartCount: state.cart.reduce((n, l) => n + l.quantity, 0),
     subtotal,
     cartProducts,

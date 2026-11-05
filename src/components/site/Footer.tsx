@@ -18,8 +18,7 @@ export function Footer() {
           <div className="col-span-2 md:col-span-4">
             <p className="font-display text-lg uppercase tracking-[0.28em]">LOUIE HERITAGE</p>
             <p className="mt-4 max-w-xs text-sm leading-relaxed text-muted-foreground">
-              Cotton, denim, ethnic wear and home textiles bought directly from India's textile hubs
-              and shipped from Meerut.
+              Explore clothing, accessories and home textiles from LOUIE HERITAGE.
             </p>
           </div>
 
@@ -89,7 +88,7 @@ export function Footer() {
               </li>
               <li>
                 <Link to="/about" className="transition-colors hover:text-foreground">
-                  Sourcing
+                  About the collection
                 </Link>
               </li>
               <li>
@@ -161,7 +160,6 @@ export function Footer() {
             <Link to="/terms" className="transition-colors hover:text-foreground">
               Terms
             </Link>
-            <span>Meerut, Uttar Pradesh</span>
           </div>
         </div>
       </div>
