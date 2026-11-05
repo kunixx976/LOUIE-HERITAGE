@@ -1,0 +1,16 @@
+export const checkoutCatalog = {
+  "1": { name: "Tirupur Classic Cotton T-Shirt", price: 799 },
+  "2": { name: "Oversized Drop-Shoulder Tee", price: 1099 },
+  "3": { name: "Ahmedabad Straight-Fit Jeans", price: 1899 },
+  "4": { name: "Bhilwara High-Rise Jeans", price: 2099 },
+  "5": { name: "Surat Georgette Saree", price: 2499 },
+  "6": { name: "Surat Anarkali Kurta Set", price: 2899 },
+  "7": { name: "Ludhiana Merino Crew Sweater", price: 1799 },
+  "8": { name: "Ludhiana Long Cardigan", price: 2199 },
+  "9": { name: "Panipat Cotton Bedsheet Set", price: 1499 },
+  "10": { name: "Panipat Handloom Throw", price: 1199 },
+  "11": { name: "Cotton Poplin Casual Shirt", price: 1299 },
+  "12": { name: "Handloom Cotton Stole", price: 649 },
+  "13": { name: "Tirupur Airy Cotton Shirt", price: 1399 },
+  "14": { name: "Everyday Cotton Kurta", price: 1599 },
+} as const;

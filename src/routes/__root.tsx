@@ -8,7 +8,7 @@ import {
   HeadContent,
   Scripts,
 } from "@tanstack/react-router";
-import { useEffect, type ReactNode } from "react";
+import { useEffect, useMemo, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
@@ -22,17 +22,23 @@ function NotFoundComponent() {
     <div className="flex min-h-[70vh] items-center justify-center px-4">
       <div className="max-w-md text-center">
         <p className="eyebrow">Error 404</p>
-        <h1 className="mt-4 text-4xl">This page has been archived</h1>
+        <h1 className="mt-4 text-4xl">We couldn't find that page</h1>
         <p className="mt-4 text-sm text-muted-foreground">
-          The piece or page you're looking for is no longer available. Explore the current
-          collection instead.
+          The address may be out of date, or the page may have moved. Head back to the collection or
+          return to the home page.
         </p>
-        <div className="mt-8">
+        <div className="mt-8 flex flex-wrap justify-center gap-3">
           <Link
             to="/shop"
             className="inline-flex items-center justify-center rounded-[8px] bg-foreground px-7 py-3.5 text-[11px] font-medium uppercase tracking-[0.16em] text-background transition-colors hover:bg-hover-accent"
           >
             Shop the collection
+          </Link>
+          <Link
+            to="/"
+            className="inline-flex items-center justify-center rounded-[8px] border border-border px-7 py-3.5 text-[11px] font-medium uppercase tracking-[0.16em] transition-colors hover:border-foreground"
+          >
+            Go home
           </Link>
         </div>
       </div>
@@ -40,12 +46,16 @@ function NotFoundComponent() {
   );
 }
 
-function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
-  console.error(error);
+function ErrorComponent({ error, reset }: { error: unknown; reset: () => void }) {
+  const reportedError = useMemo(
+    () => (error instanceof Error ? error : new Error(String(error))),
+    [error],
+  );
+  console.error(reportedError);
   const router = useRouter();
   useEffect(() => {
-    reportLovableError(error, { boundary: "tanstack_root_error_component" });
-  }, [error]);
+    reportLovableError(reportedError, { boundary: "tanstack_root_error_component" });
+  }, [reportedError]);
 
   return (
     <div className="flex min-h-[70vh] items-center justify-center px-4">
@@ -133,7 +143,7 @@ function RootComponent() {
       <ShopProvider>
         <div className="flex min-h-screen flex-col">
           <Navbar />
-          <main id="main" className="flex-1 pt-[92px] md:pt-[100px]">
+          <main id="main" className="flex-1 pt-16 md:pt-[72px]">
             {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
             <Outlet />
           </main>

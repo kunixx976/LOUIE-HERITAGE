@@ -3,6 +3,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { Check } from "lucide-react";
 import { FREE_DELIVERY_THRESHOLD, STANDARD_DELIVERY_FEE } from "@/lib/shipping";
 import { formatPrice, useShop } from "@/lib/shop-store";
+import { supabase } from "@/lib/supabase";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/checkout")({
@@ -29,10 +30,59 @@ const steps = ["Shipping", "Payment", "Review", "Success"] as const;
 const field =
   "h-12 w-full rounded-[8px] border border-border bg-background px-4 text-sm outline-none transition-colors focus:border-foreground";
 
+type PaymentResponse = {
+  razorpay_order_id: string;
+  razorpay_payment_id: string;
+  razorpay_signature: string;
+};
+
+type RazorpayOptions = {
+  key: string;
+  amount: number;
+  currency: string;
+  name: string;
+  description: string;
+  order_id: string;
+  prefill: { name: string; email: string };
+  handler: (response: PaymentResponse) => void;
+  modal: { ondismiss: () => void };
+  theme: { color: string };
+};
+
+type RazorpayInstance = {
+  open: () => void;
+  on: (event: string, callback: () => void) => void;
+};
+
+declare global {
+  interface Window {
+    Razorpay?: new (options: RazorpayOptions) => RazorpayInstance;
+  }
+}
+
+function loadRazorpay() {
+  if (window.Razorpay) return Promise.resolve();
+  return new Promise<void>((resolve, reject) => {
+    const script = document.createElement("script");
+    script.src = "https://checkout.razorpay.com/v1/checkout.js";
+    script.async = true;
+    script.onload = () =>
+      window.Razorpay
+        ? resolve()
+        : reject(new Error("The secure payment window could not be loaded."));
+    script.onerror = () =>
+      reject(new Error("Unable to load secure payments. Check your connection and try again."));
+    document.body.appendChild(script);
+  });
+}
+
 function CheckoutPage() {
   const { cartProducts, subtotal, discount, placeOrder, addresses, hydrated, user } = useShop();
   const [step, setStep] = useState(0);
   const [orderId, setOrderId] = useState<string | null>(null);
+  const [emailSent, setEmailSent] = useState(false);
+  const [error, setError] = useState("");
+  const [submitting, setSubmitting] = useState(false);
   const [form, setForm] = useState({
     email: "",
     name: "",
@@ -41,6 +91,7 @@ function CheckoutPage() {
     postcode: "",
     country: "India",
     method: "standard",
+    paymentMethod: "razorpay" as "razorpay" | "cod",
   });
 
   useEffect(() => {
@@ -61,6 +112,126 @@ function CheckoutPage() {
   const total = Math.max(0, subtotal - discount) + shipping;
   const set = (key: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement>) =>
     setForm((f) => ({ ...f, [key]: e.target.value }));
+
+  async function submitOrder() {
+    setError("");
+    setSubmitting(true);
+    try {
+      if (!supabase) {
+        throw new Error("Checkout is not configured yet. Please contact customer care.");
+      }
+      const client = supabase;
+
+      const checkout = {
+        email: form.email.trim(),
+        name: form.name.trim(),
+        line1: form.line1.trim(),
+        city: form.city.trim(),
+        postcode: form.postcode.trim(),
+        country: form.country.trim(),
+        shippingMethod: form.method,
+        couponCode: discount > 0 ? "STUDIO10" : undefined,
+        items: cartProducts.map(({ line, product }) => ({
+          productId: product.id,
+          size: line.size,
+          color: line.color,
+          quantity: line.quantity,
+        })),
+      };
+
+      if (form.paymentMethod === "cod") {
+        const { data, error: functionError } = await client.functions.invoke<{
+          orderNumber: string;
+          emailSent: boolean;
+          total: number;
+          error?: string;
+        }>("create-cod-order", { body: checkout });
+        if (functionError) throw new Error(data?.error ?? functionError.message);
+        if (!data?.orderNumber) throw new Error(data?.error ?? "Unable to place your order.");
+        setEmailSent(data.emailSent);
+        setOrderId(placeOrder(data.total, data.orderNumber));
+        setStep(3);
+        return;
+      }
+
+      const { data: paymentOrder, error: createError } = await client.functions.invoke<{
+        orderNumber: string;
+        razorpayOrderId: string;
+        amount: number;
+        currency: string;
+        keyId: string;
+        error?: string;
+      }>("create-razorpay-order", { body: checkout });
+      if (createError) throw new Error(paymentOrder?.error ?? createError.message);
+      if (!paymentOrder?.razorpayOrderId || !paymentOrder.keyId) {
+        throw new Error(paymentOrder?.error ?? "Unable to start payment. Please try again.");
+      }
+
+      await loadRazorpay();
+      await new Promise<void>((resolve, reject) => {
+        let settled = false;
+        const fail = (message: string) => {
+          if (settled) return;
+          settled = true;
+          reject(new Error(message));
+        };
+        const Razorpay = window.Razorpay;
+        if (!Razorpay) {
+          fail("The secure payment window could not be loaded.");
+          return;
+        }
+        const instance = new Razorpay({
+          key: paymentOrder.keyId,
+          amount: paymentOrder.amount,
+          currency: paymentOrder.currency,
+          name: "LOUIE HERITAGE",
+          description: `Order ${paymentOrder.orderNumber}`,
+          order_id: paymentOrder.razorpayOrderId,
+          prefill: { name: form.name, email: form.email },
+          theme: { color: "#111111" },
+          modal: {
+            ondismiss: () => fail("Payment was cancelled. Your order has not been confirmed."),
+          },
+          handler: (response) => {
+            void (async () => {
+              const { data, error: verifyError } = await client.functions.invoke<{
+                orderNumber: string;
+                emailSent: boolean;
+                total: number;
+                error?: string;
+              }>("verify-razorpay-payment", { body: response });
+              if (verifyError || !data?.orderNumber) {
+                fail(
+                  data?.error ??
+                    verifyError?.message ??
+                    "We couldn't verify your payment. Please contact customer care.",
+                );
+                return;
+              }
+              if (settled) return;
+              settled = true;
+              setEmailSent(data.emailSent);
+              setOrderId(placeOrder(data.total, data.orderNumber));
+              setStep(3);
+              resolve();
+            })().catch((cause: unknown) => {
+              fail(cause instanceof Error ? cause.message : "We couldn't verify your payment.");
+            });
+          },
+        });
+        instance.on("payment.failed", () =>
+          fail("Payment failed. You can try again or choose cash on delivery."),
+        );
+        instance.open();
+      });
+    } catch (cause) {
+      setError(
+        cause instanceof Error ? cause.message : "Unable to complete checkout. Please try again.",
+      );
+    } finally {
+      setSubmitting(false);
+    }
+  }
 
   if (!hydrated) {
     return (
@@ -90,10 +261,16 @@ function CheckoutPage() {
           <div className="mx-auto grid h-14 w-14 place-items-center rounded-full border border-border">
             <Check className="h-6 w-6" strokeWidth={1.25} />
           </div>
-          <h1 className="mt-8 text-3xl">Your test order is confirmed</h1>
+          <h1 className="mt-8 text-3xl">Your order is confirmed</h1>
           <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
-            Order {orderId} has been saved in this browser. This demo checkout did not collect
-            payment or send the order to a fulfilment service.
+            Order {orderId} is confirmed
+            {form.paymentMethod === "cod"
+              ? " with cash due on delivery"
+              : " and your payment was verified"}
+            .
+            {emailSent
+              ? ` A confirmation email was sent to ${form.email}.`
+              : " We couldn't send the confirmation email; please contact care@louieheritage.in."}
           </p>
           <div className="mt-9 flex flex-wrap justify-center gap-3">
             <Link
@@ -159,11 +336,10 @@ function CheckoutPage() {
             className="mt-9"
             onSubmit={(e) => {
               e.preventDefault();
-              if (step < 2) setStep(step + 1);
-              else {
-                setOrderId(placeOrder(total));
-                setStep(3);
-              }
+              if (step < 2) {
+                setError("");
+                setStep(step + 1);
+              } else void submitOrder();
             }}
           >
             {step === 0 ? (
@@ -206,6 +382,9 @@ function CheckoutPage() {
                 <input
                   required
                   type="email"
+                  autoComplete="email"
+                  maxLength={254}
+                  aria-label="Email address"
                   placeholder="Email address"
                   value={form.email}
                   onChange={set("email")}
@@ -213,6 +392,10 @@ function CheckoutPage() {
                 />
                 <input
                   required
+                  minLength={2}
+                  maxLength={100}
+                  autoComplete="name"
+                  aria-label="Full name"
                   placeholder="Full name"
                   value={form.name}
                   onChange={set("name")}
@@ -220,6 +403,10 @@ function CheckoutPage() {
                 />
                 <input
                   required
+                  minLength={4}
+                  maxLength={200}
+                  autoComplete="street-address"
+                  aria-label="Street address"
                   placeholder="Address"
                   value={form.line1}
                   onChange={set("line1")}
@@ -228,6 +415,10 @@ function CheckoutPage() {
                 <div className="grid gap-4 sm:grid-cols-2">
                   <input
                     required
+                    minLength={2}
+                    maxLength={100}
+                    autoComplete="address-level2"
+                    aria-label="City"
                     placeholder="City"
                     value={form.city}
                     onChange={set("city")}
@@ -235,6 +426,12 @@ function CheckoutPage() {
                   />
                   <input
                     required
+                    inputMode="numeric"
+                    autoComplete="postal-code"
+                    pattern="[1-9][0-9]{5}"
+                    title="Enter a valid 6-digit Indian PIN code"
+                    maxLength={6}
+                    aria-label="PIN code"
                     placeholder="PIN code"
                     value={form.postcode}
                     onChange={set("postcode")}
@@ -243,6 +440,10 @@ function CheckoutPage() {
                 </div>
                 <input
                   required
+                  minLength={2}
+                  maxLength={60}
+                  autoComplete="country-name"
+                  aria-label="Country"
                   placeholder="Country"
                   value={form.country}
                   onChange={set("country")}
@@ -294,11 +495,45 @@ function CheckoutPage() {
             {step === 1 ? (
               <div className="rounded-[8px] border border-border p-5">
                 <p className="eyebrow">Payment method</p>
-                <p className="mt-3 text-sm">Demo checkout — no payment will be collected.</p>
-                <p className="mt-2 text-xs leading-relaxed text-muted-foreground">
-                  This storefront does not have a payment provider connected yet. Do not enter card,
-                  UPI, or bank details.
-                </p>
+                <div className="mt-4 space-y-3">
+                  {[
+                    {
+                      id: "razorpay" as const,
+                      title: "Pay online",
+                      detail: "UPI or credit/debit card via Razorpay",
+                    },
+                    {
+                      id: "cod" as const,
+                      title: "Cash on delivery",
+                      detail: "Pay when your order arrives",
+                    },
+                  ].map((option) => (
+                    <label
+                      key={option.id}
+                      className={cn(
+                        "flex cursor-pointer items-start gap-3 rounded-[8px] border border-border p-4 transition-colors",
+                        form.paymentMethod === option.id && "border-foreground",
+                      )}
+                    >
+                      <input
+                        type="radio"
+                        name="paymentMethod"
+                        value={option.id}
+                        checked={form.paymentMethod === option.id}
+                        onChange={() =>
+                          setForm((current) => ({ ...current, paymentMethod: option.id }))
+                        }
+                        className="mt-1 accent-black"
+                      />
+                      <span>
+                        <span className="block text-sm">{option.title}</span>
+                        <span className="mt-1 block text-xs text-muted-foreground">
+                          {option.detail}
+                        </span>
+                      </span>
+                    </label>
+                  ))}
+                </div>
               </div>
             ) : null}
 
@@ -313,7 +548,11 @@ function CheckoutPage() {
                 </div>
                 <div className="rounded-[8px] border border-border p-5">
                   <p className="eyebrow mb-2">Payment & delivery</p>
-                  <p>Demo checkout — no payment collected.</p>
+                  <p>
+                    {form.paymentMethod === "cod"
+                      ? "Cash on delivery"
+                      : "UPI or credit/debit card — processed securely by Razorpay"}
+                  </p>
                   <p className="mt-2 text-muted-foreground">
                     {form.method === "express"
                       ? "Express delivery — ₹199"
@@ -323,6 +562,16 @@ function CheckoutPage() {
                   </p>
                 </div>
               </div>
+            ) : null}
+
+            {error ? (
+              <p
+                role="alert"
+                aria-live="assertive"
+                className="mt-5 rounded-[8px] border border-destructive/40 bg-destructive/5 p-4 text-sm text-destructive"
+              >
+                {error}
+              </p>
             ) : null}
 
             <div className="mt-9 flex items-center gap-3">
@@ -337,9 +586,16 @@ function CheckoutPage() {
               ) : null}
               <button
                 type="submit"
-                className="flex-1 rounded-[8px] bg-foreground py-4 text-[11px] font-medium uppercase tracking-[0.16em] text-background transition-colors hover:bg-hover-accent"
+                disabled={submitting}
+                className="flex-1 rounded-[8px] bg-foreground py-4 text-[11px] font-medium uppercase tracking-[0.16em] text-background transition-colors hover:bg-hover-accent disabled:cursor-wait disabled:opacity-60"
               >
-                {step === 2 ? `Place test order — ${formatPrice(total)}` : "Continue"}
+                {submitting
+                  ? "Processing…"
+                  : step === 2
+                    ? form.paymentMethod === "cod"
+                      ? `Place COD order — ${formatPrice(total)}`
+                      : `Pay securely — ${formatPrice(total)}`
+                    : "Continue"}
               </button>
             </div>
           </form>

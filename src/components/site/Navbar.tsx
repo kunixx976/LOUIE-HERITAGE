@@ -42,12 +42,9 @@ export function Navbar() {
 
   return (
     <>
-      <div className="fixed inset-x-0 top-0 z-[60] flex h-7 items-center justify-center bg-foreground px-4 text-[10px] font-medium uppercase tracking-[0.14em] text-background sm:text-[11px]">
-        Free delivery over ₹1,499
-      </div>
       <header
         className={cn(
-          "fixed inset-x-0 top-7 z-50 transition-colors duration-500",
+          "fixed inset-x-0 top-0 z-50 transition-colors duration-500",
           transparent
             ? "border-b border-transparent bg-transparent text-background"
             : "border-b border-border bg-background/95 text-foreground backdrop-blur",

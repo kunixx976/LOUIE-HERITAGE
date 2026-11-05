@@ -16,7 +16,7 @@ Louie Heritage sources straight from the mills, with no middlemen:
 | Woollens              | Ludhiana            |
 | Home textiles         | Panipat             |
 
-Prices are in INR (₹). Free delivery on orders over ₹1,499. Payments: UPI, Visa, Mastercard, RuPay, net banking and cash on delivery.
+Prices are in INR (₹). Free delivery on orders over ₹1,499. Checkout supports UPI, cards and cash on delivery through Razorpay and Supabase Edge Functions; these services must be configured before live orders can be accepted.
 
 ## Features
 
@@ -73,3 +73,56 @@ provider under **Authentication → Providers** and add your Google OAuth client
 credentials. In **Authentication → URL Configuration**, allow your app's origin
 and set the Supabase callback URL listed in the Google provider settings as an
 authorized redirect URI in Google Cloud Console.
+
+## Payments and order confirmation emails
+
+Checkout uses Razorpay for UPI and card payments, supports cash on delivery, stores orders in
+Supabase, and sends confirmation email through Resend. The integration is not live until the
+following setup is complete. Start with Razorpay test-mode keys and test orders before enabling
+live payments.
+
+1. Create Razorpay and Resend accounts. In Razorpay, enable UPI and cards and copy the **test**
+   Key ID and Key Secret. In Resend, verify a sending domain and choose an address on that domain
+   for order emails.
+2. Install the [Supabase CLI](https://supabase.com/docs/guides/cli) if needed, then link this
+   repository to the Supabase project used by the storefront:
+
+   ```sh
+   npx supabase login
+   npx supabase link --project-ref YOUR_PROJECT_REF
+   npx supabase db push
+   ```
+
+   The migration creates the private `public.orders` table. The table has row-level security
+   enabled and is writable only by the Edge Functions' server-side service role.
+
+3. Add credentials as Supabase Edge Function secrets (never as `VITE_` variables or in browser
+   code):
+
+   ```sh
+   npx supabase secrets set RAZORPAY_KEY_ID=rzp_test_xxx RAZORPAY_KEY_SECRET=xxx RAZORPAY_WEBHOOK_SECRET=xxx RESEND_API_KEY=re_xxx "ORDER_FROM_EMAIL=LOUIE HERITAGE <orders@your-verified-domain>"
+   ```
+
+   Supabase supplies `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` to deployed Edge Functions.
+   Do not share or commit any secret keys.
+
+4. Deploy the checkout functions:
+
+   ```sh
+   npx supabase functions deploy create-razorpay-order
+   npx supabase functions deploy verify-razorpay-payment
+   npx supabase functions deploy create-cod-order
+   npx supabase functions deploy razorpay-webhook --no-verify-jwt
+   ```
+
+5. In Razorpay **Account & Settings → Webhooks**, add
+   `https://YOUR_PROJECT_REF.supabase.co/functions/v1/razorpay-webhook`, use the same webhook
+   secret saved above, and subscribe to `payment.captured`.
+6. Keep Razorpay in test mode and verify one UPI/card payment, one cancelled/failed payment, one
+   COD order, and receipt of the confirmation emails. Switch to live Razorpay credentials only
+   after testing and completing Razorpay's account activation.
+
+The Razorpay secret, Resend API key and Supabase service-role key must stay in Supabase secrets.
+The browser only receives Razorpay's public Key ID from the order-creation function. If function
+deployment or secrets are missing, checkout displays an error and does not create a successful
+order in the storefront.

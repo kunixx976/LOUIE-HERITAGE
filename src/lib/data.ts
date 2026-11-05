@@ -9,6 +9,7 @@ import p8 from "@/assets/p8.jpg";
 import catWomen from "@/assets/cat-women.jpg";
 import catMen from "@/assets/cat-men.jpg";
 import catOversized from "@/assets/cat-oversized.jpg";
+import { checkoutCatalog } from "../../supabase/functions/_shared/checkout-catalog";
 
 export type Category = {
   slug: string;
@@ -92,7 +93,10 @@ function buildVariants(
 }
 
 function normalizeProduct(
-  product: Omit<Product, "colors" | "sizes" | "variants" | "inStock" | "inventoryStatus"> & {
+  product: Omit<
+    Product,
+    "colors" | "sizes" | "variants" | "inStock" | "inventoryStatus" | "inventoryUpdatedAt"
+  > & {
     colors: ProductColor[];
     sizes: string[];
     variants?: ProductVariant[];
@@ -223,12 +227,12 @@ export const categories: Category[] = [
   },
 ];
 
-const rawProducts = [
+const rawProducts: Parameters<typeof normalizeProduct>[0][] = [
   {
     id: "1",
     slug: "tirupur-classic-cotton-tee",
     name: "Tirupur Classic Cotton T-Shirt",
-    price: 799,
+    price: checkoutCatalog["1"].price,
     compareAt: 1099,
     images: [p1, p2],
     categories: ["tshirts", "men", "women", "casual", "summer"],
@@ -264,7 +268,7 @@ const rawProducts = [
     id: "2",
     slug: "oversized-drop-shoulder-tee",
     name: "Oversized Drop-Shoulder Tee",
-    price: 1099,
+    price: checkoutCatalog["2"].price,
     images: [p2, p1],
     categories: ["tshirts", "women", "casual", "summer"],
     colors: [
@@ -303,7 +307,7 @@ const rawProducts = [
     id: "3",
     slug: "ahmedabad-straight-fit-jeans",
     name: "Ahmedabad Straight-Fit Jeans",
-    price: 1899,
+    price: checkoutCatalog["3"].price,
     compareAt: 2399,
     images: [p3, p4],
     categories: ["denim", "men", "casual"],
@@ -343,7 +347,7 @@ const rawProducts = [
     id: "4",
     slug: "bhilwara-high-rise-jeans",
     name: "Bhilwara High-Rise Jeans",
-    price: 2099,
+    price: checkoutCatalog["4"].price,
     images: [p4, p3],
     categories: ["denim", "women", "casual"],
     colors: [
@@ -382,7 +386,7 @@ const rawProducts = [
     id: "5",
     slug: "surat-georgette-saree",
     name: "Surat Georgette Saree",
-    price: 2499,
+    price: checkoutCatalog["5"].price,
     compareAt: 3200,
     images: [p5, p2],
     categories: ["ethnic", "women"],
@@ -422,7 +426,7 @@ const rawProducts = [
     id: "6",
     slug: "surat-anarkali-kurta-set",
     name: "Surat Anarkali Kurta Set",
-    price: 2899,
+    price: checkoutCatalog["6"].price,
     images: [catWomen, p5],
     categories: ["ethnic", "women", "summer"],
     colors: [
@@ -461,7 +465,7 @@ const rawProducts = [
     id: "7",
     slug: "ludhiana-merino-crew-sweater",
     name: "Ludhiana Merino Crew Sweater",
-    price: 1799,
+    price: checkoutCatalog["7"].price,
     images: [p6, p4],
     categories: ["woollens", "men", "winter"],
     colors: [
@@ -500,7 +504,7 @@ const rawProducts = [
     id: "8",
     slug: "ludhiana-long-cardigan",
     name: "Ludhiana Long Cardigan",
-    price: 2199,
+    price: checkoutCatalog["8"].price,
     compareAt: 2699,
     images: [catOversized, p6],
     categories: ["woollens", "women", "winter"],
@@ -540,7 +544,7 @@ const rawProducts = [
     id: "9",
     slug: "panipat-cotton-bedsheet-set",
     name: "Panipat Cotton Bedsheet Set",
-    price: 1499,
+    price: checkoutCatalog["9"].price,
     images: [p8, p7],
     categories: ["home"],
     colors: [
@@ -579,7 +583,7 @@ const rawProducts = [
     id: "10",
     slug: "panipat-handloom-throw",
     name: "Panipat Handloom Throw",
-    price: 1199,
+    price: checkoutCatalog["10"].price,
     images: [p7, p8],
     categories: ["home", "winter"],
     colors: [
@@ -618,7 +622,7 @@ const rawProducts = [
     id: "11",
     slug: "cotton-poplin-casual-shirt",
     name: "Cotton Poplin Casual Shirt",
-    price: 1299,
+    price: checkoutCatalog["11"].price,
     images: [catMen, p3],
     categories: ["men", "casual", "summer"],
     colors: [
@@ -657,7 +661,7 @@ const rawProducts = [
     id: "12",
     slug: "handloom-cotton-stole",
     name: "Handloom Cotton Stole",
-    price: 649,
+    price: checkoutCatalog["12"].price,
     images: [p1, p5],
     categories: ["accessories", "women", "summer"],
     colors: [
@@ -696,7 +700,7 @@ const rawProducts = [
     id: "13",
     slug: "tirupur-airy-cotton-shirt",
     name: "Tirupur Airy Cotton Shirt",
-    price: 1399,
+    price: checkoutCatalog["13"].price,
     images: [p2, p1],
     categories: ["women", "casual", "summer"],
     colors: [
@@ -735,7 +739,7 @@ const rawProducts = [
     id: "14",
     slug: "everyday-cotton-kurta",
     name: "Everyday Cotton Kurta",
-    price: 1599,
+    price: checkoutCatalog["14"].price,
     images: [catWomen, p5],
     categories: ["women", "ethnic", "summer"],
     colors: [
@@ -770,9 +774,9 @@ const rawProducts = [
       1599,
     ),
   },
-].map(normalizeProduct);
+];
 
-export const products: Product[] = rawProducts;
+export const products: Product[] = rawProducts.map(normalizeProduct);
 
 export const bestSellers = products.filter((p) => p.tags.includes("best-seller"));
 export const newArrivals = products.filter(

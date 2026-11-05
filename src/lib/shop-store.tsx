@@ -96,7 +96,7 @@ type Ctx = State & {
   updatePassword: (password: string) => Promise<void>;
   addAddress: (address: Address) => void;
   removeAddress: (id: string) => void;
-  placeOrder: (total: number) => string;
+  placeOrder: (total: number, orderId?: string) => string;
   cartCount: number;
   subtotal: number;
   cartProducts: { line: CartLine; product: Product }[];
@@ -323,8 +323,8 @@ export function ShopProvider({ children }: { children: ReactNode }) {
     setState((s) => ({ ...s, addresses: s.addresses.filter((a) => a.id !== id) }));
   }, []);
 
-  const placeOrder = useCallback((total: number) => {
-    const id = `AN-${Math.floor(20000 + Math.random() * 9000)}`;
+  const placeOrder = useCallback((total: number, orderId?: string) => {
+    const id = orderId ?? `AN-${Math.floor(20000 + Math.random() * 9000)}`;
     setState((s) => {
       const items = s.cart.map((line) => {
         const product = products.find((p) => p.id === line.productId)!;
