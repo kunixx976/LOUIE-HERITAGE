@@ -689,7 +689,100 @@ const rawProducts = [
       649,
     ),
   },
-].map(normalizeProduct);
+,
+  {
+    id: "13",
+    slug: "demo-handloom-cotton-scarf",
+    name: "Demo Handloom Cotton Scarf",
+    price: 599,
+    images: [p7, p1],
+    categories: ["accessories", "women", "summer"],
+    colors: [
+      { name: "Indigo", hex: "#33445E" },
+      { name: "Terracotta", hex: "#A45A38" },
+    ],
+    sizes: ONE_SIZE,
+    rating: 0,
+    reviewCount: 0,
+    tags: ["new"],
+    fabric: "Demo listing · handloom cotton",
+    description:
+      "A sample accessory listing for the store demo. Replace this description, image and price with confirmed product details before taking orders.",
+    details: ["Demo listing", "One size", "Sample stock only"],
+    variants: buildVariants(
+      "13",
+      [
+        { name: "Indigo", hex: "#33445E" },
+        { name: "Terracotta", hex: "#A45A38" },
+      ],
+      ONE_SIZE,
+      { Indigo: { "One size": 4 }, Terracotta: { "One size": 4 } },
+      [p7, p1],
+      599,
+    ),
+  },
+  {
+    id: "14",
+    slug: "demo-printed-cotton-bandana",
+    name: "Demo Printed Cotton Bandana",
+    price: 399,
+    images: [p5, p2],
+    categories: ["accessories", "women", "summer"],
+    colors: [
+      { name: "Ivory Print", hex: "#EDE9DF" },
+      { name: "Rust Print", hex: "#A45A38" },
+    ],
+    sizes: ONE_SIZE,
+    rating: 0,
+    reviewCount: 0,
+    tags: ["new"],
+    fabric: "Demo listing · printed cotton",
+    description:
+      "A sample accessory listing for the store demo. Replace this description, image and price with confirmed product details before taking orders.",
+    details: ["Demo listing", "One size", "Sample stock only"],
+    variants: buildVariants(
+      "14",
+      [
+        { name: "Ivory Print", hex: "#EDE9DF" },
+        { name: "Rust Print", hex: "#A45A38" },
+      ],
+      ONE_SIZE,
+      { "Ivory Print": { "One size": 4 }, "Rust Print": { "One size": 4 } },
+      [p5, p2],
+      399,
+    ),
+  },
+  {
+    id: "15",
+    slug: "demo-woven-cotton-tote",
+    name: "Demo Woven Cotton Tote",
+    price: 799,
+    images: [p8, p7],
+    categories: ["accessories", "women", "casual"],
+    colors: [
+      { name: "Natural", hex: "#D9CBB7" },
+      { name: "Olive", hex: "#75816A" },
+    ],
+    sizes: ONE_SIZE,
+    rating: 0,
+    reviewCount: 0,
+    tags: ["new"],
+    fabric: "Demo listing · woven cotton",
+    description:
+      "A sample accessory listing for the store demo. Replace this description, image and price with confirmed product details before taking orders.",
+    details: ["Demo listing", "One size", "Sample stock only"],
+    variants: buildVariants(
+      "15",
+      [
+        { name: "Natural", hex: "#D9CBB7" },
+        { name: "Olive", hex: "#75816A" },
+      ],
+      ONE_SIZE,
+      { Natural: { "One size": 3 }, Olive: { "One size": 3 } },
+      [p8, p7],
+      799,
+    ),
+  }].map(normalizeProduct);
 
 export const products: Product[] = rawProducts;
 
