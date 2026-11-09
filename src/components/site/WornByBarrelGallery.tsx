@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion, useAnimationFrame, useMotionValue, useReducedMotion, useSpring } from "motion/react";
 import { galleryImages } from "@/lib/data";
 
