@@ -2,8 +2,6 @@ import { useEffect, useRef, useState } from "react";
 import { motion, useMotionValue, useReducedMotion, useSpring } from "motion/react";
 import { galleryImages } from "@/lib/data";
 
-const TAU = Math.PI * 2;
-
 export function BarrelGallery() {
   const sceneRef = useRef<HTMLDivElement>(null);
   const [geometry, setGeometry] = useState({ panelWidth: 160, radius: 138 });
