@@ -56,9 +56,7 @@ export function Navbar() {
             {/* Left — navigation */}
             <nav className="hidden items-center gap-7 lg:flex" aria-label="Primary">
               <MegaMenu label="Shop" />
-              <Link to="/category/$slug" params={{ slug: "women" }} className="text-sm font-medium transition-colors hover:text-muted-foreground">
-                Women
-              </Link>
+              <MegaMenu label="Women" variant="women" />
               <Link to="/category/$slug" params={{ slug: "men" }} className="text-sm font-medium transition-colors hover:text-muted-foreground">
                 Men
               </Link>
@@ -236,9 +234,27 @@ function Dot() {
   return <span className="absolute right-2.5 top-2.5 h-1.5 w-1.5 rounded-full bg-current" />;
 }
 
-function MegaMenu({ label }: { label: string }) {
+const womenMenuLinks = [
+  { label: "Dresses", slug: "ethnic" },
+  { label: "Tops", slug: "women" },
+  { label: "Tees", slug: "tshirts" },
+  { label: "Skirts", slug: "women" },
+  { label: "Denim", slug: "denim" },
+  { label: "Trousers", slug: "women" },
+  { label: "Accessories", slug: "accessories" },
+] as const;
+
+function MegaMenu({
+  label,
+  variant = "shop",
+}: {
+  label: string;
+  variant?: "shop" | "women";
+}) {
   const [open, setOpen] = useState(false);
   const reduceMotion = useReducedMotion();
+  const isWomen = variant === "women";
+  const menuId = isWomen ? "women-mega-menu" : "shop-mega-menu";
 
   const panelTransition = reduceMotion
     ? { duration: 0 }
@@ -260,29 +276,50 @@ function MegaMenu({ label }: { label: string }) {
         if (event.key === "Escape") setOpen(false);
       }}
     >
-      <Link
-        to="/shop"
-        className="relative text-sm font-medium transition-colors hover:text-muted-foreground"
-        aria-expanded={open}
-        aria-haspopup="true"
-        aria-controls="shop-mega-menu"
-        onFocus={() => setOpen(true)}
-      >
-        {label}
-        {open ? (
-          <motion.span
-            layoutId="shop-menu-indicator"
-            className="absolute -bottom-[9px] left-0 right-0 h-px bg-current"
-            transition={panelTransition}
-          />
-        ) : null}
-      </Link>
+      {isWomen ? (
+        <Link
+          to="/category/$slug"
+          params={{ slug: "women" }}
+          className="relative text-sm font-medium transition-colors hover:text-muted-foreground"
+          aria-expanded={open}
+          aria-haspopup="true"
+          aria-controls={menuId}
+          onFocus={() => setOpen(true)}
+        >
+          {label}
+          {open ? (
+            <motion.span
+              layoutId="primary-nav-indicator"
+              className="absolute -bottom-[9px] left-0 right-0 h-px bg-current"
+              transition={panelTransition}
+            />
+          ) : null}
+        </Link>
+      ) : (
+        <Link
+          to="/shop"
+          className="relative text-sm font-medium transition-colors hover:text-muted-foreground"
+          aria-expanded={open}
+          aria-haspopup="true"
+          aria-controls={menuId}
+          onFocus={() => setOpen(true)}
+        >
+          {label}
+          {open ? (
+            <motion.span
+              layoutId="primary-nav-indicator"
+              className="absolute -bottom-[9px] left-0 right-0 h-px bg-current"
+              transition={panelTransition}
+            />
+          ) : null}
+        </Link>
+      )}
 
       <AnimatePresence initial={false}>
         {open ? (
           <motion.div
-            id="shop-mega-menu"
-            key="shop-mega-menu"
+            id={menuId}
+            key={menuId}
             initial={reduceMotion ? { opacity: 0 } : { opacity: 0, y: -10, scale: 0.99 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={reduceMotion ? { opacity: 0 } : { opacity: 0, y: -8, scale: 0.99 }}
@@ -302,46 +339,123 @@ function MegaMenu({ label }: { label: string }) {
                 },
               }}
             >
-              {groups.map((group) => (
-                <motion.div key={group} variants={columnVariants} transition={panelTransition}>
-                  <p className="eyebrow mb-4">{group}</p>
-                  <ul className="space-y-2.5">
-                    {categories
-                      .filter((category) => category.group === group)
-                      .map((category) => (
-                        <li key={category.slug}>
+              {isWomen ? (
+                <>
+                  <motion.div variants={columnVariants} transition={panelTransition}>
+                    <p className="eyebrow mb-4">Clothing</p>
+                    <ul className="space-y-2.5">
+                      {womenMenuLinks.slice(0, 4).map((item) => (
+                        <li key={item.label}>
                           <Link
                             to="/category/$slug"
-                            params={{ slug: category.slug }}
+                            params={{ slug: item.slug }}
                             onClick={() => setOpen(false)}
                             className="text-sm text-muted-foreground transition-colors hover:text-foreground"
                           >
-                            {category.name}
+                            {item.label}
                           </Link>
                         </li>
                       ))}
-                  </ul>
-                </motion.div>
-              ))}
-              <motion.div variants={columnVariants} transition={panelTransition}>
-                <p className="eyebrow mb-4">Featured</p>
-                <Link
-                  to="/category/$slug"
-                  params={{ slug: "winter" }}
-                  onClick={() => setOpen(false)}
-                >
-                  <img
-                    src={categories[7]!.image}
-                    alt="Winter collection"
-                    width={900}
-                    height={1200}
-                    loading="lazy"
-                    className="aspect-[4/5] w-full rounded-[8px] object-cover"
-                  />
-                  <p className="mt-3 font-display text-base">Autumn / Winter 26</p>
-                  <p className="text-xs text-muted-foreground">Coats, heavy knits and outerwear</p>
-                </Link>
-              </motion.div>
+                    </ul>
+                  </motion.div>
+                  <motion.div variants={columnVariants} transition={panelTransition}>
+                    <p className="eyebrow mb-4">More to explore</p>
+                    <ul className="space-y-2.5">
+                      {womenMenuLinks.slice(4).map((item) => (
+                        <li key={item.label}>
+                          <Link
+                            to="/category/$slug"
+                            params={{ slug: item.slug }}
+                            onClick={() => setOpen(false)}
+                            className="text-sm text-muted-foreground transition-colors hover:text-foreground"
+                          >
+                            {item.label}
+                          </Link>
+                        </li>
+                      ))}
+                      <li>
+                        <Link
+                          to="/category/$slug"
+                          params={{ slug: "women" }}
+                          onClick={() => setOpen(false)}
+                          className="text-sm text-muted-foreground transition-colors hover:text-foreground"
+                        >
+                          Shop all women
+                        </Link>
+                      </li>
+                    </ul>
+                  </motion.div>
+                  <motion.div
+                    variants={columnVariants}
+                    transition={panelTransition}
+                    className="col-span-2"
+                  >
+                    <Link
+                      to="/category/$slug"
+                      params={{ slug: "women" }}
+                      onClick={() => setOpen(false)}
+                    >
+                      <img
+                        src={categories.find((category) => category.slug === "women")!.image}
+                        alt="Women’s collection"
+                        width={900}
+                        height={600}
+                        loading="lazy"
+                        className="h-56 w-full rounded-[8px] object-cover object-center"
+                      />
+                      <p className="mt-3 font-display text-base">The women’s collection</p>
+                      <p className="text-xs text-muted-foreground">
+                        Explore the pieces currently in the collection
+                      </p>
+                    </Link>
+                  </motion.div>
+                </>
+              ) : (
+                <>
+                  {groups.map((group) => (
+                    <motion.div key={group} variants={columnVariants} transition={panelTransition}>
+                      <p className="eyebrow mb-4">{group}</p>
+                      <ul className="space-y-2.5">
+                        {categories
+                          .filter((category) => category.group === group)
+                          .map((category) => (
+                            <li key={category.slug}>
+                              <Link
+                                to="/category/$slug"
+                                params={{ slug: category.slug }}
+                                onClick={() => setOpen(false)}
+                                className="text-sm text-muted-foreground transition-colors hover:text-foreground"
+                              >
+                                {category.name}
+                              </Link>
+                            </li>
+                          ))}
+                      </ul>
+                    </motion.div>
+                  ))}
+                  <motion.div variants={columnVariants} transition={panelTransition}>
+                    <p className="eyebrow mb-4">Featured</p>
+                    <Link
+                      to="/category/$slug"
+                      params={{ slug: "winter" }}
+                      onClick={() => setOpen(false)}
+                    >
+                      <img
+                        src={categories.find((category) => category.slug === "winter")!.image}
+                        alt="Winter collection"
+                        width={900}
+                        height={1200}
+                        loading="lazy"
+                        className="aspect-[4/5] w-full rounded-[8px] object-cover"
+                      />
+                      <p className="mt-3 font-display text-base">Autumn / Winter 26</p>
+                      <p className="text-xs text-muted-foreground">
+                        Coats, heavy knits and outerwear
+                      </p>
+                    </Link>
+                  </motion.div>
+                </>
+              )}
             </motion.div>
           </motion.div>
         ) : null}
