@@ -8,7 +8,7 @@ import {
   type ReactNode,
 } from "react";
 import type { User as SupabaseUser } from "@supabase/supabase-js";
-import { products, type Product } from "./data";
+import { getProductVariant, products, type Product } from "./data";
 import { authConfigurationMessage, supabase, supabaseConfigured } from "./supabase";
 
 export type CartLine = {
@@ -90,7 +90,6 @@ type Ctx = State & {
   updatePassword: (password: string) => Promise<void>;
   addAddress: (address: Address) => void;
   removeAddress: (id: string) => void;
-  placeOrder: (total: number) => string;
   cartCount: number;
   subtotal: number;
   cartProducts: { line: CartLine; product: Product }[];
@@ -184,23 +183,34 @@ export function ShopProvider({ children }: { children: ReactNode }) {
 
   const addToCart = useCallback((line: CartLine) => {
     setState((s) => {
+      const product = products.find((item) => item.id === line.productId);
+      const variant = product ? getProductVariant(product, line.size, line.color) : null;
+      if (!variant || variant.stockCount <= 0 || line.quantity <= 0) return s;
+
       const idx = s.cart.findIndex(
         (l) => l.productId === line.productId && l.size === line.size && l.color === line.color,
       );
-      if (idx > -1) {
-        const cart = [...s.cart];
-        cart[idx] = { ...cart[idx]!, quantity: cart[idx]!.quantity + line.quantity };
-        return { ...s, cart };
-      }
-      return { ...s, cart: [...s.cart, line] };
+      const cart = [...s.cart];
+      const currentQuantity = idx > -1 ? cart[idx]!.quantity : 0;
+      const quantity = Math.min(variant.stockCount, currentQuantity + Math.floor(line.quantity));
+      if (idx > -1) cart[idx] = { ...cart[idx]!, quantity };
+      else cart.push({ ...line, quantity });
+      return { ...s, cart };
     });
   }, []);
 
   const updateQuantity = useCallback((index: number, quantity: number) => {
     setState((s) => {
+      if (!s.cart[index]) return s;
       const cart = [...s.cart];
       if (quantity <= 0) cart.splice(index, 1);
-      else cart[index] = { ...cart[index]!, quantity };
+      else {
+        const line = cart[index]!;
+        const product = products.find((item) => item.id === line.productId);
+        const variant = product ? getProductVariant(product, line.size, line.color) : null;
+        if (!variant || variant.stockCount <= 0) cart.splice(index, 1);
+        else cart[index] = { ...line, quantity: Math.min(variant.stockCount, Math.floor(quantity)) };
+      }
       return { ...s, cart };
     });
   }, []);
@@ -305,40 +315,6 @@ export function ShopProvider({ children }: { children: ReactNode }) {
     setState((s) => ({ ...s, addresses: s.addresses.filter((a) => a.id !== id) }));
   }, []);
 
-  const placeOrder = useCallback((total: number) => {
-    const id = `AN-${Math.floor(20000 + Math.random() * 9000)}`;
-    setState((s) => {
-      const items = s.cart.map((line) => {
-        const product = products.find((p) => p.id === line.productId)!;
-        return {
-          name: product.name,
-          quantity: line.quantity,
-          price: product.price,
-          image: product.images[0]!,
-        };
-      });
-      return {
-        ...s,
-        cart: [],
-        orders: [
-          {
-            id,
-            date: new Date().toLocaleDateString("en-IN", {
-              day: "numeric",
-              month: "long",
-              year: "numeric",
-            }),
-            status: "Processing",
-            total,
-            items,
-          },
-          ...s.orders,
-        ],
-      };
-    });
-    return id;
-  }, []);
-
   const cartProducts = useMemo(
     () =>
       state.cart
@@ -368,7 +344,6 @@ export function ShopProvider({ children }: { children: ReactNode }) {
     updatePassword,
     addAddress,
     removeAddress,
-    placeOrder,
     cartCount: state.cart.reduce((n, l) => n + l.quantity, 0),
     subtotal: cartProducts.reduce((n, { line, product }) => n + product.price * line.quantity, 0),
     cartProducts,
