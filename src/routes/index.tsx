@@ -13,6 +13,8 @@ import {
 import { ProductCard } from "@/components/site/ProductCard";
 import { SectionHeading } from "@/components/site/SectionHeading";
 import { Reveal } from "@/components/site/Reveal";
+import { StarRating } from "@/components/site/StarRating";
+import { NewsletterForm } from "@/components/site/NewsletterForm";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -298,12 +300,11 @@ function Home() {
           />
           <div className="mt-12 grid grid-cols-2 gap-2 md:grid-cols-3 lg:grid-cols-6">
             {galleryImages.map((image, i) => (
-              <Reveal key={image.slug} delay={(i % 6) * 0.04}>
-                <Link
-                  to="/product/$slug"
-                  params={{ slug: image.slug }}
+              <Reveal key={i} delay={(i % 6) * 0.04}>
+                <a
+                  href="https://www.instagram.com/louieheritage"
                   className="group block overflow-hidden rounded-[8px] bg-secondary"
-                  aria-label={`View ${image.alt}`}
+                  aria-label="View on Instagram"
                 >
                   <img
                     src={image.src}
@@ -313,7 +314,7 @@ function Home() {
                     loading="lazy"
                     className="aspect-square w-full object-cover transition-transform duration-[1200ms] ease-out group-hover:scale-105"
                   />
-                </Link>
+                </a>
               </Reveal>
             ))}
           </div>

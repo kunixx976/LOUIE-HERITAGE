@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Check } from "lucide-react";
-import { FREE_DELIVERY_THRESHOLD, STANDARD_DELIVERY_FEE } from "@/lib/shipping";
 import { formatPrice, useShop } from "@/lib/shop-store";
 import { supabase } from "@/lib/supabase";
 import { cn } from "@/lib/utils";
@@ -77,13 +76,9 @@ function loadRazorpay() {
 }
 
 function CheckoutPage() {
-  const { cartProducts, subtotal, discount, placeOrder, refreshOrders, addresses, hydrated, user } =
-    useShop();
+  const { cartProducts, subtotal, placeOrder, addresses } = useShop();
   const [step, setStep] = useState(0);
   const [orderId, setOrderId] = useState<string | null>(null);
-  const [emailSent, setEmailSent] = useState(false);
-  const [error, setError] = useState("");
-  const [submitting, setSubmitting] = useState(false);
   const [form, setForm] = useState({
     email: "",
     name: "",
@@ -92,17 +87,10 @@ function CheckoutPage() {
     postcode: "",
     country: "India",
     method: "standard",
-    paymentMethod: "razorpay" as "razorpay" | "cod",
+    card: "",
+    expiry: "",
+    cvc: "",
   });
-
-  useEffect(() => {
-    if (!hydrated || !user) return;
-    setForm((current) => ({
-      ...current,
-      email: current.email || user.email,
-      name: current.name || user.name,
-    }));
-  }, [hydrated, user]);
 
   const shipping =
     form.method === "express"
@@ -114,191 +102,17 @@ function CheckoutPage() {
   const set = (key: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement>) =>
     setForm((f) => ({ ...f, [key]: e.target.value }));
 
-  async function submitOrder() {
-    setError("");
-    setSubmitting(true);
-    try {
-      if (!supabase) {
-        throw new Error("Checkout is not configured. Please try again later.");
-      }
-      const client = supabase;
-
-      const checkout = {
-        email: user?.email.trim() || form.email.trim(),
-        name: form.name.trim(),
-        line1: form.line1.trim(),
-        city: form.city.trim(),
-        postcode: form.postcode.trim(),
-        country: form.country.trim(),
-        shippingMethod: form.method,
-        couponCode: discount > 0 ? "STUDIO10" : undefined,
-        items: cartProducts.map(({ line, product }) => ({
-          productId: product.id,
-          size: line.size,
-          color: line.color,
-          quantity: line.quantity,
-        })),
-      };
-
-      if (form.paymentMethod === "cod") {
-        const { data, error: functionError } = await client.functions.invoke<{
-          orderNumber: string;
-          emailSent: boolean;
-          error?: string;
-        }>("create-cod-order", { body: checkout });
-        if (functionError) throw new Error(data?.error ?? functionError.message);
-        if (!data?.orderNumber) throw new Error(data?.error ?? "Unable to place your order.");
-        setEmailSent(data.emailSent);
-        setOrderId(placeOrder(data.orderNumber));
-        void refreshOrders();
-        setStep(3);
-        return;
-      }
-
-      const { data: paymentOrder, error: createError } = await client.functions.invoke<{
-        orderNumber: string;
-        razorpayOrderId: string;
-        amount: number;
-        currency: string;
-        keyId: string;
-        abandonmentToken: string;
-        error?: string;
-      }>("create-razorpay-order", { body: checkout });
-      if (createError) throw new Error(paymentOrder?.error ?? createError.message);
-      if (!paymentOrder?.razorpayOrderId || !paymentOrder.keyId || !paymentOrder.abandonmentToken) {
-        throw new Error(paymentOrder?.error ?? "Unable to start payment. Please try again.");
-      }
-
-      await loadRazorpay();
-      await new Promise<void>((resolve, reject) => {
-        let settled = false;
-        const fail = (message: string) => {
-          if (settled) return;
-          settled = true;
-          reject(new Error(message));
-        };
-        const markAbandoned = async (reason: string) => {
-          if (settled) return;
-          try {
-            const { data: abandoned, error: abandonError } = await client.functions.invoke<{
-              abandoned: boolean;
-            }>("abandon-razorpay-order", {
-              body: {
-                razorpayOrderId: paymentOrder.razorpayOrderId,
-                abandonmentToken: paymentOrder.abandonmentToken,
-              },
-            });
-            if (abandonError) throw abandonError;
-            if (!abandoned?.abandoned) {
-              throw new Error("The payment may already have completed. Check your order history.");
-            }
-            fail(reason);
-          } catch (cause) {
-            console.error("Unable to record the cancelled payment.", cause);
-            fail(
-              cause instanceof Error
-                ? `${cause.message} Check order history before trying again.`
-                : "We couldn't update the payment status. Check order history before trying again.",
-            );
-          }
-        };
-        const Razorpay = window.Razorpay;
-        if (!Razorpay) {
-          fail("The secure payment window could not be loaded.");
-          return;
-        }
-        const instance = new Razorpay({
-          key: paymentOrder.keyId,
-          amount: paymentOrder.amount,
-          currency: paymentOrder.currency,
-          name: "LOUIE HERITAGE",
-          description: `Order ${paymentOrder.orderNumber}`,
-          order_id: paymentOrder.razorpayOrderId,
-          prefill: { name: form.name, email: checkout.email },
-          theme: { color: "#111111" },
-          modal: {
-            ondismiss: () =>
-              void markAbandoned("Payment window closed. Your order has not been confirmed."),
-          },
-          handler: (response) => {
-            void (async () => {
-              const { data, error: verifyError } = await client.functions.invoke<{
-                orderNumber: string;
-                emailSent: boolean;
-                error?: string;
-              }>("verify-razorpay-payment", { body: response });
-              if (verifyError || !data?.orderNumber) {
-                fail(
-                  data?.error ??
-                    verifyError?.message ??
-                    "We couldn't verify your payment. If you were charged, check order history before trying again.",
-                );
-                return;
-              }
-              if (settled) return;
-              settled = true;
-              setEmailSent(data.emailSent);
-              setOrderId(placeOrder(data.orderNumber));
-              void refreshOrders();
-              setStep(3);
-              resolve();
-            })().catch((cause: unknown) => {
-              fail(cause instanceof Error ? cause.message : "We couldn't verify your payment.");
-            });
-          },
-        });
-        instance.on("payment.failed", () => {
-          void markAbandoned("Payment failed. You can try again or choose cash on delivery.");
-        });
-        instance.open();
-      });
-    } catch (cause) {
-      setError(
-        cause instanceof Error ? cause.message : "Unable to complete checkout. Please try again.",
-      );
-    } finally {
-      setSubmitting(false);
-    }
-  }
-
-  if (!hydrated) {
-    return (
-      <div className="container-editorial flex min-h-[60vh] items-center justify-center py-20">
-        <p className="text-sm text-muted-foreground">Loading your bag…</p>
-      </div>
-    );
-  }
-
   if (orderId) {
     return (
-      <div className="container-editorial min-h-[70vh] py-16 md:py-20">
-        <ol
-          aria-label="Checkout progress"
-          className="mx-auto flex max-w-3xl items-center justify-between gap-2 border-b border-border pb-5 text-[10px] uppercase tracking-[0.1em] sm:text-xs sm:tracking-[0.14em]"
-        >
-          {steps.map((label) => (
-            <li key={label} className="flex items-center gap-2">
-              <span className="grid h-6 w-6 place-items-center rounded-full border border-foreground bg-foreground text-background">
-                <Check className="h-3.5 w-3.5" />
-              </span>
-              {label}
-            </li>
-          ))}
-        </ol>
-        <div className="mx-auto mt-16 max-w-md text-center">
+      <div className="container-editorial flex min-h-[70vh] items-center justify-center py-20">
+        <div className="max-w-md text-center">
           <div className="mx-auto grid h-14 w-14 place-items-center rounded-full border border-border">
             <Check className="h-6 w-6" strokeWidth={1.25} />
           </div>
-          <h1 className="mt-8 text-3xl">Your order is confirmed</h1>
+          <h1 className="mt-8 text-3xl">Thank you — your order is confirmed</h1>
           <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
-            Order {orderId} is confirmed
-            {form.paymentMethod === "cod"
-              ? " with cash due on delivery"
-              : " and your payment was verified"}
-            .
-            {emailSent
-              ? ` A confirmation email was sent to ${form.email}.`
-              : " We couldn't send a confirmation email. Your order is saved; use Track an order to check its status."}
+            Order {orderId} is being packed at our Meerut warehouse. You'll receive tracking
+            by email within 24 hours.
           </p>
           <div className="mt-9 flex flex-wrap justify-center gap-3">
             <Link
@@ -364,10 +178,8 @@ function CheckoutPage() {
             className="mt-9"
             onSubmit={(e) => {
               e.preventDefault();
-              if (step < 2) {
-                setError("");
-                setStep(step + 1);
-              } else void submitOrder();
+              if (step < 2) setStep(step + 1);
+              else setOrderId(placeOrder(total));
             }}
           >
             {step === 0 ? (
@@ -517,47 +329,15 @@ function CheckoutPage() {
             ) : null}
 
             {step === 1 ? (
-              <div className="rounded-[8px] border border-border p-5">
-                <p className="eyebrow">Payment method</p>
-                <div className="mt-4 space-y-3">
-                  {[
-                    {
-                      id: "razorpay" as const,
-                      title: "Pay online",
-                      detail: "UPI or credit/debit card via Razorpay",
-                    },
-                    {
-                      id: "cod" as const,
-                      title: "Cash on delivery",
-                      detail: "Pay when your order arrives",
-                    },
-                  ].map((option) => (
-                    <label
-                      key={option.id}
-                      className={cn(
-                        "flex cursor-pointer items-start gap-3 rounded-[8px] border border-border p-4 transition-colors",
-                        form.paymentMethod === option.id && "border-foreground",
-                      )}
-                    >
-                      <input
-                        type="radio"
-                        name="paymentMethod"
-                        value={option.id}
-                        checked={form.paymentMethod === option.id}
-                        onChange={() =>
-                          setForm((current) => ({ ...current, paymentMethod: option.id }))
-                        }
-                        className="mt-1 accent-black"
-                      />
-                      <span>
-                        <span className="block text-sm">{option.title}</span>
-                        <span className="mt-1 block text-xs text-muted-foreground">
-                          {option.detail}
-                        </span>
-                      </span>
-                    </label>
-                  ))}
+              <div className="space-y-4">
+                <input required placeholder="Card number" value={form.card} onChange={set("card")} className={field} inputMode="numeric" />
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <input required placeholder="MM / YY" value={form.expiry} onChange={set("expiry")} className={field} />
+                  <input required placeholder="CVC" value={form.cvc} onChange={set("cvc")} className={field} inputMode="numeric" />
                 </div>
+                <p className="text-xs text-muted-foreground">
+                  Payments are encrypted and processed securely. We never store card details.
+                </p>
               </div>
             ) : null}
 
@@ -571,18 +351,9 @@ function CheckoutPage() {
                   </p>
                 </div>
                 <div className="rounded-[8px] border border-border p-5">
-                  <p className="eyebrow mb-2">Payment & delivery</p>
-                  <p>
-                    {form.paymentMethod === "cod"
-                      ? "Cash on delivery"
-                      : "UPI or credit/debit card — processed securely by Razorpay"}
-                  </p>
-                  <p className="mt-2 text-muted-foreground">
-                    {form.method === "express"
-                      ? "Express delivery — ₹199"
-                      : `Standard delivery — ${
-                          shipping === 0 ? "Free" : formatPrice(STANDARD_DELIVERY_FEE)
-                        }`}
+                  <p className="eyebrow mb-2">Paying with</p>
+                  <p className="text-muted-foreground">
+                    Card ending {form.card.slice(-4) || "••••"} · {form.method === "express" ? "Express" : "Standard"} delivery
                   </p>
                 </div>
               </div>
@@ -610,16 +381,9 @@ function CheckoutPage() {
               ) : null}
               <button
                 type="submit"
-                disabled={submitting}
-                className="flex-1 rounded-[8px] bg-foreground py-4 text-[11px] font-medium uppercase tracking-[0.16em] text-background transition-colors hover:bg-hover-accent disabled:cursor-wait disabled:opacity-60"
+                className="flex-1 rounded-[8px] bg-foreground py-4 text-[11px] font-medium uppercase tracking-[0.16em] text-background transition-colors hover:bg-hover-accent"
               >
-                {submitting
-                  ? "Processing…"
-                  : step === 2
-                    ? form.paymentMethod === "cod"
-                      ? `Place COD order — ${formatPrice(total)}`
-                      : `Pay securely — ${formatPrice(total)}`
-                    : "Continue"}
+                {step === 2 ? `Place order — ${formatPrice(total)}` : "Continue"}
               </button>
             </div>
           </form>

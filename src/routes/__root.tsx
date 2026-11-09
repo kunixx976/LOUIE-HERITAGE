@@ -145,7 +145,9 @@ function RootComponent() {
           <Navbar />
           <main id="main" className="flex-1 pt-16 md:pt-[72px]">
             {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-            <Outlet />
+            <div key={pathname} className="animate-fade-up">
+              <Outlet />
+            </div>
           </main>
           <Footer />
         </div>

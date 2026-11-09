@@ -36,8 +36,8 @@ function CartPage() {
     hydrated,
   } = useShop();
   const [coupon, setCoupon] = useState("");
-  const shipping =
-    subtotal === 0 ? 0 : subtotal > FREE_DELIVERY_THRESHOLD ? 0 : STANDARD_DELIVERY_FEE;
+  const [discount, setDiscount] = useState(0);
+  const shipping = subtotal > 150 || subtotal === 0 ? 0 : 6;
   const total = Math.max(0, subtotal - discount) + shipping;
 
   return (

@@ -663,85 +663,11 @@ const rawProducts: Parameters<typeof normalizeProduct>[0][] = [
       649,
     ),
   },
-  {
-    id: "13",
-    slug: "tirupur-airy-cotton-shirt",
-    name: "Airy Cotton Shirt",
-    price: checkoutCatalog["13"].price,
-    images: [p2, p1],
-    categories: ["women", "casual", "summer"],
-    colors: [
-      { name: "Soft White", hex: "#F4F1E9" },
-      { name: "Sage", hex: "#A8B3A0" },
-    ],
-    sizes: SIZES,
-    tags: ["new", "seasonal"],
-    fabric: "Lightweight 100% cotton voile",
-    description:
-      "An easy, breathable cotton shirt with a relaxed fit and softly curved hem, made for warm days and open windows.",
-    details: [
-      "Relaxed fit with a curved hem",
-      "Lightweight cotton voile",
-      "Lightweight cotton voile",
-      "Machine wash cold, line dry",
-    ],
-    variants: buildVariants(
-      "13",
-      [
-        { name: "Soft White", hex: "#F4F1E9" },
-        { name: "Sage", hex: "#A8B3A0" },
-      ],
-      SIZES,
-      {
-        "Soft White": { XS: 5, S: 8, M: 10, L: 8, XL: 5 },
-        Sage: { XS: 4, S: 7, M: 9, L: 7, XL: 4 },
-      },
-      [p2, p1],
-      1399,
-    ),
-  },
-  {
-    id: "14",
-    slug: "everyday-cotton-kurta",
-    name: "Everyday Cotton Kurta",
-    price: checkoutCatalog["14"].price,
-    images: [catWomen, p5],
-    categories: ["women", "ethnic", "summer"],
-    colors: [
-      { name: "Powder Blue", hex: "#B7C7D6" },
-      { name: "Clay", hex: "#C08A6E" },
-    ],
-    sizes: SIZES,
-    tags: ["new", "seasonal"],
-    fabric: "Breathable cotton-viscose",
-    description:
-      "A light, straight-cut kurta with a clean neckline and easy three-quarter sleeves, designed for warm days and everyday wear.",
-    details: [
-      "Straight fit with side slits",
-      "Breathable cotton-viscose fabric",
-      "Cotton-viscose fabric",
-      "Gentle machine wash, dry in shade",
-    ],
-    variants: buildVariants(
-      "14",
-      [
-        { name: "Powder Blue", hex: "#B7C7D6" },
-        { name: "Clay", hex: "#C08A6E" },
-      ],
-      SIZES,
-      {
-        "Powder Blue": { XS: 4, S: 7, M: 9, L: 7, XL: 4 },
-        Clay: { XS: 4, S: 6, M: 8, L: 6, XL: 3 },
-      },
-      [catWomen, p5],
-      1599,
-    ),
-  },
-];
+].map(normalizeProduct);
 
-export const products: Product[] = rawProducts.map(normalizeProduct);
+export const products: Product[] = rawProducts;
 
-export const featuredProducts = products.slice(0, 8);
+export const bestSellers = products.filter((p) => p.tags.includes("best-seller"));
 export const newArrivals = products.filter((p) => p.tags.includes("new"));
 export const summerProducts = products.filter((p) => p.categories.includes("summer") && p.inStock);
 export const winterProducts = products.filter((p) => p.categories.includes("winter") && p.inStock);
