@@ -2,13 +2,12 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowRight } from "lucide-react";
 import hero from "@/assets/hero.jpg";
 import editorial from "@/assets/editorial.jpg";
-import { bestSellers, categories, newArrivals, reviews, seasonal } from "@/lib/data";
+import { bestSellers, categories, galleryImages, newArrivals, reviews, seasonal } from "@/lib/data";
 import { ProductCard } from "@/components/site/ProductCard";
 import { SectionHeading } from "@/components/site/SectionHeading";
 import { Reveal } from "@/components/site/Reveal";
 import { StarRating } from "@/components/site/StarRating";
 import { NewsletterForm } from "@/components/site/NewsletterForm";
-import { BarrelGallery } from "@/components/site/BarrelGallery";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -297,8 +296,25 @@ function Home() {
             description="Tag your pieces with #LOUIEHERITAGE for a chance to be featured."
             align="center"
           />
-          <div className="mt-12">
-            <BarrelGallery />
+          <div className="mt-12 grid grid-cols-2 gap-2 md:grid-cols-3 lg:grid-cols-6">
+            {galleryImages.map((image, i) => (
+              <Reveal key={i} delay={(i % 6) * 0.04}>
+                <a
+                  href="https://www.instagram.com/louieheritage"
+                  className="group block overflow-hidden rounded-[8px] bg-secondary"
+                  aria-label="View on Instagram"
+                >
+                  <img
+                    src={image.src}
+                    alt={image.alt}
+                    width={900}
+                    height={1200}
+                    loading="lazy"
+                    className="aspect-square w-full object-cover transition-transform duration-[1200ms] ease-out group-hover:scale-105"
+                  />
+                </a>
+              </Reveal>
+            ))}
           </div>
         </div>
       </section>
