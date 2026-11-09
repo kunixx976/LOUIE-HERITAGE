@@ -1,11 +1,11 @@
-import { useEffect, useRef, useState } from "react";
-import { motion, useMotionValue, useReducedMotion, useSpring } from "motion/react";
+import { useEffect, useState } from "react";
+import { motion, useAnimationFrame, useMotionValue, useReducedMotion, useSpring } from "motion/react";
 import { galleryImages } from "@/lib/data";
 
 export function WornByBarrelGallery() {
   const sceneRef = useRef<HTMLDivElement>(null);
-  const isDragging = useRef(false);
   const [geometry, setGeometry] = useState({ panelWidth: 160, radius: 138 });
+  const [paused, setPaused] = useState(false);
   const rotation = useMotionValue(-8);
   const springRotation = useSpring(rotation, { stiffness: 110, damping: 24, mass: 0.9 });
   const reduceMotion = useReducedMotion();
@@ -26,9 +26,11 @@ export function WornByBarrelGallery() {
     return () => observer.disconnect();
   }, []);
 
-  const rotateBy = (degrees: number) => {
-    rotation.set(rotation.get() + degrees);
-  };
+  useAnimationFrame((_, delta) => {
+    if (!reduceMotion && !paused) {
+      rotation.set(rotation.get() + Math.min(delta, 50) * 0.004);
+    }
+  });
 
   return (
     <div
@@ -38,20 +40,14 @@ export function WornByBarrelGallery() {
     >
       <motion.div
         role="region"
-        aria-label="Worn by you gallery. Drag horizontally or use the arrow keys to rotate."
-        tabIndex={0}
-        onPanStart={() => {
-          isDragging.current = true;
-        }}
-        onPan={(_, info) => rotateBy(info.delta.x * 0.5)}
-        onPanEnd={() => {
-          window.requestAnimationFrame(() => {
-            isDragging.current = false;
-          });
-        }}
-        onKeyDown={(event) => {
-          if (event.key === "ArrowLeft") rotateBy(-24);
-          if (event.key === "ArrowRight") rotateBy(24);
+        aria-label="Worn by you gallery. It rotates slowly and pauses when hovered or focused."
+        onMouseEnter={() => setPaused(true)}
+        onMouseLeave={() => setPaused(false)}
+        onFocus={() => setPaused(true)}
+        onBlur={(event) => {
+          if (!event.currentTarget.contains(event.relatedTarget as Node | null)) {
+            setPaused(false);
+          }
         }}
         initial={reduceMotion ? { opacity: 0 } : { opacity: 0, rotateX: -5 }}
         animate={{ opacity: 1, rotateX: 0 }}
@@ -60,7 +56,7 @@ export function WornByBarrelGallery() {
             ? { duration: 0 }
             : { type: "spring", stiffness: 110, damping: 24, mass: 0.9 }
         }
-        className="absolute inset-0 cursor-grab outline-none active:cursor-grabbing focus-visible:ring-1 focus-visible:ring-foreground"
+        className="absolute inset-0 outline-none"
         style={{
           rotateY: reduceMotion ? rotation : springRotation,
           transformStyle: "preserve-3d",
@@ -74,9 +70,6 @@ export function WornByBarrelGallery() {
               key={image.src}
               href="https://www.instagram.com/louieheritage"
               aria-label={`View ${image.alt} on Instagram`}
-              onClick={(event) => {
-                if (isDragging.current) event.preventDefault();
-              }}
               className="absolute left-1/2 top-1/2 block overflow-hidden rounded-[8px] bg-secondary shadow-lg"
               style={{
                 width: geometry.panelWidth,
@@ -104,7 +97,7 @@ export function WornByBarrelGallery() {
 
       <div className="pointer-events-none absolute inset-x-0 bottom-0 flex justify-center">
         <p className="rounded-full bg-background/85 px-4 py-2 text-[10px] uppercase tracking-[0.14em] text-muted-foreground backdrop-blur">
-          Drag to rotate
+          Slowly rotating · hover to pause
         </p>
       </div>
     </div>
