@@ -31,8 +31,9 @@ function ContactPage() {
           className="space-y-4 lg:col-span-7"
           onSubmit={(e) => {
             e.preventDefault();
-            toast("Message sent", { description: "We'll reply within one working day." });
-            (e.target as HTMLFormElement).reset();
+            toast("Contact form is unavailable", {
+              description: "Your message has not been sent.",
+            });
           }}
         >
           <div className="grid gap-4 sm:grid-cols-2">
