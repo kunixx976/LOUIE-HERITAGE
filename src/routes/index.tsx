@@ -2,13 +2,13 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowRight } from "lucide-react";
 import hero from "@/assets/hero.jpg";
 import editorial from "@/assets/editorial.jpg";
-import { bestSellers, categories, newArrivals, reviews, seasonal } from "@/lib/data";
+import { bestSellers, categories, galleryImages, newArrivals, reviews, seasonal } from "@/lib/data";
 import { ProductCard } from "@/components/site/ProductCard";
 import { SectionHeading } from "@/components/site/SectionHeading";
 import { Reveal } from "@/components/site/Reveal";
 import { StarRating } from "@/components/site/StarRating";
 import { NewsletterForm } from "@/components/site/NewsletterForm";
-import { BarrelGallery } from "@/components/site/BarrelGallery";
+import { WornByBarrelGallery } from "@/components/site/WornByBarrelGallery";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -298,7 +298,7 @@ function Home() {
             align="center"
           />
           <div className="mt-12">
-            <BarrelGallery />
+            <WornByBarrelGallery />
           </div>
         </div>
       </section>

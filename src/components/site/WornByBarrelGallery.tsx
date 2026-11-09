@@ -2,12 +2,12 @@ import { useEffect, useRef, useState } from "react";
 import { motion, useMotionValue, useReducedMotion, useSpring } from "motion/react";
 import { galleryImages } from "@/lib/data";
 
-export function BarrelGallery() {
+export function WornByBarrelGallery() {
   const sceneRef = useRef<HTMLDivElement>(null);
-  const dragging = useRef(false);
+  const isDragging = useRef(false);
   const [geometry, setGeometry] = useState({ panelWidth: 160, radius: 138 });
-  const rotation = useMotionValue(0);
-  const springRotation = useSpring(rotation, { stiffness: 120, damping: 22, mass: 0.9 });
+  const rotation = useMotionValue(-8);
+  const springRotation = useSpring(rotation, { stiffness: 110, damping: 24, mass: 0.9 });
   const reduceMotion = useReducedMotion();
 
   useEffect(() => {
@@ -26,7 +26,9 @@ export function BarrelGallery() {
     return () => observer.disconnect();
   }, []);
 
-  const turnBy = (degrees: number) => rotation.set(rotation.get() + degrees);
+  const rotateBy = (degrees: number) => {
+    rotation.set(rotation.get() + degrees);
+  };
 
   return (
     <div
@@ -36,21 +38,28 @@ export function BarrelGallery() {
     >
       <motion.div
         role="region"
-        aria-label="Worn by you gallery. Drag horizontally or use the arrow keys to explore."
+        aria-label="Worn by you gallery. Drag horizontally or use the arrow keys to rotate."
         tabIndex={0}
         onPanStart={() => {
-          dragging.current = true;
+          isDragging.current = true;
         }}
-        onPan={(_, info) => turnBy(info.delta.x * 0.45)}
+        onPan={(_, info) => rotateBy(info.delta.x * 0.5)}
         onPanEnd={() => {
           window.requestAnimationFrame(() => {
-            dragging.current = false;
+            isDragging.current = false;
           });
         }}
         onKeyDown={(event) => {
-          if (event.key === "ArrowLeft") turnBy(-20);
-          if (event.key === "ArrowRight") turnBy(20);
+          if (event.key === "ArrowLeft") rotateBy(-24);
+          if (event.key === "ArrowRight") rotateBy(24);
         }}
+        initial={reduceMotion ? { opacity: 0 } : { opacity: 0, rotateX: -5 }}
+        animate={{ opacity: 1, rotateX: 0 }}
+        transition={
+          reduceMotion
+            ? { duration: 0 }
+            : { type: "spring", stiffness: 110, damping: 24, mass: 0.9 }
+        }
         className="absolute inset-0 cursor-grab outline-none active:cursor-grabbing focus-visible:ring-1 focus-visible:ring-foreground"
         style={{
           rotateY: reduceMotion ? rotation : springRotation,
@@ -66,7 +75,7 @@ export function BarrelGallery() {
               href="https://www.instagram.com/louieheritage"
               aria-label={`View ${image.alt} on Instagram`}
               onClick={(event) => {
-                if (dragging.current) event.preventDefault();
+                if (isDragging.current) event.preventDefault();
               }}
               className="absolute left-1/2 top-1/2 block overflow-hidden rounded-[8px] bg-secondary shadow-lg"
               style={{
@@ -95,7 +104,7 @@ export function BarrelGallery() {
 
       <div className="pointer-events-none absolute inset-x-0 bottom-0 flex justify-center">
         <p className="rounded-full bg-background/85 px-4 py-2 text-[10px] uppercase tracking-[0.14em] text-muted-foreground backdrop-blur">
-          Drag to explore
+          Drag to rotate
         </p>
       </div>
     </div>
