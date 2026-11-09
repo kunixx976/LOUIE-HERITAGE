@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useId, useState } from "react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
 export function NewsletterForm({ className }: { className?: string }) {
   const [email, setEmail] = useState("");
+  const inputId = useId();
 
   return (
     <form
@@ -14,17 +15,16 @@ export function NewsletterForm({ className }: { className?: string }) {
           toast("Please enter a valid email address");
           return;
         }
-        toast("Welcome to LOUIE HERITAGE", {
-          description: "Look out for the collection preview in your inbox.",
+        toast("Newsletter sign-up is unavailable", {
+          description: "Your email has not been submitted.",
         });
-        setEmail("");
       }}
     >
-      <label htmlFor="newsletter-email" className="sr-only">
+      <label htmlFor={inputId} className="sr-only">
         Email address
       </label>
       <input
-        id="newsletter-email"
+        id={inputId}
         type="email"
         required
         value={email}
