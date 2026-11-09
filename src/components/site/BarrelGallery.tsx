@@ -4,6 +4,7 @@ import { galleryImages } from "@/lib/data";
 
 export function BarrelGallery() {
   const sceneRef = useRef<HTMLDivElement>(null);
+  const dragging = useRef(false);
   const [geometry, setGeometry] = useState({ panelWidth: 160, radius: 138 });
   const rotation = useMotionValue(0);
   const springRotation = useSpring(rotation, { stiffness: 120, damping: 22, mass: 0.9 });
@@ -37,7 +38,15 @@ export function BarrelGallery() {
         role="region"
         aria-label="Worn by you gallery. Drag horizontally or use the arrow keys to explore."
         tabIndex={0}
+        onPanStart={() => {
+          dragging.current = true;
+        }}
         onPan={(_, info) => turnBy(info.delta.x * 0.45)}
+        onPanEnd={() => {
+          window.requestAnimationFrame(() => {
+            dragging.current = false;
+          });
+        }}
         onKeyDown={(event) => {
           if (event.key === "ArrowLeft") turnBy(-20);
           if (event.key === "ArrowRight") turnBy(20);
@@ -56,6 +65,9 @@ export function BarrelGallery() {
               key={image.src}
               href="https://www.instagram.com/louieheritage"
               aria-label={`View ${image.alt} on Instagram`}
+              onClick={(event) => {
+                if (dragging.current) event.preventDefault();
+              }}
               className="absolute left-1/2 top-1/2 block overflow-hidden rounded-[8px] bg-secondary shadow-lg"
               style={{
                 width: geometry.panelWidth,
