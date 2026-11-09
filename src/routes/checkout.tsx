@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Check } from "lucide-react";
 import { formatPrice, useShop } from "@/lib/shop-store";
 import { cn } from "@/lib/utils";
 
@@ -23,9 +22,8 @@ const field =
   "h-12 w-full rounded-[8px] border border-border bg-background px-4 text-sm outline-none transition-colors focus:border-foreground";
 
 function CheckoutPage() {
-  const { cartProducts, subtotal, placeOrder, addresses } = useShop();
+  const { cartProducts, subtotal, addresses } = useShop();
   const [step, setStep] = useState(0);
-  const [orderId, setOrderId] = useState<string | null>(null);
   const [form, setForm] = useState({
     email: "",
     name: "",
@@ -34,46 +32,12 @@ function CheckoutPage() {
     postcode: "",
     country: "India",
     method: "standard",
-    card: "",
-    expiry: "",
-    cvc: "",
   });
 
   const shipping = form.method === "express" ? 199 : subtotal > 1499 ? 0 : 79;
   const total = subtotal + shipping;
   const set = (key: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement>) =>
     setForm((f) => ({ ...f, [key]: e.target.value }));
-
-  if (orderId) {
-    return (
-      <div className="container-editorial flex min-h-[70vh] items-center justify-center py-20">
-        <div className="max-w-md text-center">
-          <div className="mx-auto grid h-14 w-14 place-items-center rounded-full border border-border">
-            <Check className="h-6 w-6" strokeWidth={1.25} />
-          </div>
-          <h1 className="mt-8 text-3xl">Thank you — your order is confirmed</h1>
-          <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
-            Order {orderId} is being packed at our Meerut warehouse. You'll receive tracking
-            by email within 24 hours.
-          </p>
-          <div className="mt-9 flex flex-wrap justify-center gap-3">
-            <Link
-              to="/orders"
-              className="rounded-[8px] bg-foreground px-7 py-3.5 text-[11px] font-medium uppercase tracking-[0.16em] text-background transition-colors hover:bg-hover-accent"
-            >
-              View order
-            </Link>
-            <Link
-              to="/shop"
-              className="rounded-[8px] border border-border px-7 py-3.5 text-[11px] font-medium uppercase tracking-[0.16em] transition-colors hover:border-foreground"
-            >
-              Continue shopping
-            </Link>
-          </div>
-        </div>
-      </div>
-    );
-  }
 
   if (cartProducts.length === 0) {
     return (
@@ -121,7 +85,6 @@ function CheckoutPage() {
             onSubmit={(e) => {
               e.preventDefault();
               if (step < 2) setStep(step + 1);
-              else setOrderId(placeOrder(total));
             }}
           >
             {step === 0 ? (
@@ -195,15 +158,8 @@ function CheckoutPage() {
             ) : null}
 
             {step === 1 ? (
-              <div className="space-y-4">
-                <input required placeholder="Card number" value={form.card} onChange={set("card")} className={field} inputMode="numeric" />
-                <div className="grid gap-4 sm:grid-cols-2">
-                  <input required placeholder="MM / YY" value={form.expiry} onChange={set("expiry")} className={field} />
-                  <input required placeholder="CVC" value={form.cvc} onChange={set("cvc")} className={field} inputMode="numeric" />
-                </div>
-                <p className="text-xs text-muted-foreground">
-                  Payments are encrypted and processed securely. We never store card details.
-                </p>
+              <div className="rounded-[8px] border border-border p-5 text-sm leading-relaxed text-muted-foreground" role="status">
+                Online payment is not available yet. No payment details are collected, and this checkout cannot place an order.
               </div>
             ) : null}
 
@@ -217,9 +173,9 @@ function CheckoutPage() {
                   </p>
                 </div>
                 <div className="rounded-[8px] border border-border p-5">
-                  <p className="eyebrow mb-2">Paying with</p>
+                  <p className="eyebrow mb-2">Payment</p>
                   <p className="text-muted-foreground">
-                    Card ending {form.card.slice(-4) || "••••"} · {form.method === "express" ? "Express" : "Standard"} delivery
+                    Online payment is not configured · {form.method === "express" ? "Express" : "Standard"} delivery
                   </p>
                 </div>
               </div>
@@ -236,10 +192,11 @@ function CheckoutPage() {
                 </button>
               ) : null}
               <button
-                type="submit"
-                className="flex-1 rounded-[8px] bg-foreground py-4 text-[11px] font-medium uppercase tracking-[0.16em] text-background transition-colors hover:bg-hover-accent"
+                type={step === 2 ? "button" : "submit"}
+                disabled={step === 2}
+                className="flex-1 rounded-[8px] bg-foreground py-4 text-[11px] font-medium uppercase tracking-[0.16em] text-background transition-colors enabled:hover:bg-hover-accent disabled:cursor-not-allowed disabled:opacity-60"
               >
-                {step === 2 ? `Place order — ${formatPrice(total)}` : "Continue"}
+                {step === 2 ? "Order placement unavailable" : "Continue"}
               </button>
             </div>
           </form>
