@@ -22,7 +22,7 @@ export const Route = createFileRoute("/orders")({
 });
 
 function OrdersPage() {
-  const { orders, user, hydrated, ordersLoading, ordersError, refreshOrders } = useShop();
+  const { orders, user, hydrated, ordersLoading, ordersError } = useShop();
 
   return (
     <>
@@ -58,7 +58,7 @@ function OrdersPage() {
             </p>
             <button
               type="button"
-              onClick={() => void refreshOrders()}
+              onClick={() => window.location.reload()}
               className="mt-5 rounded-[8px] border border-border px-6 py-3 text-[11px] uppercase tracking-[0.14em] transition-colors hover:border-foreground"
             >
               Try again

@@ -1,32 +1,19 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
-import { Link, useRouterState } from "@tanstack/react-router";
+import { Link } from "@tanstack/react-router";
 import { Heart, Menu, Search, ShoppingBag, User, X } from "lucide-react";
 import { categories, products } from "@/lib/data";
 import { formatPrice, useShop } from "@/lib/shop-store";
-import { cn } from "@/lib/utils";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 
 const groups = ["Collections", "Clothing", "Seasonal"] as const;
 
 export function Navbar() {
-  const pathname = useRouterState({ select: (s) => s.location.pathname });
-  const isHome = pathname === "/";
-  const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [query, setQuery] = useState("");
   const { cartCount, wishlist, user, hydrated } = useShop();
-
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 24);
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
-
-  const transparent = isHome && !scrolled;
 
   const results = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -43,23 +30,24 @@ export function Navbar() {
 
   return (
     <>
-      <header
-        className={cn(
-          "fixed inset-x-0 top-0 z-50 transition-colors duration-500",
-          transparent
-            ? "border-b border-transparent bg-transparent text-background"
-            : "border-b border-border bg-background/95 text-foreground backdrop-blur",
-        )}
-      >
+      <header className="fixed inset-x-0 top-0 z-[100] border-b border-border bg-background text-foreground shadow-sm">
         <div className="container-editorial">
           <div className="grid h-16 grid-cols-[1fr_auto_1fr] items-center gap-4 md:h-[72px]">
             {/* Left — navigation */}
             <nav className="hidden items-center gap-7 lg:flex" aria-label="Primary">
               <MegaMenu label="Shop" />
-              <Link to="/category/$slug" params={{ slug: "women" }} className="text-sm font-medium transition-colors hover:text-muted-foreground">
+              <Link
+                to="/category/$slug"
+                params={{ slug: "women" }}
+                className="text-sm font-medium transition-colors hover:text-muted-foreground"
+              >
                 Women
               </Link>
-              <Link to="/category/$slug" params={{ slug: "men" }} className="text-sm font-medium transition-colors hover:text-muted-foreground">
+              <Link
+                to="/category/$slug"
+                params={{ slug: "men" }}
+                className="text-sm font-medium transition-colors hover:text-muted-foreground"
+              >
                 Men
               </Link>
               <Link
@@ -172,9 +160,7 @@ export function Navbar() {
                 <ShoppingBag className="h-[18px] w-[18px]" strokeWidth={1.25} />
                 {hydrated ? (
                   <span className="absolute right-2 top-2 grid h-4 min-w-4 place-items-center rounded-full bg-current px-1 text-[9px] font-medium leading-none">
-                    <span className={transparent ? "text-foreground" : "text-background"}>
-                      {cartCount}
-                    </span>
+                    <span className="text-background">{cartCount}</span>
                   </span>
                 ) : null}
               </Link>
@@ -263,13 +249,7 @@ const womenMenuLinks = [
   { label: "Accessories", slug: "accessories" },
 ] as const;
 
-function MegaMenu({
-  label,
-  variant = "shop",
-}: {
-  label: string;
-  variant?: "shop" | "women";
-}) {
+function MegaMenu({ label, variant = "shop" }: { label: string; variant?: "shop" | "women" }) {
   const [open, setOpen] = useState(false);
   const reduceMotion = useReducedMotion();
   const isWomen = variant === "women";
