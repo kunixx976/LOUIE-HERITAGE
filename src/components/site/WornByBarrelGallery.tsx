@@ -94,12 +94,6 @@ export function WornByBarrelGallery() {
           );
         })}
       </motion.div>
-
-      <div className="pointer-events-none absolute inset-x-0 bottom-0 flex justify-center">
-        <p className="rounded-full bg-background/85 px-4 py-2 text-[10px] uppercase tracking-[0.14em] text-muted-foreground backdrop-blur">
-          Slowly rotating · hover to pause
-        </p>
-      </div>
     </div>
   );
 }
