@@ -667,6 +667,7 @@ const rawProducts: Parameters<typeof normalizeProduct>[0][] = [
 
 export const products: Product[] = rawProducts;
 
+export const featuredProducts = products.slice(0, 8);
 export const bestSellers = products.filter((p) => p.tags.includes("best-seller"));
 export const newArrivals = products.filter((p) => p.tags.includes("new"));
 export const summerProducts = products.filter((p) => p.categories.includes("summer") && p.inStock);
