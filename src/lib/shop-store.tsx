@@ -242,7 +242,7 @@ export function ShopProvider({ children }: { children: ReactNode }) {
       );
       const cart = [...s.cart];
       const currentQuantity = idx > -1 ? cart[idx]!.quantity : 0;
-      const quantity = Math.min(variant.stockCount, currentQuantity + Math.floor(line.quantity));
+      const quantity = Math.min(variant.stockCount, 10, currentQuantity + Math.floor(line.quantity));
       if (idx > -1) cart[idx] = { ...cart[idx]!, quantity };
       else cart.push({ ...line, quantity });
       return { ...s, cart };
@@ -253,8 +253,11 @@ export function ShopProvider({ children }: { children: ReactNode }) {
     setState((s) => {
       if (!s.cart[index]) return s;
       const cart = [...s.cart];
-      if (quantity <= 0) cart.splice(index, 1);
-      else cart[index] = { ...cart[index]!, quantity };
+      const line = cart[index]!;
+      const product = products.find((item) => item.id === line.productId);
+      const variant = product ? getProductVariant(product, line.size, line.color) : null;
+      if (quantity <= 0 || !variant || variant.stockCount <= 0) cart.splice(index, 1);
+      else cart[index] = { ...line, quantity: Math.min(Math.floor(quantity), variant.stockCount, 10) };
       return { ...s, cart };
     });
   }, []);

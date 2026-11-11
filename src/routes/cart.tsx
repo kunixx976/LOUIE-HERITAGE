@@ -44,11 +44,16 @@ function CartPage() {
       <PageHeader title="Shopping bag" crumbs={[{ label: "Bag" }]} />
 
       <div className="container-editorial py-12 md:py-16">
-        {!hydrated ? null : cartProducts.length === 0 ? (
+        {!hydrated ? (
+          <div className="space-y-4" aria-busy="true" aria-label="Loading your bag">
+            <div className="h-5 w-40 animate-pulse rounded bg-secondary" />
+            <div className="h-28 animate-pulse rounded-[8px] bg-secondary" />
+          </div>
+        ) : cartProducts.length === 0 ? (
           <div className="py-16 text-center">
             <p className="font-display text-2xl">Your bag is empty</p>
             <p className="mt-3 text-sm text-muted-foreground">
-              Start with the pieces our customers return for most.
+              Browse the collection and find something you love.
             </p>
             <Link
               to="/shop"
@@ -131,7 +136,7 @@ function CartPage() {
               <div className="rounded-[10px] border border-border p-7 lg:sticky lg:top-28">
                 <h2 className="text-xl">Order summary</h2>
                 <p className="mt-3 rounded-[6px] bg-surface px-4 py-3 text-xs leading-relaxed text-muted-foreground">
-                  Delivery charges are shown in your checkout total.
+                  {subtotal > FREE_DELIVERY_THRESHOLD ? "Free standard delivery unlocked." : `Add ${formatPrice(FREE_DELIVERY_THRESHOLD + 1 - subtotal)} for free standard delivery.`}
                 </p>
 
                 <form
