@@ -1,5 +1,11 @@
 import { useEffect, useRef, useState } from "react";
-import { motion, useAnimationFrame, useMotionValue, useReducedMotion, useSpring } from "motion/react";
+import {
+  motion,
+  useAnimationFrame,
+  useMotionValue,
+  useReducedMotion,
+  useSpring,
+} from "motion/react";
 import { galleryImages } from "@/lib/data";
 
 export function WornByBarrelGallery() {
@@ -97,7 +103,7 @@ export function WornByBarrelGallery() {
 
       <div className="pointer-events-none absolute inset-x-0 bottom-0 flex justify-center">
         <p className="rounded-full bg-background/85 px-4 py-2 text-[10px] uppercase tracking-[0.14em] text-muted-foreground backdrop-blur">
-          Drag to rotate
+          Slowly rotating · hover to pause
         </p>
       </div>
     </div>
