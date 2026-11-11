@@ -35,7 +35,7 @@ export type Order = {
   date: string;
   status: string;
   total: number;
-  paymentMethod: "razorpay" | "cod";
+  paymentMethod: "razorpay" | "cod" | "upi";
   paymentStatus: string;
   trackingCarrier: string | null;
   trackingNumber: string | null;
@@ -54,7 +54,7 @@ type OrderRecord = {
   order_number: string;
   status: string;
   total: number;
-  payment_method: "razorpay" | "cod";
+  payment_method: "razorpay" | "cod" | "upi";
   payment_status: string;
   tracking_carrier: string | null;
   tracking_number: string | null;
