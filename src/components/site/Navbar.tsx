@@ -36,13 +36,7 @@ export function Navbar() {
             {/* Left — navigation */}
             <nav className="hidden items-center gap-7 lg:flex" aria-label="Primary">
               <MegaMenu label="Shop" />
-              <Link
-                to="/category/$slug"
-                params={{ slug: "women" }}
-                className="text-sm font-medium transition-colors hover:text-muted-foreground"
-              >
-                Women
-              </Link>
+              <MegaMenu label="Women" variant="women" />
               <Link
                 to="/category/$slug"
                 params={{ slug: "men" }}
