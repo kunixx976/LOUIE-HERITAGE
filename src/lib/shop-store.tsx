@@ -84,6 +84,11 @@ type State = {
 
 const STORAGE_KEY = "louie-heritage-state";
 
+function getAuthRedirectUrl(path: "/profile" | "/forgot-password") {
+  const siteUrl = import.meta.env.VITE_SITE_URL || window.location.origin;
+  return new URL(path, siteUrl).toString();
+}
+
 const initialState: State = {
   cart: [],
   couponCode: null,
@@ -304,7 +309,7 @@ export function ShopProvider({ children }: { children: ReactNode }) {
     const { error } = await client.auth.signInWithOAuth({
       provider: "google",
       options: {
-        redirectTo: `${window.location.origin}/profile`,
+        redirectTo: getAuthRedirectUrl("/profile"),
       },
     });
     if (error) throw error;
@@ -318,7 +323,7 @@ export function ShopProvider({ children }: { children: ReactNode }) {
         password,
         options: {
           data: { full_name: name },
-          emailRedirectTo: `${window.location.origin}/profile`,
+          emailRedirectTo: getAuthRedirectUrl("/profile"),
         },
       });
       if (error) throw error;
@@ -343,7 +348,7 @@ export function ShopProvider({ children }: { children: ReactNode }) {
     async (email: string) => {
       const client = requireSupabase();
       const { error } = await client.auth.resetPasswordForEmail(email, {
-        redirectTo: `${window.location.origin}/forgot-password`,
+        redirectTo: getAuthRedirectUrl("/forgot-password"),
       });
       if (error) throw error;
     },

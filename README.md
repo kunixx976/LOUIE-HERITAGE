@@ -54,11 +54,24 @@ npm run dev
 
 ## Google sign-in
 
-Google sign-in uses Supabase Auth. In your Supabase dashboard, enable the Google
-provider under **Authentication → Providers** and add your Google OAuth client
-credentials. In **Authentication → URL Configuration**, allow your app's origin
-and set the Supabase callback URL listed in the Google provider settings as an
-authorized redirect URI in Google Cloud Console.
+Google sign-in uses Supabase Auth. Set `VITE_SITE_URL` in Vercel to the deployed
+site's canonical URL (for example, `https://your-production-domain.vercel.app`),
+then redeploy. The app uses that origin for Google sign-in, signup confirmation,
+and password-reset callbacks; local development falls back to its current origin.
+
+In the Supabase dashboard, enable Google under **Authentication → Providers**
+and add your Google OAuth client credentials. Under **Authentication → URL
+Configuration**, set **Site URL** to the same deployed URL and add these paths
+to **Redirect URLs**:
+
+```text
+https://your-production-domain.vercel.app/profile
+https://your-production-domain.vercel.app/forgot-password
+```
+
+In Google Cloud Console, add the Supabase callback URL shown in the Google
+provider settings as an authorized redirect URI. It is the Supabase callback
+URL, not the Vercel URL.
 
 ## Payments and order confirmation emails
 
