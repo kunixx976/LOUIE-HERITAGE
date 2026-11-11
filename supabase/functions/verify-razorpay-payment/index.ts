@@ -62,6 +62,13 @@ Deno.serve(async (request) => {
       console.error("Razorpay payment details did not match the order.", payment);
       return json({ error: "Payment details did not match this order." }, 400);
     }
+    if (payment.method !== "upi") {
+      return json(
+        { error: "This order accepts UPI only. If your account was charged, contact customer care with your payment ID." },
+        400,
+      );
+    }
+
     if (!(await validateOrderPayment(orderId, payment.amount, payment.currency))) {
       return json({ error: "The order for this payment could not be found." }, 404);
     }

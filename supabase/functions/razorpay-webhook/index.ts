@@ -53,7 +53,8 @@ Deno.serve(async (request) => {
       typeof payment.order_id !== "string" ||
       typeof payment.id !== "string" ||
       payment.status !== "captured" ||
-      payment.captured !== true
+      payment.captured !== true ||
+      payment.method !== "upi"
     ) {
       return json({ error: "Invalid captured-payment event." }, 400);
     }
