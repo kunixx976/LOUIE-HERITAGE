@@ -343,6 +343,17 @@ function ProductPage() {
         </div>
       </article>
 
+      {/* Reviews */}
+      <section className="border-t border-border">
+        <div className="container-editorial py-12 md:py-16">
+          <p className="eyebrow">Customer feedback</p>
+          <h2 className="mt-3 text-2xl md:text-3xl">Reviews</h2>
+          <p className="mt-4 max-w-xl text-sm leading-relaxed text-muted-foreground">
+            Verified reviews and customer photos will appear here after genuine purchases. There are no verified reviews for this item yet.
+          </p>
+        </div>
+      </section>
+
       {/* Related */}
       {related.length > 0 ? (
         <section className="border-t border-border">
