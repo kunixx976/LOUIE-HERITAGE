@@ -1,5 +1,4 @@
-  import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowRight } from "lucide-react";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import hero from "@/assets/hero.jpg";
 import editorial from "@/assets/editorial.jpg";
 import {
@@ -31,12 +30,6 @@ export const Route = createFileRoute("/")({
   }),
   component: Home,
 });
-
-const promos = [
-  { title: "Shop Women", slug: "women", copy: "Cotton, denim & ethnic wear" },
-  { title: "Shop Men", slug: "men", copy: "Tees, shirts & straight-fit denim" },
-  { title: "Summer Edit", slug: "summer", copy: "Light cottons for warmer days" },
-];
 
 function Home() {
   return (
@@ -83,45 +76,6 @@ function Home() {
               </div>
             </div>
           </div>
-        </div>
-      </section>
-
-      {/* Promo triptych */}
-      <section className="container-editorial section-y">
-        <div className="grid gap-5 md:grid-cols-3">
-          {promos.map((promo, i) => {
-            const category = categories.find((c) => c.slug === promo.slug)!;
-            return (
-              <Reveal key={promo.slug} delay={i * 0.08}>
-                <Link
-                  to="/category/$slug"
-                  params={{ slug: promo.slug }}
-                  className="group block overflow-hidden rounded-[10px]"
-                >
-                  <div className="relative aspect-[4/5] overflow-hidden bg-secondary">
-                    <img
-                      src={category.image}
-                      alt={category.name}
-                      width={900}
-                      height={1200}
-                      loading="lazy"
-                      className="h-full w-full object-cover transition-transform duration-[1200ms] ease-out group-hover:scale-[1.04]"
-                    />
-                  </div>
-                  <div className="flex items-end justify-between pt-5">
-                    <div>
-                      <h2 className="text-xl">{promo.title}</h2>
-                      <p className="mt-1 text-xs text-muted-foreground">{promo.copy}</p>
-                    </div>
-                    <ArrowRight
-                      className="h-4 w-4 transition-transform duration-500 group-hover:translate-x-1"
-                      strokeWidth={1.25}
-                    />
-                  </div>
-                </Link>
-              </Reveal>
-            );
-          })}
         </div>
       </section>
 
