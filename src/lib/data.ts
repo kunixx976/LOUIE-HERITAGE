@@ -11,6 +11,15 @@ import catMen from "@/assets/cat-men.jpg";
 import catOversized from "@/assets/cat-oversized.jpg";
 import { checkoutCatalog } from "../../supabase/functions/_shared/checkout-catalog";
 
+const teeImage = "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=1400&q=85";
+const denimImage = "https://images.unsplash.com/photo-1541099649105-f69ad21f3246?auto=format&fit=crop&w=1400&q=85";
+const sareeImage = "https://images.unsplash.com/photo-1745482036050-3d644032416d?auto=format&fit=crop&w=1400&q=85";
+const kurtaImage = "https://images.unsplash.com/photo-1742800767764-479556a4d8a5?auto=format&fit=crop&w=1400&q=85";
+const sweaterImage = "https://images.unsplash.com/photo-1541629007334-1f6c44705182?auto=format&fit=crop&w=1400&q=85";
+const cardiganImage = "https://images.unsplash.com/photo-1616821074314-245674337a0d?auto=format&fit=crop&w=1400&q=85";
+const bedsheetImage = "https://images.unsplash.com/photo-1633539091259-dc7024887566?auto=format&fit=crop&w=1400&q=85";
+const textileImage = "https://images.unsplash.com/photo-1600166898405-da9535204843?auto=format&fit=crop&w=1400&q=85";
+
 export type Category = {
   slug: string;
   name: string;
@@ -231,7 +240,7 @@ const rawProducts: Parameters<typeof normalizeProduct>[0][] = [
     name: "Classic Cotton T-Shirt",
     price: checkoutCatalog["1"].price,
     compareAt: 1099,
-    images: [p1, p2],
+    images: [teeImage, p1],
     categories: ["tshirts", "men", "women", "casual", "summer"],
     colors: NEUTRALS,
     sizes: SIZES,
@@ -255,7 +264,7 @@ const rawProducts: Parameters<typeof normalizeProduct>[0][] = [
         Stone: { XS: 8, S: 14, M: 16, L: 12, XL: 7 },
         Black: { XS: 6, S: 10, M: 12, L: 8, XL: 4 },
       },
-      [p1, p2],
+      [teeImage, p1],
       799,
     ),
   },
@@ -264,7 +273,7 @@ const rawProducts: Parameters<typeof normalizeProduct>[0][] = [
     slug: "oversized-drop-shoulder-tee",
     name: "Oversized Drop-Shoulder Tee",
     price: checkoutCatalog["2"].price,
-    images: [p2, p1],
+    images: [teeImage, p1],
     categories: ["tshirts", "women", "casual", "summer"],
     colors: [
       { name: "Off White", hex: "#F2EFE9" },
@@ -292,7 +301,7 @@ const rawProducts: Parameters<typeof normalizeProduct>[0][] = [
         "Off White": { XS: 7, S: 12, M: 15, L: 11, XL: 8 },
         Charcoal: { XS: 5, S: 11, M: 13, L: 10, XL: 6 },
       },
-      [p2, p1],
+      [teeImage, p1],
       1099,
     ),
   },
@@ -302,7 +311,7 @@ const rawProducts: Parameters<typeof normalizeProduct>[0][] = [
     name: "Straight-Fit Jeans",
     price: checkoutCatalog["3"].price,
     compareAt: 2399,
-    images: [p3, p4],
+    images: [denimImage, p3],
     categories: ["denim", "men", "casual"],
     colors: [
       { name: "Mid Indigo", hex: "#3C5878" },
@@ -329,7 +338,7 @@ const rawProducts: Parameters<typeof normalizeProduct>[0][] = [
         "Mid Indigo": { "28": 4, "30": 8, "32": 10, "34": 8, "36": 5, "38": 3 },
         "Jet Black": { "28": 3, "30": 7, "32": 9, "34": 7, "36": 4, "38": 2 },
       },
-      [p3, p4],
+      [denimImage, p3],
       1899,
     ),
   },
@@ -338,7 +347,7 @@ const rawProducts: Parameters<typeof normalizeProduct>[0][] = [
     slug: "bhilwara-high-rise-jeans",
     name: "High-Rise Jeans",
     price: checkoutCatalog["4"].price,
-    images: [p4, p3],
+    images: [denimImage, p4],
     categories: ["denim", "women", "casual"],
     colors: [
       { name: "Light Wash", hex: "#8FA6BE" },
@@ -366,7 +375,7 @@ const rawProducts: Parameters<typeof normalizeProduct>[0][] = [
         "Light Wash": { "28": 5, "30": 7, "32": 9, "34": 6, "36": 3, "38": 2 },
         "Deep Indigo": { "28": 4, "30": 7, "32": 8, "34": 7, "36": 5, "38": 2 },
       },
-      [p4, p3],
+      [denimImage, p4],
       2099,
     ),
   },
@@ -376,7 +385,7 @@ const rawProducts: Parameters<typeof normalizeProduct>[0][] = [
     name: "Georgette Saree",
     price: checkoutCatalog["5"].price,
     compareAt: 3200,
-    images: [p5, p2],
+    images: [sareeImage, p5],
     categories: ["ethnic", "women"],
     colors: [
       { name: "Deep Maroon", hex: "#6E1F2A" },
@@ -403,7 +412,7 @@ const rawProducts: Parameters<typeof normalizeProduct>[0][] = [
         "Deep Maroon": { "One size": 6 },
         Ivory: { "One size": 8 },
       },
-      [p5, p2],
+      [sareeImage, p5],
       2499,
     ),
   },
@@ -412,7 +421,7 @@ const rawProducts: Parameters<typeof normalizeProduct>[0][] = [
     slug: "surat-anarkali-kurta-set",
     name: "Anarkali Kurta Set",
     price: checkoutCatalog["6"].price,
-    images: [catWomen, p5],
+    images: [kurtaImage, sareeImage],
     categories: ["ethnic", "women", "summer"],
     colors: [
       { name: "Powder Blue", hex: "#B7C7D6" },
@@ -440,7 +449,7 @@ const rawProducts: Parameters<typeof normalizeProduct>[0][] = [
         "Powder Blue": { XS: 6, S: 9, M: 8, L: 7, XL: 4 },
         Clay: { XS: 5, S: 8, M: 7, L: 6, XL: 3 },
       },
-      [catWomen, p5],
+      [kurtaImage, sareeImage],
       2899,
     ),
   },
@@ -449,7 +458,7 @@ const rawProducts: Parameters<typeof normalizeProduct>[0][] = [
     slug: "ludhiana-merino-crew-sweater",
     name: "Merino Crew Sweater",
     price: checkoutCatalog["7"].price,
-    images: [p6, p4],
+    images: [sweaterImage, p4],
     categories: ["woollens", "men", "winter"],
     colors: [
       { name: "Oatmeal", hex: "#DCD3C3" },
@@ -476,7 +485,7 @@ const rawProducts: Parameters<typeof normalizeProduct>[0][] = [
         Oatmeal: { XS: 5, S: 8, M: 10, L: 8, XL: 4 },
         "Bottle Green": { XS: 4, S: 7, M: 9, L: 7, XL: 3 },
       },
-      [p6, p4],
+      [sweaterImage, p4],
       1799,
     ),
   },
@@ -486,7 +495,7 @@ const rawProducts: Parameters<typeof normalizeProduct>[0][] = [
     name: "Long Cardigan",
     price: checkoutCatalog["8"].price,
     compareAt: 2699,
-    images: [catOversized, p6],
+    images: [cardiganImage, sweaterImage],
     categories: ["woollens", "women", "winter"],
     colors: [
       { name: "Camel", hex: "#B48450" },
@@ -514,7 +523,7 @@ const rawProducts: Parameters<typeof normalizeProduct>[0][] = [
         Camel: { XS: 3, S: 7, M: 9, L: 7, XL: 4 },
         "Grey Melange": { XS: 2, S: 6, M: 8, L: 6, XL: 3 },
       },
-      [catOversized, p6],
+      [cardiganImage, sweaterImage],
       2199,
     ),
   },
@@ -523,7 +532,7 @@ const rawProducts: Parameters<typeof normalizeProduct>[0][] = [
     slug: "panipat-cotton-bedsheet-set",
     name: "Cotton Bedsheet Set",
     price: checkoutCatalog["9"].price,
-    images: [p8, p7],
+    images: [bedsheetImage, p8],
     categories: ["home"],
     colors: [
       { name: "Ivory", hex: "#EFE9DE" },
@@ -550,7 +559,7 @@ const rawProducts: Parameters<typeof normalizeProduct>[0][] = [
         Ivory: { Single: 8, Double: 11, King: 6 },
         Sage: { Single: 7, Double: 10, King: 5 },
       },
-      [p8, p7],
+      [bedsheetImage, p8],
       1499,
     ),
   },
@@ -559,7 +568,7 @@ const rawProducts: Parameters<typeof normalizeProduct>[0][] = [
     slug: "panipat-handloom-throw",
     name: "Cotton Throw",
     price: checkoutCatalog["10"].price,
-    images: [p7, p8],
+    images: [textileImage, p8],
     categories: ["home", "winter"],
     colors: [
       { name: "Taupe", hex: "#B39C86" },
@@ -586,7 +595,7 @@ const rawProducts: Parameters<typeof normalizeProduct>[0][] = [
         Taupe: { "One size": 0 },
         Indigo: { "One size": 0 },
       },
-      [p7, p8],
+      [textileImage, p8],
       1199,
     ),
   },
@@ -632,7 +641,7 @@ const rawProducts: Parameters<typeof normalizeProduct>[0][] = [
     slug: "handloom-cotton-stole",
     name: "Cotton Stole",
     price: checkoutCatalog["12"].price,
-    images: [p1, p5],
+    images: [textileImage, sareeImage],
     categories: ["accessories", "women", "summer"],
     colors: [
       { name: "Bone", hex: "#EDE7DB" },
@@ -659,7 +668,7 @@ const rawProducts: Parameters<typeof normalizeProduct>[0][] = [
         Bone: { "One size": 9 },
         Rust: { "One size": 7 },
       },
-      [p1, p5],
+      [textileImage, sareeImage],
       649,
     ),
   },
@@ -703,8 +712,8 @@ export const galleryImages = [
     alt: "Oversized drop-shoulder tee in sand",
     slug: "oversized-drop-shoulder-tee",
   },
-  { src: p5, alt: "Georgette saree with zari border", slug: "surat-georgette-saree" },
-  { src: p6, alt: "Merino crew sweater", slug: "ludhiana-merino-crew-sweater" },
-  { src: p4, alt: "Denim jeans in a light wash", slug: "bhilwara-high-rise-jeans" },
+  { src: sareeImage, alt: "Woman wearing a georgette saree", slug: "surat-georgette-saree" },
+  { src: sweaterImage, alt: "Merino crew sweater", slug: "ludhiana-merino-crew-sweater" },
+  { src: denimImage, alt: "High-rise denim jeans", slug: "bhilwara-high-rise-jeans" },
   { src: catMen, alt: "Cotton poplin casual shirt", slug: "cotton-poplin-casual-shirt" },
 ];
