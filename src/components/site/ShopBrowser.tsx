@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { SlidersHorizontal, X } from "lucide-react";
+import { Search, SlidersHorizontal, X } from "lucide-react";
 import { categories, type Product } from "@/lib/data";
 import { formatPrice } from "@/lib/shop-store";
 import { cn } from "@/lib/utils";
@@ -32,6 +32,7 @@ export function ShopBrowser({
   const [price, setPrice] = useState<number[]>([0, 3000]);
   const [inStockOnly, setInStockOnly] = useState(false);
   const [sort, setSort] = useState<Sort>("featured");
+  const [query, setQuery] = useState("");
   const [page, setPage] = useState(1);
 
   const facetProducts = useMemo(
@@ -58,6 +59,8 @@ export function ShopBrowser({
 
   const filtered = useMemo(() => {
     const result = products.filter((p) => {
+      const searchText = [p.name, p.description, p.fabric, ...p.categories].join(" ").toLocaleLowerCase();
+      if (query.trim() && !searchText.includes(query.trim().toLocaleLowerCase())) return false;
       if (selectedCategories.length && !selectedCategories.some((c) => p.categories.includes(c)))
         return false;
       if (sizes.length && !sizes.some((s) => p.sizes.includes(s))) return false;
@@ -79,7 +82,7 @@ export function ShopBrowser({
       default:
         return result;
     }
-  }, [products, selectedCategories, sizes, colors, price, inStockOnly, sort]);
+  }, [products, selectedCategories, sizes, colors, price, inStockOnly, sort, query]);
 
   const pages = Math.max(1, Math.ceil(filtered.length / PER_PAGE));
   const current = Math.min(page, pages);
@@ -90,7 +93,8 @@ export function ShopBrowser({
     sizes.length +
     colors.length +
     (price[0] !== 0 || price[1] !== 3000 ? 1 : 0) +
-    (inStockOnly ? 1 : 0);
+    (inStockOnly ? 1 : 0) +
+    (query.trim() ? 1 : 0);
 
   const clearAll = () => {
     setSelectedCategories([]);
@@ -98,6 +102,7 @@ export function ShopBrowser({
     setColors([]);
     setPrice([0, 3000]);
     setInStockOnly(false);
+    setQuery("");
     setPage(1);
   };
 
@@ -219,6 +224,20 @@ export function ShopBrowser({
       </aside>
 
       <div className="lg:col-span-9">
+        <label className="relative mb-5 block">
+          <Search aria-hidden="true" className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" strokeWidth={1.5} />
+          <input
+            type="search"
+            value={query}
+            onChange={(event) => {
+              setQuery(event.target.value);
+              setPage(1);
+            }}
+            placeholder="Search by name, fabric or style"
+            aria-label="Search products by name, fabric or style"
+            className="h-12 w-full rounded-[8px] border border-border bg-background pl-11 pr-4 text-sm outline-none transition-colors placeholder:text-muted-foreground focus:border-foreground"
+          />
+        </label>
         <div className="flex items-center justify-between gap-4 border-b border-border pb-5">
           <p className="text-xs text-muted-foreground">
             {filtered.length} {filtered.length === 1 ? "piece" : "pieces"}
