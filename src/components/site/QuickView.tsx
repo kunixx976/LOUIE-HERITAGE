@@ -1,10 +1,11 @@
 import { useState } from "react";
-import { Link } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
 import { toast } from "sonner";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { getDefaultVariant, getProductVariant, type Product } from "@/lib/data";
 import { formatPrice, useShop } from "@/lib/shop-store";
 import { cn } from "@/lib/utils";
+import { showAddedToBagToast } from "@/lib/cart-toast";
 
 export function QuickView({
   product,
@@ -15,6 +16,7 @@ export function QuickView({
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }) {
+  const navigate = useNavigate();
   const { addToCart } = useShop();
   const defaultVariant = getDefaultVariant(product) ?? product.variants[0] ?? null;
   const [size, setSize] = useState(defaultVariant?.size ?? product.sizes[0]!);
@@ -98,7 +100,9 @@ export function QuickView({
                   return;
                 }
                 addToCart({ productId: product.id, size, color, quantity: 1 });
-                toast("Added to bag", { description: `${product.name} · ${size} · ${color}` });
+                showAddedToBagToast(`${product.name} · ${size} · ${color}`, () =>
+                  navigate({ to: "/cart" }),
+                );
                 onOpenChange(false);
               }}
               className="mt-8 w-full rounded-[8px] bg-foreground py-3.5 text-[11px] font-medium uppercase tracking-[0.16em] text-background transition-colors hover:bg-hover-accent disabled:opacity-40"

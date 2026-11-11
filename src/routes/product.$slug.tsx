@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { createFileRoute, Link, notFound } from "@tanstack/react-router";
+import { createFileRoute, Link, notFound, useNavigate } from "@tanstack/react-router";
 import { Heart, Minus, Plus, Ruler } from "lucide-react";
 import { toast } from "sonner";
 import {
@@ -11,6 +11,7 @@ import {
 } from "@/lib/data";
 import { formatPrice, useShop } from "@/lib/shop-store";
 import { cn } from "@/lib/utils";
+import { showAddedToBagToast } from "@/lib/cart-toast";
 import { Breadcrumbs } from "@/components/site/PageHeader";
 import { ProductCard } from "@/components/site/ProductCard";
 import { SizeGuideTable } from "@/components/site/SizeGuideTable";
@@ -54,6 +55,7 @@ export const Route = createFileRoute("/product/$slug")({
 
 function ProductPage() {
   const { product } = Route.useLoaderData() as { product: Product };
+  const navigate = useNavigate();
   const { addToCart, toggleWishlist, isWishlisted, markViewed, recentlyViewed } = useShop();
 
   const defaultVariant = getDefaultVariant(product) ?? product.variants[0] ?? null;
@@ -277,7 +279,9 @@ function ProductPage() {
                     return;
                   }
                   addToCart({ productId: product.id, size, color, quantity });
-                  toast("Added to bag", { description: `${product.name} · ${size} · ${color}` });
+                  showAddedToBagToast(`${product.name} · ${size} · ${color}`, () =>
+                    navigate({ to: "/cart" }),
+                  );
                 }}
                 className="h-12 flex-1 rounded-[8px] bg-foreground px-8 text-[11px] font-medium uppercase tracking-[0.16em] text-background transition-colors hover:bg-hover-accent disabled:cursor-not-allowed disabled:opacity-40"
               >
@@ -301,7 +305,8 @@ function ProductPage() {
             <div className="mt-6 border-y border-border py-4">
               <p className="text-sm font-medium">Delivery & returns</p>
               <p className="mt-1.5 text-xs leading-relaxed text-muted-foreground">
-                Delivery options and charges are shown at checkout. Review current return information before ordering.
+                Delivery options and charges are shown at checkout. Review current return
+                information before ordering.
               </p>
               <Link
                 to="/shipping-returns"

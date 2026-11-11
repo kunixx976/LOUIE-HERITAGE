@@ -1,13 +1,15 @@
 import { useState } from "react";
-import { Link } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
 import { Heart, Eye } from "lucide-react";
 import { toast } from "sonner";
 import type { Product } from "@/lib/data";
 import { formatPrice, useShop } from "@/lib/shop-store";
 import { cn } from "@/lib/utils";
+import { showAddedToBagToast } from "@/lib/cart-toast";
 import { QuickView } from "./QuickView";
 
 export function ProductCard({ product, priority }: { product: Product; priority?: boolean }) {
+  const navigate = useNavigate();
   const { toggleWishlist, isWishlisted, addToCart } = useShop();
   const [quickView, setQuickView] = useState(false);
   const wishlisted = isWishlisted(product.id);
@@ -73,14 +75,13 @@ export function ProductCard({ product, priority }: { product: Product; priority?
               description: product.name,
             });
           }}
-          aria-label={wishlisted ? `Remove ${product.name} from wishlist` : `Save ${product.name} to wishlist`}
+          aria-label={
+            wishlisted ? `Remove ${product.name} from wishlist` : `Save ${product.name} to wishlist`
+          }
           aria-pressed={wishlisted}
           className="absolute right-2 top-2 grid h-11 w-11 place-items-center rounded-full bg-background/85 text-foreground backdrop-blur transition-colors hover:bg-background md:right-3 md:top-3 md:h-9 md:w-9"
         >
-          <Heart
-            className={cn("h-4 w-4", wishlisted && "fill-foreground")}
-            strokeWidth={1.25}
-          />
+          <Heart className={cn("h-4 w-4", wishlisted && "fill-foreground")} strokeWidth={1.25} />
         </button>
 
         <div className="pointer-events-none absolute inset-x-3 bottom-3 hidden translate-y-2 gap-2 opacity-0 transition-all duration-500 group-hover:pointer-events-auto group-hover:translate-y-0 group-hover:opacity-100 md:flex">
@@ -101,7 +102,9 @@ export function ProductCard({ product, priority }: { product: Product; priority?
                 color: product.colors[0]!.name,
                 quantity: 1,
               });
-              toast("Added to bag", { description: `${product.name} · ${product.sizes[0]}` });
+              showAddedToBagToast(`${product.name} · ${product.sizes[0]}`, () =>
+                navigate({ to: "/cart" }),
+              );
             }}
             className="flex-1 rounded-[8px] bg-foreground py-2.5 text-[11px] font-medium uppercase tracking-[0.14em] text-background transition-colors hover:bg-hover-accent disabled:cursor-not-allowed disabled:opacity-40"
           >
@@ -147,16 +150,15 @@ export function ProductCard({ product, priority }: { product: Product; priority?
               color: product.colors[0]!.name,
               quantity: 1,
             });
-            toast("Added to bag", { description: `${product.name} · ${product.sizes[0]}` });
+            showAddedToBagToast(`${product.name} · ${product.sizes[0]}`, () =>
+              navigate({ to: "/cart" }),
+            );
           }}
           className="h-11 flex-1 rounded-[8px] border border-foreground text-[11px] font-medium uppercase tracking-[0.14em] transition-colors active:bg-foreground active:text-background disabled:cursor-not-allowed disabled:opacity-40"
         >
           {product.inStock ? "Add to bag" : "Sold out"}
         </button>
       </div>
-
-
-
 
       <QuickView product={product} open={quickView} onOpenChange={setQuickView} />
     </article>
