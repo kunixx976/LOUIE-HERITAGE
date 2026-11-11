@@ -221,19 +221,27 @@ function ProductPage() {
                 </Dialog>
               </div>
               <div className="flex flex-wrap gap-2">
-                {product.sizes.map((s) => (
-                  <button
-                    key={s}
-                    type="button"
-                    onClick={() => setSize(s)}
-                    className={cn(
-                      "min-w-12 rounded-[8px] border border-border px-3.5 py-2.5 text-xs transition-colors hover:border-foreground",
-                      size === s && "border-foreground bg-foreground text-background",
-                    )}
-                  >
-                    {s}
-                  </button>
-                ))}
+                {product.sizes.map((s) => {
+                  const variant = getProductVariant(product, s, color);
+                  const unavailable = !variant || variant.stockCount <= 0;
+
+                  return (
+                    <button
+                      key={s}
+                      type="button"
+                      disabled={unavailable}
+                      aria-pressed={size === s}
+                      aria-label={unavailable ? `${s}, sold out in ${color}` : s}
+                      onClick={() => setSize(s)}
+                      className={cn(
+                        "min-w-12 rounded-[8px] border border-border px-3.5 py-2.5 text-xs transition-colors hover:border-foreground disabled:cursor-not-allowed disabled:opacity-40 disabled:line-through",
+                        size === s && "border-foreground bg-foreground text-background",
+                      )}
+                    >
+                      {s}
+                    </button>
+                  );
+                })}
               </div>
             </div>
 
@@ -288,6 +296,19 @@ function ProductPage() {
                   strokeWidth={1.25}
                 />
               </button>
+            </div>
+
+            <div className="mt-6 border-y border-border py-4">
+              <p className="text-sm font-medium">Delivery & returns</p>
+              <p className="mt-1.5 text-xs leading-relaxed text-muted-foreground">
+                Delivery options and charges are shown at checkout. Review current return information before ordering.
+              </p>
+              <Link
+                to="/shipping-returns"
+                className="mt-2 inline-flex text-xs font-medium link-underline"
+              >
+                Read shipping & returns
+              </Link>
             </div>
 
             <Accordion type="single" collapsible className="mt-8 border-t border-border">
