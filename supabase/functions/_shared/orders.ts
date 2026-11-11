@@ -166,7 +166,7 @@ export async function sendOrderConfirmation(order: {
   discount: number;
   shippingFee: number;
   total: number;
-  method: "razorpay" | "cod" | "upi";
+  method: "razorpay" | "cod";
   address: CheckoutInput;
 }) {
   const apiKey = Deno.env.get("RESEND_API_KEY");
@@ -194,13 +194,7 @@ export async function sendOrderConfirmation(order: {
   ]
     .map(escapeHtml)
     .join(", ");
-  const payment =
-    order.method === "cod"
-      ? "Cash on delivery"
-      : order.method === "upi"
-        ? "UPI transfer — awaiting manual payment verification"
-        : "Paid online";
-  const orderState = order.method === "upi" ? "received and awaiting payment verification" : "confirmed";
+  const payment = order.method === "cod" ? "Cash on delivery" : "Paid online";
   try {
     const response = await fetch("https://api.resend.com/emails", {
       method: "POST",
@@ -208,9 +202,9 @@ export async function sendOrderConfirmation(order: {
       body: JSON.stringify({
         from,
         to: [order.email],
-        subject: `Order ${order.orderNumber} received — LOUIE HERITAGE`,
-        html: `<div style="font-family:Arial,sans-serif;max-width:600px;margin:auto;color:#111"><h1>Thank you, ${escapeHtml(order.name)}.</h1><p>Your order <strong>${escapeHtml(order.orderNumber)}</strong> is ${orderState}.</p><ul>${lines}</ul><p>Subtotal: ₹${order.subtotal}<br>Discount: −₹${order.discount}<br>Delivery: ₹${order.shippingFee}<br><strong>Total: ₹${order.total}</strong></p><p>Payment: ${payment}</p><p>Delivering to: ${address}</p><p>LOUIE HERITAGE</p></div>`,
-        text: `Thank you, ${order.name}. Order ${order.orderNumber} is ${orderState}. Total: ₹${order.total}. Payment: ${payment}. Delivering to: ${address}.`,
+        subject: `Order ${order.orderNumber} confirmed — LOUIE HERITAGE`,
+        html: `<div style="font-family:Arial,sans-serif;max-width:600px;margin:auto;color:#111"><h1>Thank you, ${escapeHtml(order.name)}.</h1><p>Your order <strong>${escapeHtml(order.orderNumber)}</strong> is confirmed.</p><ul>${lines}</ul><p>Subtotal: ₹${order.subtotal}<br>Discount: −₹${order.discount}<br>Delivery: ₹${order.shippingFee}<br><strong>Total: ₹${order.total}</strong></p><p>Payment: ${payment}</p><p>Delivering to: ${address}</p><p>LOUIE HERITAGE</p></div>`,
+        text: `Thank you, ${order.name}. Order ${order.orderNumber} is confirmed. Total: ₹${order.total}. Payment: ${payment}. Delivering to: ${address}.`,
       }),
     });
     if (!response.ok) {
