@@ -1,14 +1,16 @@
 import { useEffect, useRef, useState } from "react";
-import { motion, useAnimationFrame, useMotionValue, useReducedMotion, useSpring } from "motion/react";
+import {
+  motion,
+  useAnimationFrame,
+  useMotionValue,
+  useReducedMotion,
+  useSpring,
+} from "motion/react";
 import { galleryImages } from "@/lib/data";
 
 export function WornByBarrelGallery() {
   const sceneRef = useRef<HTMLDivElement>(null);
   const [geometry, setGeometry] = useState({ panelWidth: 160, radius: 138 });
-  const [paused, setPaused] = useState(false);
-  const rotation = useMotionValue(-8);
-  const springRotation = useSpring(rotation, { stiffness: 110, damping: 24, mass: 0.9 });
-  const reduceMotion = useReducedMotion();
   const [paused, setPaused] = useState(false);
   const rotation = useMotionValue(-8);
   const springRotation = useSpring(rotation, { stiffness: 110, damping: 24, mass: 0.9 });
@@ -27,13 +29,7 @@ export function WornByBarrelGallery() {
     updateGeometry();
     const observer = new ResizeObserver(updateGeometry);
     observer.observe(scene);
-    useAnimationFrame((_, delta) => {
-    if (!reduceMotion && !paused) {
-      rotation.set(rotation.get() + Math.min(delta, 50) * 0.004);
-    }
-  });
-
-  return () => observer.disconnect();
+    return () => observer.disconnect();
   }, []);
 
   useAnimationFrame((_, delta) => {
