@@ -9,6 +9,10 @@ export function WornByBarrelGallery() {
   const rotation = useMotionValue(-8);
   const springRotation = useSpring(rotation, { stiffness: 110, damping: 24, mass: 0.9 });
   const reduceMotion = useReducedMotion();
+  const [paused, setPaused] = useState(false);
+  const rotation = useMotionValue(-8);
+  const springRotation = useSpring(rotation, { stiffness: 110, damping: 24, mass: 0.9 });
+  const reduceMotion = useReducedMotion();
 
   useEffect(() => {
     const scene = sceneRef.current;
@@ -23,7 +27,13 @@ export function WornByBarrelGallery() {
     updateGeometry();
     const observer = new ResizeObserver(updateGeometry);
     observer.observe(scene);
-    return () => observer.disconnect();
+    useAnimationFrame((_, delta) => {
+    if (!reduceMotion && !paused) {
+      rotation.set(rotation.get() + Math.min(delta, 50) * 0.004);
+    }
+  });
+
+  return () => observer.disconnect();
   }, []);
 
   useAnimationFrame((_, delta) => {
@@ -97,7 +107,7 @@ export function WornByBarrelGallery() {
 
       <div className="pointer-events-none absolute inset-x-0 bottom-0 flex justify-center">
         <p className="rounded-full bg-background/85 px-4 py-2 text-[10px] uppercase tracking-[0.14em] text-muted-foreground backdrop-blur">
-          Drag to rotate
+          Slowly rotating · hover to pause
         </p>
       </div>
     </div>
