@@ -21,7 +21,7 @@ export function QuickView({
   const defaultVariant = getDefaultVariant(product) ?? product.variants[0] ?? null;
   const [size, setSize] = useState(defaultVariant?.size ?? product.sizes[0]!);
   const [color, setColor] = useState(defaultVariant?.color ?? product.colors[0]!.name);
-  const selectedVariant = getProductVariant(product, size, color) ?? defaultVariant;
+  const selectedVariant = getProductVariant(product, size, color);
   const selectedVariantInStock = Boolean(selectedVariant && selectedVariant.stockCount > 0);
 
   return (
@@ -58,10 +58,18 @@ export function QuickView({
                     key={c.name}
                     type="button"
                     aria-label={c.name}
-                    onClick={() => setColor(c.name)}
+                    disabled={!product.variants.some((variant) => variant.color === c.name && variant.stockCount > 0)}
+                    aria-pressed={color === c.name}
+                    onClick={() => {
+                      const firstAvailable = product.variants.find(
+                        (variant) => variant.color === c.name && variant.stockCount > 0,
+                      );
+                      setColor(c.name);
+                      if (firstAvailable) setSize(firstAvailable.size);
+                    }}
                     style={{ backgroundColor: c.hex }}
                     className={cn(
-                      "h-7 w-7 rounded-full border border-border transition-all",
+                      "h-7 w-7 rounded-full border border-border transition-all disabled:cursor-not-allowed disabled:opacity-30",
                       color === c.name &&
                         "ring-1 ring-foreground ring-offset-2 ring-offset-background",
                     )}
@@ -77,9 +85,11 @@ export function QuickView({
                   <button
                     key={s}
                     type="button"
+                    disabled={!getProductVariant(product, s, color)?.stockCount}
+                    aria-pressed={size === s}
                     onClick={() => setSize(s)}
                     className={cn(
-                      "min-w-11 rounded-[8px] border border-border px-3 py-2 text-xs transition-colors hover:border-foreground",
+                      "min-w-11 rounded-[8px] border border-border px-3 py-2 text-xs transition-colors hover:border-foreground disabled:cursor-not-allowed disabled:opacity-40 disabled:line-through",
                       size === s && "border-foreground bg-foreground text-background",
                     )}
                   >

@@ -13,6 +13,17 @@ export function ProductCard({ product, priority }: { product: Product; priority?
   const { toggleWishlist, isWishlisted, addToCart } = useShop();
   const [quickView, setQuickView] = useState(false);
   const wishlisted = isWishlisted(product.id);
+  const needsOptions = product.sizes.length > 1 || product.colors.length > 1;
+  const handleAddToBag = () => {
+    if (needsOptions) {
+      setQuickView(true);
+      return;
+    }
+    const variant = product.variants.find((item) => item.stockCount > 0);
+    if (!variant) return;
+    addToCart({ productId: product.id, size: variant.size, color: variant.color, quantity: 1 });
+    showAddedToBagToast(`${product.name} · ${variant.size}`, () => navigate({ to: "/cart" }));
+  };
   const discount = product.compareAt
     ? Math.round(100 - (product.price / product.compareAt) * 100)
     : 0;
@@ -95,20 +106,10 @@ export function ProductCard({ product, priority }: { product: Product; priority?
           <button
             type="button"
             disabled={!product.inStock}
-            onClick={() => {
-              addToCart({
-                productId: product.id,
-                size: product.sizes[0]!,
-                color: product.colors[0]!.name,
-                quantity: 1,
-              });
-              showAddedToBagToast(`${product.name} · ${product.sizes[0]}`, () =>
-                navigate({ to: "/cart" }),
-              );
-            }}
+            onClick={handleAddToBag}
             className="flex-1 rounded-[8px] bg-foreground py-2.5 text-[11px] font-medium uppercase tracking-[0.14em] text-background transition-colors hover:bg-hover-accent disabled:cursor-not-allowed disabled:opacity-40"
           >
-            Add to bag
+            {needsOptions ? "Choose options" : "Add to bag"}
           </button>
         </div>
       </div>
@@ -143,20 +144,10 @@ export function ProductCard({ product, priority }: { product: Product; priority?
         <button
           type="button"
           disabled={!product.inStock}
-          onClick={() => {
-            addToCart({
-              productId: product.id,
-              size: product.sizes[0]!,
-              color: product.colors[0]!.name,
-              quantity: 1,
-            });
-            showAddedToBagToast(`${product.name} · ${product.sizes[0]}`, () =>
-              navigate({ to: "/cart" }),
-            );
-          }}
+          onClick={handleAddToBag}
           className="h-11 flex-1 rounded-[8px] border border-foreground text-[11px] font-medium uppercase tracking-[0.14em] transition-colors active:bg-foreground active:text-background disabled:cursor-not-allowed disabled:opacity-40"
         >
-          {product.inStock ? "Add to bag" : "Sold out"}
+          {product.inStock ? (needsOptions ? "Choose options" : "Add to bag") : "Sold out"}
         </button>
       </div>
 

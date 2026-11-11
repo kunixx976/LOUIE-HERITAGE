@@ -73,7 +73,7 @@ function ProductPage() {
     markViewed(product.id);
   }, [product, markViewed]);
 
-  const selectedVariant = getProductVariant(product, size, color) ?? defaultVariant;
+  const selectedVariant = getProductVariant(product, size, color);
   const selectedVariantInStock = Boolean(selectedVariant && selectedVariant.stockCount > 0);
   const wishlisted = isWishlisted(product.id);
   const gallery =
@@ -176,10 +176,17 @@ function ProductPage() {
                     type="button"
                     aria-label={c.name}
                     aria-pressed={color === c.name}
-                    onClick={() => setColor(c.name)}
+                    disabled={!product.variants.some((variant) => variant.color === c.name && variant.stockCount > 0)}
+                    onClick={() => {
+                      const firstAvailable = product.variants.find(
+                        (variant) => variant.color === c.name && variant.stockCount > 0,
+                      );
+                      setColor(c.name);
+                      if (firstAvailable) setSize(firstAvailable.size);
+                    }}
                     style={{ backgroundColor: c.hex }}
                     className={cn(
-                      "h-8 w-8 rounded-full border border-border transition-all",
+                      "h-8 w-8 rounded-full border border-border transition-all disabled:cursor-not-allowed disabled:opacity-30",
                       color === c.name &&
                         "ring-1 ring-foreground ring-offset-2 ring-offset-background",
                     )}
