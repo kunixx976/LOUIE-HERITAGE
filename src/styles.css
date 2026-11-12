@@ -610,3 +610,79 @@
     animation: none;
   }
 }
+
+/* Warm editorial treatments shared across interior pages */
+.page-masthead {
+  position: relative;
+  overflow: hidden;
+  border-bottom: 1px solid var(--border);
+  background:
+    radial-gradient(ellipse at 92% 0%, oklch(0.89 0.055 53 / 60%), transparent 40%),
+    linear-gradient(115deg, var(--surface), var(--background) 65%);
+}
+.page-masthead__inner { position: relative; padding-block: 2rem 2.2rem; }
+.page-masthead__content { display: grid; align-items: end; gap: 1.5rem; margin-top: 2rem; }
+.page-masthead__title { max-width: 48rem; }
+.page-masthead__title .eyebrow { margin-bottom: .85rem; color: var(--primary); }
+.page-masthead__title h1 {
+  font-family: var(--font-display);
+  font-size: clamp(3rem, 7vw, 6rem);
+  font-weight: 400;
+  letter-spacing: -.045em;
+  line-height: .92;
+  text-wrap: balance;
+}
+.page-masthead__description {
+  max-width: 30rem;
+  border-left: 1px solid oklch(0.68 0.08 48);
+  padding: .25rem 0 .25rem 1.25rem;
+  color: var(--muted-foreground);
+  font-size: .9rem;
+  line-height: 1.75;
+}
+.page-masthead__seal {
+  display: flex;
+  width: fit-content;
+  align-items: center;
+  gap: .65rem;
+  margin-top: 2rem;
+  color: var(--muted-foreground);
+  font-size: .58rem;
+  letter-spacing: .2em;
+}
+.page-masthead__seal i { width: 1.5rem; height: 1px; background: oklch(0.68 0.08 48); }
+.filter-rail {
+  border: 1px solid var(--border);
+  border-radius: calc(var(--radius) + 4px);
+  background: linear-gradient(155deg, var(--card), var(--surface));
+  padding: 1.4rem;
+}
+.shop-results { min-width: 0; }
+.shop-toolbar { border-color: color-mix(in oklch, var(--border), transparent 15%); }
+.category-masthead { background: #302720; }
+.category-masthead > div:last-child {
+  background: linear-gradient(90deg, var(--background), color-mix(in oklch, var(--surface), transparent 18%));
+}
+.product-details-panel {
+  border: 1px solid var(--border);
+  border-radius: calc(var(--radius) + 6px);
+  background: linear-gradient(155deg, var(--card), var(--surface));
+  padding: clamp(1.25rem, 3vw, 2rem);
+}
+.about-story-card {
+  align-self: center;
+  border: 1px solid var(--border);
+  border-radius: calc(var(--radius) + 6px);
+  background: radial-gradient(ellipse at 100% 0%, oklch(0.89 0.055 53 / 42%), transparent 42%), var(--surface);
+  padding: clamp(1.5rem, 4vw, 3.5rem);
+}
+@media (min-width: 768px) {
+  .page-masthead__inner { padding-block: 2.4rem 2.8rem; }
+  .page-masthead__content { grid-template-columns: minmax(0, 1.25fr) minmax(16rem, .75fr); gap: 3rem; margin-top: 2.6rem; }
+}
+@media (max-width: 767px) {
+  .page-masthead__inner { padding-block: 1.4rem 1.8rem; }
+  .page-masthead__content { margin-top: 1.5rem; }
+  .page-masthead__description { margin-top: .25rem; }
+  .page-masthead__seal { margin-top: 1.4rem; }
+}

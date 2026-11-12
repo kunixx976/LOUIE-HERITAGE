@@ -45,9 +45,10 @@ function CategoryPage() {
             className="absolute inset-0 h-full w-full object-cover object-top"
           />
           <div className="absolute inset-0 bg-black/30" />
-          <div className="container-editorial relative flex h-full flex-col justify-end pb-12 text-white">
-            <h1 className="text-4xl leading-[1.1] md:text-6xl">{category.name}</h1>
-            <p className="mt-4 max-w-md text-sm leading-relaxed text-white/80">
+          <div className="container-editorial relative flex h-full flex-col justify-end pb-12 text-white md:pb-16">
+            <p className="mb-4 text-[10px] font-semibold uppercase tracking-[0.24em] text-[#efc7ae]">The collection</p>
+            <h1 className="font-display text-5xl leading-[0.95] md:text-7xl lg:text-8xl">{category.name}</h1>
+            <p className="mt-5 max-w-lg text-sm leading-relaxed text-white/85 md:text-base">
               {category.description}
             </p>
           </div>
