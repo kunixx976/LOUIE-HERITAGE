@@ -75,12 +75,12 @@ URL, not the Vercel URL.
 
 ## Payments and order confirmation emails
 
-Checkout uses Razorpay for UPI and card payments, supports cash on delivery, stores orders in
+Checkout uses Razorpay for UPI, Visa, Mastercard, RuPay and net banking payments, supports cash on delivery, stores orders in
 Supabase, and sends confirmation email through Resend. The integration is not live until the
 following setup is complete. Start with Razorpay test-mode keys and test orders before enabling
 live payments.
 
-1. Create Razorpay and Resend accounts. In Razorpay, enable UPI and cards and copy the **test**
+1. Create Razorpay and Resend accounts. In Razorpay, enable UPI, cards and net banking and copy the **test**
    Key ID and Key Secret. In Resend, verify a sending domain and choose an address on that domain
    for order emails.
 2. Install the [Supabase CLI](https://supabase.com/docs/guides/cli) if needed, then link this
