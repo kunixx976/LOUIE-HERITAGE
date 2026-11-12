@@ -62,7 +62,7 @@ function Home() {
                 <Link
                   to="/category/$slug"
                   params={{ slug: "women" }}
-                  className="inline-flex h-12 items-center justify-center rounded-full bg-white px-8 text-sm font-medium text-black transition-colors hover:bg-white/90"
+                  className="inline-flex h-12 items-center justify-center rounded-full bg-white px-8 text-sm font-medium text-black shadow-[0_8px_24px_rgba(0,0,0,0.12)] transition duration-300 hover:-translate-y-0.5 hover:bg-white/90 hover:shadow-[0_12px_30px_rgba(0,0,0,0.2)] active:translate-y-0"
                 >
                   Shop women
                 </Link>
@@ -87,7 +87,7 @@ function Home() {
             title="Featured categories"
             description="Explore clothing, accessories and home textiles."
           />
-          <div className="mt-12 grid grid-cols-2 gap-x-5 gap-y-10 md:grid-cols-3 lg:grid-cols-5">
+          <div className="mt-10 grid grid-cols-2 gap-x-4 gap-y-9 sm:gap-x-6 md:mt-14 md:grid-cols-3 lg:grid-cols-5">
             {categories.map((category, i) => (
               <Reveal key={category.slug} delay={(i % 5) * 0.05}>
                 <Link to="/category/$slug" params={{ slug: category.slug }} className="group block">
