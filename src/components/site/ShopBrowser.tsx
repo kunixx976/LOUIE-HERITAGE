@@ -218,12 +218,12 @@ export function ShopBrowser({
   );
 
   return (
-    <div className="container-editorial grid gap-12 py-10 md:py-16 lg:grid-cols-12 lg:gap-14">
+    <div className="container-editorial grid gap-8 py-8 md:gap-12 md:py-14 lg:grid-cols-12 lg:gap-14">
       <aside className="hidden lg:col-span-3 lg:block">
-        <div className="sticky top-28">{filterPanel}</div>
+        <div className="filter-rail sticky top-28">{filterPanel}</div>
       </aside>
 
-      <div className="lg:col-span-9">
+      <div className="shop-results lg:col-span-9">
         <label className="relative mb-5 block">
           <Search aria-hidden="true" className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" strokeWidth={1.5} />
           <input
@@ -238,7 +238,7 @@ export function ShopBrowser({
             className="h-12 w-full rounded-[8px] border border-border bg-background pl-11 pr-4 text-sm outline-none transition-colors placeholder:text-muted-foreground focus:border-foreground"
           />
         </label>
-        <div className="flex items-center justify-between gap-4 border-b border-border pb-5">
+        <div className="shop-toolbar flex items-center justify-between gap-4 border-b border-border pb-5">
           <p className="text-xs text-muted-foreground">
             {filtered.length} {filtered.length === 1 ? "piece" : "pieces"}
           </p>
