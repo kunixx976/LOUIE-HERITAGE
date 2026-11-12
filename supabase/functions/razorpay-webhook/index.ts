@@ -54,7 +54,7 @@ Deno.serve(async (request) => {
       typeof payment.id !== "string" ||
       payment.status !== "captured" ||
       payment.captured !== true ||
-      payment.method !== "upi"
+      !["upi", "card", "netbanking"].includes(payment.method)
     ) {
       return json({ error: "Invalid captured-payment event." }, 400);
     }
