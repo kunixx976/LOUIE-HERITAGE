@@ -45,17 +45,7 @@ export function ProductCard({ product, priority }: { product: Product; priority?
               height={1200}
               loading={priority ? "eager" : "lazy"}
               decoding="async"
-              className="absolute inset-0 h-full w-full object-cover transition-opacity duration-700 ease-out group-hover:opacity-0"
-            />
-            <img
-              src={product.images[1] ?? product.images[0]}
-              alt=""
-              aria-hidden="true"
-              width={900}
-              height={1200}
-              loading="lazy"
-              decoding="async"
-              className="absolute inset-0 h-full w-full scale-[1.03] object-cover opacity-0 transition-all duration-700 ease-out group-hover:scale-100 group-hover:opacity-100"
+              className="absolute inset-0 h-full w-full object-cover"
             />
           </div>
         </Link>
