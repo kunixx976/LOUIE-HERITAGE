@@ -62,9 +62,9 @@ Deno.serve(async (request) => {
       console.error("Razorpay payment details did not match the order.", payment);
       return json({ error: "Payment details did not match this order." }, 400);
     }
-    if (payment.method !== "upi") {
+    if (!["upi", "card", "netbanking"].includes(payment.method)) {
       return json(
-        { error: "This order accepts UPI only. If your account was charged, contact customer care with your payment ID." },
+        { error: "This order accepts UPI, card or net banking payments only. If your account was charged, contact customer care with your payment ID." },
         400,
       );
     }
