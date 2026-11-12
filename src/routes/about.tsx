@@ -43,8 +43,7 @@ function AboutPage() {
               className="aspect-[4/5] w-full rounded-[10px] object-cover"
             />
           </Reveal>
-          <div className="space-y-6 text-sm leading-relaxed text-muted-foreground lg:col-span-6 lg:col-start-7">
-            <h2 className="font-display text-3xl text-foreground">Browse the collection</h2>
+          <div className="about-story-card space-y-6 text-sm leading-relaxed text-muted-foreground lg:col-span-6 lg:col-start-7">\n            <p className="eyebrow">A considered edit</p>\n            <h2 className="font-display text-4xl leading-tight text-foreground md:text-5xl">Browse the collection</h2>
             <p>
               Product pages list the available sizes, colours, materials and prices for each item.
               Review those details before adding a piece to your bag.

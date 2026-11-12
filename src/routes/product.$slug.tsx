@@ -150,7 +150,7 @@ function ProductPage() {
 
         {/* Details */}
         <div className="lg:col-span-5">
-          <div className="lg:sticky lg:top-28">
+          <div className="product-details-panel lg:sticky lg:top-28">
             <p className="eyebrow">{product.categories[0]}</p>
             <h1 className="mt-3 text-[1.95rem] md:text-[2.3rem]">{product.name}</h1>
 
