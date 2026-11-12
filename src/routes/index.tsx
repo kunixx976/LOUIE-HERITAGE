@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { ArrowDown, ArrowUpRight } from "lucide-react";
 import hero from "@/assets/hero.jpg";
 import editorial from "@/assets/editorial.jpg";
 import {
@@ -35,59 +36,64 @@ function Home() {
   return (
     <>
       {/* Hero */}
-      <section className="relative">
-        <div className="relative h-[88vh] min-h-[560px] w-full overflow-hidden">
+      <section className="home-hero">
+        <div className="home-hero__frame">
           <img
             src={hero}
             alt="Two models in relaxed cotton shirting and straight-fit denim"
             width={1920}
             height={1088}
             fetchPriority="high"
-            className="absolute inset-0 h-full w-full object-cover"
+            className="home-hero__image"
           />
-          <div className="absolute inset-0 bg-black/25" />
-          <div className="container-editorial relative flex h-full items-end pb-16 md:pb-24">
-            <div className="max-w-2xl text-white animate-fade-up">
-              <p className="eyebrow text-white/80">New Season 2026</p>
-              <h1 className="mt-5 text-[2.75rem] leading-[1.06] md:text-6xl lg:text-7xl">
-                Everyday clothing,
-                <br />
-                thoughtfully selected
-              </h1>
-              <p className="mt-6 max-w-md text-sm leading-relaxed text-white/90">
-                Explore clothing, accessories and home textiles for everyday wear.
+          <div className="home-hero__shade" />
+          <div className="container-editorial home-hero__container">
+            <div className="home-hero__copy">
+              <p className="home-hero__eyebrow">
+                <span>The everyday edit</span>
+                <span className="home-hero__eyebrow-rule" />
+                <span>Edition 01</span>
               </p>
-
-              <div className="mt-9 flex flex-wrap gap-3">
+              <h1 className="home-hero__title">
+                <span>Everyday,</span>
+                <em>with character.</em>
+              </h1>
+              <p className="home-hero__description">
+                Cotton, denim and Indian wear selected for the rhythm of real life.
+              </p>
+              <div className="home-hero__actions">
+                <Link to="/shop" className="home-hero__button home-hero__button--primary">
+                  Shop all <ArrowUpRight className="h-4 w-4" strokeWidth={1.5} />
+                </Link>
                 <Link
                   to="/category/$slug"
                   params={{ slug: "women" }}
-                  className="inline-flex h-12 items-center justify-center rounded-full bg-white px-8 text-sm font-medium text-black shadow-[0_8px_24px_rgba(0,0,0,0.12)] transition duration-300 hover:-translate-y-0.5 hover:bg-white/90 hover:shadow-[0_12px_30px_rgba(0,0,0,0.2)] active:translate-y-0"
+                  className="home-hero__button home-hero__button--secondary"
                 >
                   Shop women
                 </Link>
-                <Link
-                  to="/category/$slug"
-                  params={{ slug: "men" }}
-                  className="inline-flex h-12 items-center justify-center rounded-full border border-white/40 px-8 text-sm font-medium text-white backdrop-blur-sm transition-colors hover:bg-white/10"
-                >
-                  Shop men
-                </Link>
               </div>
             </div>
+            <p className="home-hero__side-note">LOUIE HERITAGE <span>—</span> CLOTHING & TEXTILES</p>
+            <a className="home-hero__scroll" href="#browse">
+              Discover the collection <ArrowDown className="h-3.5 w-3.5" strokeWidth={1.5} />
+            </a>
           </div>
+        </div>
+        <div className="home-hero__ticker" aria-label="Shop cotton, denim, Indian wear and home textiles">
+          <span>Cotton</span><i>✳</i><span>Denim</span><i>✳</i><span>Indian wear</span><i>✳</i><span>Home textiles</span>
         </div>
       </section>
 
       {/* Featured categories */}
-      <section className="border-y border-border bg-secondary/50">
+      <section id="browse" className="home-browse border-y border-border bg-secondary/50">
         <div className="container-editorial section-y">
           <SectionHeading
             eyebrow="Browse"
             title="Featured categories"
             description="Explore clothing, accessories and home textiles."
           />
-          <div className="mt-10 grid grid-cols-2 gap-x-4 gap-y-9 sm:gap-x-6 md:mt-14 md:grid-cols-3 lg:grid-cols-5">
+          <div className="mt-8 grid grid-cols-2 gap-x-4 gap-y-8 sm:gap-x-6 md:mt-14 md:grid-cols-3 lg:grid-cols-5">
             {categories.map((category, i) => (
               <Reveal key={category.slug} delay={(i % 5) * 0.05}>
                 <Link to="/category/$slug" params={{ slug: category.slug }} className="group block">
@@ -124,7 +130,7 @@ function Home() {
             </Link>
           }
         />
-        <div className="mt-12 grid grid-cols-2 gap-x-5 gap-y-12 lg:grid-cols-4">
+        <div className="mt-9 grid grid-cols-2 gap-x-4 gap-y-10 sm:gap-x-5 md:mt-12 md:gap-y-12 lg:grid-cols-4">
           {featuredProducts.slice(0, 4).map((product, i) => (
             <Reveal key={product.id} delay={i * 0.06}>
               <ProductCard product={product} />
@@ -177,7 +183,7 @@ function Home() {
             </Link>
           }
         />
-        <div className="mt-12 grid grid-cols-2 gap-x-5 gap-y-12 lg:grid-cols-4">
+        <div className="mt-9 grid grid-cols-2 gap-x-4 gap-y-10 sm:gap-x-5 md:mt-12 md:gap-y-12 lg:grid-cols-4">
           {newArrivals.slice(0, 4).map((product, i) => (
             <Reveal key={product.id} delay={i * 0.06}>
               <ProductCard product={product} />
@@ -232,7 +238,7 @@ function Home() {
             </Link>
           }
         />
-        <div className="mt-12 grid grid-cols-2 gap-x-5 gap-y-12 lg:grid-cols-4">
+        <div className="mt-9 grid grid-cols-2 gap-x-4 gap-y-10 sm:gap-x-5 md:mt-12 md:gap-y-12 lg:grid-cols-4">
           {summerProducts.slice(0, 4).map((product, i) => (
             <Reveal key={product.id} delay={i * 0.06}>
               <ProductCard product={product} />
