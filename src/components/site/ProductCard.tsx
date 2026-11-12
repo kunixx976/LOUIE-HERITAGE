@@ -30,7 +30,7 @@ export function ProductCard({ product, priority }: { product: Product; priority?
 
   return (
     <article className="group relative">
-      <div className="relative overflow-hidden rounded-[3px] bg-secondary">
+      <div className="relative overflow-hidden rounded-[var(--radius-lg)] bg-secondary shadow-[0_1px_0_rgba(0,0,0,0.03)] transition-shadow duration-500 group-hover:shadow-[0_16px_40px_rgba(0,0,0,0.09)]">
         <Link
           to="/product/$slug"
           params={{ slug: product.slug }}

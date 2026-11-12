@@ -30,7 +30,7 @@ export function Navbar() {
 
   return (
     <>
-      <header className="fixed inset-x-0 top-0 z-[100] border-b border-border bg-background text-foreground shadow-sm">
+      <header className="fixed inset-x-0 top-0 z-[100] border-b border-border/80 bg-background/90 text-foreground shadow-[0_8px_30px_rgba(0,0,0,0.035)] backdrop-blur-xl">
         <div className="container-editorial">
           <div className="grid h-16 grid-cols-[1fr_auto_1fr] items-center gap-4 md:h-[72px]">
             {/* Left — navigation */}
