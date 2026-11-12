@@ -24,9 +24,12 @@ export type Address = {
   label: string;
   name: string;
   line1: string;
+  line2?: string;
   city: string;
+  state?: string;
   postcode: string;
   country: string;
+  phone?: string;
   isDefault?: boolean;
 };
 
@@ -369,11 +372,23 @@ export function ShopProvider({ children }: { children: ReactNode }) {
   );
 
   const addAddress = useCallback((address: Address) => {
-    setState((s) => ({ ...s, addresses: [...s.addresses, address] }));
+    setState((s) => {
+      const isDefault = address.isDefault || s.addresses.length === 0;
+      const addresses = s.addresses.map((savedAddress) =>
+        isDefault ? { ...savedAddress, isDefault: false } : savedAddress,
+      );
+      return { ...s, addresses: [...addresses, { ...address, isDefault }] };
+    });
   }, []);
 
   const removeAddress = useCallback((id: string) => {
-    setState((s) => ({ ...s, addresses: s.addresses.filter((a) => a.id !== id) }));
+    setState((s) => {
+      const addresses = s.addresses.filter((address) => address.id !== id);
+      if (s.addresses.find((address) => address.id === id)?.isDefault && addresses[0]) {
+        addresses[0] = { ...addresses[0], isDefault: true };
+      }
+      return { ...s, addresses };
+    });
   }, []);
 
   const placeOrder = useCallback((total: number) => {
