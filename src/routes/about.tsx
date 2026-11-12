@@ -40,7 +40,7 @@ function AboutPage() {
               width={1600}
               height={912}
               loading="lazy"
-              className="aspect-[4/5] w-full rounded-[10px] object-cover"
+              className="aspect-[4/5] w-full rounded-[10px] object-cover object-[88%_center]"
             />
           </Reveal>
           <div className="space-y-6 text-sm leading-relaxed text-muted-foreground lg:col-span-6 lg:col-start-7">

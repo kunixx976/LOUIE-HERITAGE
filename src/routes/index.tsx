@@ -49,11 +49,6 @@ function Home() {
           <div className="home-hero__shade" />
           <div className="container-editorial home-hero__container">
             <div className="home-hero__copy">
-              <p className="home-hero__eyebrow">
-                <span>The everyday edit</span>
-                <span className="home-hero__eyebrow-rule" />
-                <span>Edition 01</span>
-              </p>
               <h1 className="home-hero__title">
                 <span>Everyday,</span>
                 <em>with character.</em>

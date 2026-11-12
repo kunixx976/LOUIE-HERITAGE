@@ -325,25 +325,6 @@
   animation: fade-up 0.85s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
-.home-hero__eyebrow {
-  display: flex;
-  align-items: center;
-  gap: 0.85rem;
-  color: rgb(251 247 240 / 82%);
-  font-size: 0.68rem;
-  font-weight: 600;
-  letter-spacing: 0.21em;
-  line-height: 1.4;
-  text-transform: uppercase;
-}
-
-.home-hero__eyebrow-rule {
-  display: inline-block;
-  width: 2.5rem;
-  height: 1px;
-  background: rgb(237 183 151 / 82%);
-}
-
 .home-hero__title {
   display: flex;
   flex-direction: column;
@@ -515,16 +496,6 @@
 
   .home-hero__copy {
     padding-block: 5rem calc(4.5rem + env(safe-area-inset-bottom));
-  }
-
-  .home-hero__eyebrow {
-    gap: 0.65rem;
-    font-size: 0.59rem;
-    letter-spacing: 0.17em;
-  }
-
-  .home-hero__eyebrow-rule {
-    width: 1.5rem;
   }
 
   .home-hero__title {
