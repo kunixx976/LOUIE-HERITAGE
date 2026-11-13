@@ -6,6 +6,11 @@ import {
   razorpayCredentials,
   validateOrderPayment,
 } from "../_shared/orders.ts";
+import {
+  checkRateLimit,
+  rejectDisallowedOrigin,
+  RateLimitServiceError,
+} from "../_shared/security.ts";
 
 async function verifySignature(
   orderId: string,
@@ -35,15 +40,20 @@ async function verifySignature(
 Deno.serve(async (request) => {
   const options = preflight(request);
   if (options) return options;
-  if (request.method !== "POST") return json({ error: "Method not allowed." }, 405);
+  const blocked = rejectDisallowedOrigin(request);
+  if (blocked) return blocked;
+  if (request.method !== "POST") return json({ error: "Method not allowed." }, 405, request);
 
   try {
+    if (!(await checkRateLimit(request, "verify-razorpay-payment", 10, 900))) {
+      return json({ error: "Too many payment verification attempts. Please try again later." }, 429, request);
+    }
     const body = await request.json();
     const orderId = typeof body.razorpay_order_id === "string" ? body.razorpay_order_id : "";
     const paymentId = typeof body.razorpay_payment_id === "string" ? body.razorpay_payment_id : "";
     const signature = typeof body.razorpay_signature === "string" ? body.razorpay_signature : "";
     if (!orderId || !paymentId || !signature) {
-      return json({ error: "Payment verification details are incomplete." }, 400);
+      return json({ error: "Payment verification details are incomplete." }, 400, request);
     }
 
     const { keyId, keySecret } = razorpayCredentials();
@@ -51,6 +61,7 @@ Deno.serve(async (request) => {
       return json(
         { error: "Payment verification failed. If you were charged, check order history." },
         400,
+        request,
       );
     }
 
@@ -61,17 +72,18 @@ Deno.serve(async (request) => {
     const payment = await paymentResponse.json();
     if (!paymentResponse.ok || payment.order_id !== orderId || payment.currency !== "INR") {
       console.error("Razorpay payment details did not match the order.", payment);
-      return json({ error: "Payment details did not match this order." }, 400);
+      return json({ error: "Payment details did not match this order." }, 400, request);
     }
     if (!isSupportedRazorpayMethod(payment.method)) {
       return json(
         { error: "This payment method is not supported. If your account was charged, contact customer care with your payment ID." },
         400,
+        request,
       );
     }
 
     if (!(await validateOrderPayment(orderId, payment.amount, payment.currency))) {
-      return json({ error: "The order for this payment could not be found." }, 404);
+      return json({ error: "The order for this payment could not be found." }, 404, request);
     }
 
     if (payment.status === "authorized" && !payment.captured) {
@@ -95,22 +107,24 @@ Deno.serve(async (request) => {
               "Payment is authorized but not yet captured. Check order history before trying again.",
           },
           502,
+          request,
         );
       }
     } else if (payment.status !== "captured" || !payment.captured) {
-      return json({ error: "Payment has not been captured." }, 400);
+      return json({ error: "Payment has not been captured." }, 400, request);
     }
 
     const result = await finalizePaidOrder(orderId, paymentId, payment.amount, payment.currency);
-    if (!result) return json({ error: "The order for this payment could not be found." }, 404);
-    return json(result);
+    if (!result) return json({ error: "The order for this payment could not be found." }, 404, request);
+    return json(result, 200, request);
   } catch (error) {
     console.error("Unable to verify Razorpay payment.", error);
     return json(
       {
         error: error instanceof Error ? error.message : "Unable to verify payment.",
       },
-      500,
+      error instanceof RateLimitServiceError ? 503 : 500,
+      request,
     );
   }
 });

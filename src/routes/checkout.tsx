@@ -79,6 +79,8 @@ function CheckoutPage() {
     addresses,
     clearCart,
     catalogError,
+    customerDataError,
+    retryCustomerData,
   } = useShop();
   const [step, setStep] = useState(0);
   const [orderId, setOrderId] = useState<string | null>(null);
@@ -205,6 +207,18 @@ function CheckoutPage() {
               <p role="status" className="mb-5 rounded-[8px] border border-border bg-surface p-4 text-sm text-muted-foreground">
                 The live catalog could not be refreshed. Prices and availability will be rechecked
                 before your order is placed.
+              </p>
+            )}
+            {customerDataError && (
+              <p role="alert" className="mb-5 rounded-[8px] border border-border bg-surface p-4 text-sm text-muted-foreground">
+                Your saved shopping data could not sync to your account.{" "}
+                <button
+                  type="button"
+                  onClick={() => void retryCustomerData()}
+                  className="link-underline"
+                >
+                  Retry sync
+                </button>
               </p>
             )}
             {step === 0 ? <div className="space-y-4">

@@ -50,6 +50,9 @@ function ProfilePage() {
     hydrated,
     authError,
     catalogProducts,
+    customerDataLoading,
+    customerDataError,
+    retryCustomerData,
   } = useShop();
   const saved = catalogProducts.filter((p) => wishlist.includes(p.id));
 
@@ -142,6 +145,27 @@ function ProfilePage() {
         narrow
       />
       <div className="container-editorial py-12 md:py-16">
+        {customerDataLoading || customerDataError ? (
+          <div
+            role={customerDataError ? "alert" : "status"}
+            className="mb-6 flex flex-wrap items-center justify-between gap-3 rounded-[8px] border border-border bg-surface p-4 text-sm text-muted-foreground"
+          >
+            <span>
+              {customerDataError
+                ? "Your cart, wishlist and saved addresses could not sync to your account."
+                : "Loading your saved cart, wishlist and addresses…"}
+            </span>
+            {customerDataError ? (
+              <button
+                type="button"
+                onClick={() => void retryCustomerData()}
+                className="link-underline"
+              >
+                Retry sync
+              </button>
+            ) : null}
+          </div>
+        ) : null}
         <Tabs value={activeTab} onValueChange={setActiveTab}>
           <TabsList className="h-auto flex-wrap justify-start gap-2 rounded-none border-b border-border bg-transparent p-0">
             {["dashboard", "orders", "wishlist", "addresses", "settings"].map((t) => (
@@ -367,6 +391,7 @@ function ProfilePage() {
                         <button
                           type="button"
                           onClick={() => removeAddress(address.id)}
+                          disabled={customerDataLoading || Boolean(customerDataError)}
                           className="mt-4 text-xs text-muted-foreground link-underline"
                         >
                           Remove
@@ -500,7 +525,8 @@ function ProfilePage() {
 
                 <button
                   type="submit"
-                  className="mt-6 inline-flex h-11 w-full items-center justify-center rounded-full bg-foreground px-6 text-[11px] font-medium uppercase tracking-[0.14em] text-background transition-colors hover:bg-hover-accent"
+                  disabled={customerDataLoading || Boolean(customerDataError)}
+                  className="mt-6 inline-flex h-11 w-full items-center justify-center rounded-full bg-foreground px-6 text-[11px] font-medium uppercase tracking-[0.14em] text-background transition-colors hover:bg-hover-accent disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   Save address
                 </button>

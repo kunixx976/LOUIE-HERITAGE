@@ -34,6 +34,8 @@ function CartPage() {
     clearCoupon,
     hydrated,
     catalogProducts,
+    customerDataError,
+    retryCustomerData,
   } = useShop();
   const [coupon, setCoupon] = useState("");
   const shipping = subtotal > FREE_DELIVERY_THRESHOLD ? 0 : STANDARD_DELIVERY_FEE;
@@ -44,6 +46,19 @@ function CartPage() {
       <PageHeader title="Shopping bag" crumbs={[{ label: "Bag" }]} />
 
       <div className="container-editorial py-12 md:py-16">
+        {customerDataError ? (
+          <p role="alert" className="mb-6 rounded-[8px] border border-border bg-surface p-4 text-sm text-muted-foreground">
+            Your account cart could not be synced. Changes may not be available on your other
+            devices.{" "}
+            <button
+              type="button"
+              onClick={() => void retryCustomerData()}
+              className="link-underline"
+            >
+              Retry
+            </button>
+          </p>
+        ) : null}
         {!hydrated ? (
           <div className="space-y-4" aria-busy="true" aria-label="Loading your bag">
             <div className="h-5 w-40 animate-pulse rounded bg-secondary" />

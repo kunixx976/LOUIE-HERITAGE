@@ -54,7 +54,7 @@ export type Product = {
   inStock: boolean;
   inventoryStatus: "in_stock" | "low_stock" | "out_of_stock";
   inventoryUpdatedAt: string;
-  tags: ("new" | "seasonal")[];
+  tags: ("new" | "seasonal" | "best-seller")[];
   fabric: string;
   description: string;
   details: string[];
@@ -232,7 +232,7 @@ export const categories: Category[] = [
   },
 ];
 
-const rawProducts: Parameters<typeof normalizeProduct>[0][] = [
+const rawProductData: Parameters<typeof normalizeProduct>[0][] = [
   {
     id: "1",
     slug: "tirupur-classic-cotton-tee",
@@ -671,7 +671,9 @@ const rawProducts: Parameters<typeof normalizeProduct>[0][] = [
       649,
     ),
   },
-].map(normalizeProduct);
+];
+
+const rawProducts = rawProductData.map(normalizeProduct);
 
 export const products: Product[] = rawProducts;
 
@@ -700,6 +702,7 @@ export function mergeLiveCatalog(
   return products.flatMap((base) => {
     const record = productRecords.find((product) => product.id === base.id);
     if (!record || !record.active) return [];
+    const { inStock: _inStock, inventoryStatus: _inventoryStatus, ...baseFields } = base;
     const variants = variantRecords
       .filter((variant) => variant.product_id === record.id)
       .map((variant) => ({
@@ -712,6 +715,7 @@ export function mergeLiveCatalog(
         price: record.price,
         images: base.images,
       }));
+    if (variants.length === 0) return [];
     const colors = [
       ...new Map(
         variants.map((variant) => [
@@ -723,7 +727,7 @@ export function mergeLiveCatalog(
     const sizes = [...new Set(variants.map((variant) => variant.size))];
     return [
       normalizeProduct({
-        ...base,
+        ...baseFields,
         slug: record.slug,
         name: record.name,
         price: record.price,

@@ -1,5 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { Instagram, Facebook, Youtube } from "lucide-react";
+import { NewsletterForm } from "./NewsletterForm";
 
 const shop = [
   { label: "New arrivals", to: "/shop" as const },
@@ -150,6 +151,16 @@ export function Footer() {
             </div>
           </div>
         </div>
+
+        <section className="border-t border-border py-8 md:flex md:items-center md:justify-between md:gap-10">
+          <div className="mb-5 md:mb-0">
+            <h2 className="font-display text-xl">Notes from the studio</h2>
+            <p className="mt-2 text-sm text-muted-foreground">
+              New collections and considered pieces, occasionally.
+            </p>
+          </div>
+          <NewsletterForm />
+        </section>
 
         <div className="flex flex-col gap-3 border-t border-border py-7 text-xs text-muted-foreground md:flex-row md:items-center md:justify-between">
           <p>© {new Date().getFullYear()} LOUIE HERITAGE. All rights reserved.</p>

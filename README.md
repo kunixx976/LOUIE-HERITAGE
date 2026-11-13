@@ -90,12 +90,13 @@ and test orders before enabling live payments.
    ```sh
    npx supabase login
    npx supabase link --project-ref YOUR_PROJECT_REF
-   npx supabase db push
+   npx supabase db push --remote
    ```
 
    The migrations create the private `public.orders` table and payment/tracking fields, plus the
-   public-read `products` and `product_variants` catalog. Row-level security is enabled; order data
-   is accessed by Edge Functions using the server-side service role.
+   public-read `products` and `product_variants` catalog, and the per-user `customer_shop_data`
+   table for carts, wishlists and saved addresses. Row-level security restricts customer data to its
+   owner; order data is accessed by Edge Functions using the server-side service role.
 
 3. Add credentials as Supabase Edge Function secrets (never as `VITE_` variables or in browser
    code):
@@ -105,7 +106,10 @@ and test orders before enabling live payments.
    ```
 
    Supabase supplies `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` to deployed Edge Functions.
-   Do not share or commit any secret keys.
+   The production origin defaults to `https://modern-heirloom.vercel.app`. Set
+   `ALLOWED_ORIGINS` to a comma-separated list of exact storefront origins if the site uses a
+   different domain; add local development origins only for local testing. Do not share or commit
+   any secret keys.
 
 4. Deploy the checkout functions:
 
@@ -113,6 +117,7 @@ and test orders before enabling live payments.
    npx supabase functions deploy create-razorpay-order
    npx supabase functions deploy verify-razorpay-payment
    npx supabase functions deploy create-cod-order
+   npx supabase functions deploy subscribe-newsletter
    npx supabase functions deploy list-orders
    npx supabase functions deploy abandon-razorpay-order
    npx supabase functions deploy razorpay-webhook --no-verify-jwt
@@ -135,6 +140,12 @@ The Razorpay secret, Resend API key and Supabase service-role key must stay in S
 The browser only receives Razorpay's public Key ID and a one-time payment-abandonment token from
 the order-creation function. If function deployment or secrets are missing, checkout displays an
 error and does not create a successful order in the storefront.
+
+COD and Razorpay order creation, payment verification, order history and newsletter signups use
+database-backed rate limits. The order endpoints accept browser requests only from the configured
+storefront origins. The newsletter stores subscriber email addresses in a private Supabase table
+and sends a welcome email through Resend using the configured `RESEND_API_KEY` and
+`ORDER_FROM_EMAIL`.
 
 ## Product prices and inventory
 

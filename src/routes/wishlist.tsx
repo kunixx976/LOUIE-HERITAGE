@@ -16,7 +16,7 @@ export const Route = createFileRoute("/wishlist")({
 });
 
 function WishlistPage() {
-  const { wishlist, hydrated, catalogProducts } = useShop();
+  const { wishlist, hydrated, catalogProducts, customerDataError, retryCustomerData } = useShop();
   const saved = catalogProducts.filter((p) => wishlist.includes(p.id));
 
   return (
@@ -28,6 +28,19 @@ function WishlistPage() {
         crumbs={[{ label: "Wishlist" }]}
       />
       <div className="container-editorial py-12 md:py-16">
+        {customerDataError ? (
+          <p role="alert" className="mb-6 rounded-[8px] border border-border bg-surface p-4 text-sm text-muted-foreground">
+            Your account wishlist could not be synced. Changes may not be available on your other
+            devices.{" "}
+            <button
+              type="button"
+              onClick={() => void retryCustomerData()}
+              className="link-underline"
+            >
+              Retry
+            </button>
+          </p>
+        ) : null}
         {!hydrated ? null : saved.length === 0 ? (
           <div className="py-16 text-center">
             <p className="font-display text-2xl">Nothing saved yet</p>

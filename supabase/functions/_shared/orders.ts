@@ -1,8 +1,4 @@
-const headers = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
-  "Access-Control-Allow-Methods": "POST, OPTIONS",
-};
+import { corsHeaders, preflight } from "./security.ts";
 
 export class OrderAuthenticationError extends Error {}
 
@@ -33,16 +29,14 @@ export function isSupportedRazorpayMethod(method: unknown): method is "upi" | "c
 
 export type PricedItem = CheckoutItemInput & { name: string; unitPrice: number };
 
-export function json(body: unknown, status = 200) {
+export function json(body: unknown, status = 200, request?: Request) {
   return new Response(JSON.stringify(body), {
     status,
-    headers: { ...headers, "Content-Type": "application/json" },
+    headers: { ...corsHeaders(request), "Content-Type": "application/json" },
   });
 }
 
-export function preflight(request: Request) {
-  return request.method === "OPTIONS" ? new Response("ok", { headers }) : null;
-}
+export { preflight };
 
 export async function readCheckout(request: Request): Promise<{
   input: CheckoutInput;
@@ -533,8 +527,8 @@ export async function finalizePaidOrder(
 }
 
 export function razorpayCredentials() {
-  const keyId = Deno.env.get("RAZORPAY_KEY_ID");
-  const keySecret = Deno.env.get("RAZORPAY_KEY_SECRET");
+  const keyId = Deno.env.get("RAZORPAY_KEY_ID") ?? Deno.env.get("RAZORPAY_APIKEY");
+  const keySecret = Deno.env.get("RAZORPAY_KEY_SECRET") ?? Deno.env.get("RAZORPAY_SECRET");
   if (!keyId || !keySecret) throw new Error("Razorpay is not configured on the server.");
   return { keyId, keySecret };
 }
