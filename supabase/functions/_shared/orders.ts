@@ -1,6 +1,7 @@
 import { corsHeaders, preflight } from "./security.ts";
 
 export class OrderAuthenticationError extends Error {}
+export class OrderAuthorizationError extends Error {}
 
 export type CheckoutItemInput = {
   productId: string;
@@ -326,11 +327,31 @@ export async function getVerifiedCustomerEmail(request: Request) {
   return user.email.trim().toLowerCase();
 }
 
+export async function requireStoreAdmin(request: Request) {
+  const email = await getVerifiedCustomerEmail(request);
+  const { url, headers } = serviceHeaders();
+  const params = new URLSearchParams({
+    select: "email",
+    email: `eq.${email}`,
+    limit: "1",
+  });
+  const response = await fetch(`${url}/rest/v1/admin_users?${params}`, { headers });
+  if (!response.ok) {
+    console.error("Unable to verify store administrator.", response.status, await response.text());
+    throw new Error("Unable to verify administrator access.");
+  }
+  const admins = (await response.json()) as { email: string }[];
+  if (admins.length === 0) {
+    throw new OrderAuthorizationError("You do not have permission to manage orders.");
+  }
+  return email;
+}
+
 export async function listCustomerOrders(email: string) {
   const { url, headers } = serviceHeaders();
   const params = new URLSearchParams({
     select:
-      "order_number,status,total,payment_method,payment_status,items,created_at,tracking_carrier,tracking_number,tracking_url",
+      "order_number,status,total,payment_method,payment_status,items,created_at,tracking_carrier,tracking_number,tracking_url,customer_request_type,customer_request_note,customer_request_status,customer_request_created_at,refund_status,refund_reference,refunded_at",
     customer_email: `eq.${email}`,
     order: "created_at.desc",
     limit: "100",

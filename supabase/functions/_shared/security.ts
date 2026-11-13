@@ -1,3 +1,9 @@
+declare const Deno: {
+  env: {
+    get(key: string): string | undefined;
+  };
+};
+
 const defaultAllowedOrigins = ["https://modern-heirloom.vercel.app"];
 
 export class RateLimitServiceError extends Error {}
@@ -74,24 +80,36 @@ export async function checkRateLimit(
     throw new RateLimitServiceError("Rate limiting is not configured on the server.");
   }
 
-  const response = await fetch(`${url}/rest/v1/rpc/consume_api_rate_limit`, {
-    method: "POST",
-    headers: {
-      apikey: key,
-      Authorization: `Bearer ${key}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      p_bucket: bucket,
-      p_limit: limit,
-      p_window_seconds: windowSeconds,
-    }),
-  });
+  let response: Response;
+  try {
+    response = await fetch(`${url}/rest/v1/rpc/consume_api_rate_limit`, {
+      method: "POST",
+      headers: {
+        apikey: key,
+        Authorization: `Bearer ${key}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        p_bucket: bucket,
+        p_limit: limit,
+        p_window_seconds: windowSeconds,
+      }),
+    });
+  } catch (error) {
+    console.error("Unable to reach request rate-limit service.", error);
+    throw new RateLimitServiceError("Rate limiting is temporarily unavailable.");
+  }
   if (!response.ok) {
     console.error("Unable to check request rate limit.", response.status, await response.text());
     throw new RateLimitServiceError("Rate limiting is temporarily unavailable.");
   }
-  const allowed: unknown = await response.json();
+  let allowed: unknown;
+  try {
+    allowed = await response.json();
+  } catch (error) {
+    console.error("Unable to read request rate-limit response.", error);
+    throw new RateLimitServiceError("Rate limiting returned an invalid response.");
+  }
   if (typeof allowed !== "boolean") {
     throw new RateLimitServiceError("Rate limiting returned an invalid response.");
   }

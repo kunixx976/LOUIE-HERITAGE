@@ -1,6 +1,9 @@
+import { useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { formatPrice, useShop } from "@/lib/shop-store";
+import { toast } from "sonner";
+import { formatPrice, useShop, type Order } from "@/lib/shop-store";
 import { PageHeader } from "@/components/site/PageHeader";
+import { supabase } from "@/lib/supabase";
 
 export const Route = createFileRoute("/orders")({
   head: () => ({
@@ -22,7 +25,31 @@ export const Route = createFileRoute("/orders")({
 });
 
 function OrdersPage() {
-  const { orders, user, hydrated, ordersLoading, ordersError } = useShop();
+  const { orders, user, hydrated, ordersLoading, ordersError, reloadOrders } = useShop();
+  const [requestingOrder, setRequestingOrder] = useState<string | null>(null);
+
+  const submitRequest = async (order: Order, type: "cancellation" | "return", note: string) => {
+    if (!supabase) {
+      toast.error("Order requests are temporarily unavailable.");
+      return false;
+    }
+    setRequestingOrder(order.id);
+    try {
+      const { error } = await supabase.functions.invoke("request-order-action", {
+        body: { orderNumber: order.id, type, note },
+      });
+      if (error) throw error;
+      toast.success("Your request has been sent for review.");
+      await reloadOrders();
+      return true;
+    } catch (error) {
+      console.error("Unable to submit an order service request.", error);
+      toast.error(error instanceof Error ? error.message : "Unable to submit your request.");
+      return false;
+    } finally {
+      setRequestingOrder(null);
+    }
+  };
 
   return (
     <>
@@ -140,11 +167,94 @@ function OrdersPage() {
                     </p>
                   )}
                 </div>
+                <OrderServiceRequest
+                  order={order}
+                  busy={requestingOrder === order.id}
+                  onSubmit={submitRequest}
+                />
               </li>
             ))}
           </ul>
         )}
       </div>
     </>
+  );
+}
+
+function OrderServiceRequest({
+  order,
+  busy,
+  onSubmit,
+}: {
+  order: Order;
+  busy: boolean;
+  onSubmit: (order: Order, type: "cancellation" | "return", note: string) => Promise<boolean>;
+}) {
+  const type = order.status === "Delivered" ? "return" : "cancellation";
+  const canRequest =
+    type === "return"
+      ? order.status === "Delivered"
+      : ["Awaiting payment", "Processing", "Preparing"].includes(order.status);
+  const [note, setNote] = useState("");
+
+  if (order.requestStatus === "pending") {
+    return (
+      <div className="mt-5 rounded-[8px] bg-surface p-4 text-sm">
+        <p className="font-medium">
+          {order.requestType === "return" ? "Return" : "Cancellation"} request under review
+        </p>
+        {order.requestNote ? (
+          <p className="mt-2 text-muted-foreground">{order.requestNote}</p>
+        ) : null}
+      </div>
+    );
+  }
+
+  return (
+    <div className="mt-5 border-t border-border pt-5">
+      {order.requestStatus ? (
+        <p className="mb-3 text-xs text-muted-foreground">
+          Your last {order.requestType} request was {order.requestStatus}.
+          {order.requestNote ? ` Reason: ${order.requestNote}` : ""}
+        </p>
+      ) : null}
+      {canRequest ? (
+        <form
+          className="max-w-xl"
+          onSubmit={(event) => {
+            event.preventDefault();
+            void onSubmit(order, type, note).then((submitted) => {
+              if (submitted) setNote("");
+            });
+          }}
+        >
+          <label htmlFor={`order-request-${order.id}`} className="text-sm font-medium">
+            Request {type === "return" ? "a return" : "cancellation"}
+          </label>
+          <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
+            This sends a request for our team to review; it does not automatically cancel the order
+            or issue a refund.
+          </p>
+          <textarea
+            id={`order-request-${order.id}`}
+            required
+            minLength={10}
+            maxLength={1000}
+            rows={3}
+            value={note}
+            onChange={(event) => setNote(event.target.value)}
+            placeholder="Tell us why you are making this request"
+            className="mt-3 w-full rounded-[8px] border border-border bg-background p-3 text-sm outline-none focus:border-foreground"
+          />
+          <button
+            type="submit"
+            disabled={busy || note.trim().length < 10}
+            className="mt-3 rounded-[8px] border border-border px-5 py-3 text-[10px] font-medium uppercase tracking-[0.14em] transition-colors hover:border-foreground disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            {busy ? "Sending…" : `Submit ${type} request`}
+          </button>
+        </form>
+      ) : null}
+    </div>
   );
 }

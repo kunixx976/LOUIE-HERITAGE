@@ -94,9 +94,10 @@ and test orders before enabling live payments.
    ```
 
    The migrations create the private `public.orders` table and payment/tracking fields, plus the
-   public-read `products` and `product_variants` catalog, and the per-user `customer_shop_data`
-   table for carts, wishlists and saved addresses. Row-level security restricts customer data to its
-   owner; order data is accessed by Edge Functions using the server-side service role.
+   public-read `products` and `product_variants` catalog, the per-user `customer_shop_data` table
+   for carts, wishlists and saved addresses, and private order-operations fields. Row-level security
+   restricts customer data to its owner; order and admin data is accessed by Edge Functions using
+   the server-side service role.
 
 3. Add credentials as Supabase Edge Function secrets (never as `VITE_` variables or in browser
    code):
@@ -120,8 +121,23 @@ and test orders before enabling live payments.
    npx supabase functions deploy subscribe-newsletter
    npx supabase functions deploy list-orders
    npx supabase functions deploy abandon-razorpay-order
+   npx supabase functions deploy request-order-action
+   npx supabase functions deploy manage-orders
    npx supabase functions deploy razorpay-webhook --no-verify-jwt
    ```
+
+The private `/admin` page is for day-to-day order operations. The
+`20261116000000_add_order_operations.sql` migration grants the initial admin role to
+`kunikac2025@gmail.com`; sign in with that verified Supabase account. Admins can update order
+status and tracking, review cancellation/return requests, and record refund status after handling
+the payment outside the storefront. Refunds are not automatically issued by this app.
+
+Customers signed in with their verified checkout email can request cancellation before shipment
+or request a return for delivered orders from **Order history**. Requests are reviewed manually;
+submitting one does not cancel an order or guarantee a return or refund. Return eligibility periods
+and seller policies still need confirmation. To grant or remove administrator access later, update
+`public.admin_users` using a trusted database session; never expose service-role credentials in the
+browser.
 
 5. In Razorpay **Account & Settings → Webhooks**, add
    `https://YOUR_PROJECT_REF.supabase.co/functions/v1/razorpay-webhook`, use the same webhook

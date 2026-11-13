@@ -50,6 +50,9 @@ export type Order = {
   trackingCarrier: string | null;
   trackingNumber: string | null;
   trackingUrl: string | null;
+  requestType: "cancellation" | "return" | null;
+  requestNote: string | null;
+  requestStatus: "pending" | "approved" | "rejected" | null;
   items: {
     name: string;
     quantity: number;
@@ -69,6 +72,9 @@ type OrderRecord = {
   tracking_carrier: string | null;
   tracking_number: string | null;
   tracking_url: string | null;
+  customer_request_type: "cancellation" | "return" | null;
+  customer_request_note: string | null;
+  customer_request_status: "pending" | "approved" | "rejected" | null;
   items: {
     productId: string;
     name: string;
@@ -162,6 +168,7 @@ type Ctx = State & {
   hydrated: boolean;
   ordersLoading: boolean;
   ordersError: string | null;
+  reloadOrders: () => Promise<void>;
   authConfigured: boolean;
   authError: string | null;
   customerDataLoading: boolean;
@@ -505,6 +512,70 @@ export function ShopProvider({ children }: { children: ReactNode }) {
     }
   }, [customerDataOwner, state.user?.id]);
 
+  const reloadOrders = useCallback(async () => {
+    const userId = state.user?.id;
+    if (!userId || !supabase) {
+      orderRequestId.current += 1;
+      setState((current) => ({ ...current, orders: [] }));
+      setOrdersLoading(false);
+      setOrdersError(null);
+      return;
+    }
+
+    const requestId = ++orderRequestId.current;
+    setOrdersLoading(true);
+    setOrdersError(null);
+    try {
+      const { data, error } = await supabase.functions.invoke("list-orders", { body: {} });
+      if (error) throw error;
+      if (!data || !Array.isArray(data.orders)) {
+        throw new Error("Order history returned an invalid response.");
+      }
+      const orders = (data.orders as OrderRecord[]).map((record) => ({
+        id: record.order_number,
+        date: new Date(record.created_at).toLocaleDateString("en-IN", {
+          day: "numeric",
+          month: "long",
+          year: "numeric",
+        }),
+        status: record.status,
+        total: record.total,
+        paymentMethod: record.payment_method,
+        paymentStatus: record.payment_status,
+        trackingCarrier: record.tracking_carrier,
+        trackingNumber: record.tracking_number,
+        trackingUrl: record.tracking_url,
+        requestType: record.customer_request_type,
+        requestNote: record.customer_request_note,
+        requestStatus: record.customer_request_status,
+        items: record.items.map((item) => ({
+          name: item.name,
+          quantity: item.quantity,
+          price: item.unitPrice,
+          image: catalogProducts.find((product) => product.id === item.productId)?.images[0] ?? null,
+          size: item.size,
+          color: item.color,
+        })),
+      }));
+      if (requestId === orderRequestId.current) {
+        setState((current) =>
+          current.user?.id === userId ? { ...current, orders } : current,
+        );
+      }
+    } catch (error) {
+      console.error("Unable to load order history.", error);
+      if (requestId === orderRequestId.current) {
+        setOrdersError(error instanceof Error ? error.message : "Unable to load your orders.");
+      }
+    } finally {
+      if (requestId === orderRequestId.current) setOrdersLoading(false);
+    }
+  }, [catalogProducts, state.user?.id]);
+
+  useEffect(() => {
+    if (hydrated) void reloadOrders();
+  }, [hydrated, reloadOrders]);
+
   const addToCart = useCallback((line: CartLine) => {
     setState((s) => {
       const product = catalogProducts.find((item) => item.id === line.productId);
@@ -701,6 +772,9 @@ export function ShopProvider({ children }: { children: ReactNode }) {
             trackingCarrier: null,
             trackingNumber: null,
             trackingUrl: null,
+            requestType: null,
+            requestNote: null,
+            requestStatus: null,
             items,
           },
           ...s.orders,
@@ -731,6 +805,7 @@ export function ShopProvider({ children }: { children: ReactNode }) {
     hydrated,
     ordersLoading,
     ordersError,
+    reloadOrders,
     authConfigured: supabaseConfigured,
     authError,
     customerDataLoading:
