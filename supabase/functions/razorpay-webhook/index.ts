@@ -1,4 +1,9 @@
-import { finalizePaidOrder, json, markPaymentFailed } from "../_shared/orders.ts";
+import {
+  finalizePaidOrder,
+  isSupportedRazorpayMethod,
+  json,
+  markPaymentFailed,
+} from "../_shared/orders.ts";
 
 async function validSignature(body: string, signature: string, secret: string) {
   const key = await crypto.subtle.importKey(
@@ -54,7 +59,7 @@ Deno.serve(async (request) => {
       typeof payment.id !== "string" ||
       payment.status !== "captured" ||
       payment.captured !== true ||
-      payment.method !== "upi"
+      !isSupportedRazorpayMethod(payment.method)
     ) {
       return json({ error: "Invalid captured-payment event." }, 400);
     }

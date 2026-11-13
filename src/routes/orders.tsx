@@ -92,7 +92,7 @@ function OrdersPage() {
                   <span className="text-sm">{formatPrice(order.total)}</span>
                 </div>
                 <p className="mt-4 text-xs text-muted-foreground">
-                  Payment: {order.paymentMethod === "cod" ? "Cash on delivery" : "UPI"} ·{" "}
+                  Payment: {order.paymentMethod === "cod" ? "Cash on delivery" : "Online"} ·{" "}
                   {order.paymentStatus.replaceAll("_", " ")}
                 </p>
                 <ul className="mt-5 space-y-4">

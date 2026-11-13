@@ -1,5 +1,6 @@
 import {
   finalizePaidOrder,
+  isSupportedRazorpayMethod,
   json,
   preflight,
   razorpayCredentials,
@@ -62,9 +63,9 @@ Deno.serve(async (request) => {
       console.error("Razorpay payment details did not match the order.", payment);
       return json({ error: "Payment details did not match this order." }, 400);
     }
-    if (payment.method !== "upi") {
+    if (!isSupportedRazorpayMethod(payment.method)) {
       return json(
-        { error: "This order accepts UPI only. If your account was charged, contact customer care with your payment ID." },
+        { error: "This payment method is not supported. If your account was charged, contact customer care with your payment ID." },
         400,
       );
     }

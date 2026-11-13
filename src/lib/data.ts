@@ -9,7 +9,6 @@ import p8 from "@/assets/p8.jpg";
 import catWomen from "@/assets/cat-women.jpg";
 import catMen from "@/assets/cat-men.jpg";
 import catOversized from "@/assets/cat-oversized.jpg";
-import { checkoutCatalog } from "../../supabase/functions/_shared/checkout-catalog";
 
 const teeImage = "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=1400&q=85";
 const denimImage = "https://images.unsplash.com/photo-1541099649105-f69ad21f3246?auto=format&fit=crop&w=1400&q=85";
@@ -238,7 +237,7 @@ const rawProducts: Parameters<typeof normalizeProduct>[0][] = [
     id: "1",
     slug: "tirupur-classic-cotton-tee",
     name: "Classic Cotton T-Shirt",
-    price: checkoutCatalog["1"].price,
+    price: 799,
     compareAt: 1099,
     images: [teeImage, p1],
     categories: ["tshirts", "men", "women", "casual", "summer"],
@@ -272,7 +271,7 @@ const rawProducts: Parameters<typeof normalizeProduct>[0][] = [
     id: "2",
     slug: "oversized-drop-shoulder-tee",
     name: "Oversized Drop-Shoulder Tee",
-    price: checkoutCatalog["2"].price,
+    price: 1099,
     images: [teeImage, p1],
     categories: ["tshirts", "women", "casual", "summer"],
     colors: [
@@ -309,7 +308,7 @@ const rawProducts: Parameters<typeof normalizeProduct>[0][] = [
     id: "3",
     slug: "ahmedabad-straight-fit-jeans",
     name: "Straight-Fit Jeans",
-    price: checkoutCatalog["3"].price,
+    price: 1899,
     compareAt: 2399,
     images: [denimImage, p3],
     categories: ["denim", "men", "casual"],
@@ -346,7 +345,7 @@ const rawProducts: Parameters<typeof normalizeProduct>[0][] = [
     id: "4",
     slug: "bhilwara-high-rise-jeans",
     name: "High-Rise Jeans",
-    price: checkoutCatalog["4"].price,
+    price: 2099,
     images: [denimImage, p4],
     categories: ["denim", "women", "casual"],
     colors: [
@@ -383,7 +382,7 @@ const rawProducts: Parameters<typeof normalizeProduct>[0][] = [
     id: "5",
     slug: "surat-georgette-saree",
     name: "Georgette Saree",
-    price: checkoutCatalog["5"].price,
+    price: 2499,
     compareAt: 3200,
     images: [sareeImage, p5],
     categories: ["ethnic", "women"],
@@ -420,7 +419,7 @@ const rawProducts: Parameters<typeof normalizeProduct>[0][] = [
     id: "6",
     slug: "surat-anarkali-kurta-set",
     name: "Anarkali Kurta Set",
-    price: checkoutCatalog["6"].price,
+    price: 2899,
     images: [kurtaImage, sareeImage],
     categories: ["ethnic", "women", "summer"],
     colors: [
@@ -457,7 +456,7 @@ const rawProducts: Parameters<typeof normalizeProduct>[0][] = [
     id: "7",
     slug: "ludhiana-merino-crew-sweater",
     name: "Merino Crew Sweater",
-    price: checkoutCatalog["7"].price,
+    price: 1799,
     images: [sweaterImage, p4],
     categories: ["woollens", "men", "winter"],
     colors: [
@@ -493,7 +492,7 @@ const rawProducts: Parameters<typeof normalizeProduct>[0][] = [
     id: "8",
     slug: "ludhiana-long-cardigan",
     name: "Long Cardigan",
-    price: checkoutCatalog["8"].price,
+    price: 2199,
     compareAt: 2699,
     images: [cardiganImage, sweaterImage],
     categories: ["woollens", "women", "winter"],
@@ -531,7 +530,7 @@ const rawProducts: Parameters<typeof normalizeProduct>[0][] = [
     id: "9",
     slug: "panipat-cotton-bedsheet-set",
     name: "Cotton Bedsheet Set",
-    price: checkoutCatalog["9"].price,
+    price: 1499,
     images: [bedsheetImage, p8],
     categories: ["home"],
     colors: [
@@ -567,7 +566,7 @@ const rawProducts: Parameters<typeof normalizeProduct>[0][] = [
     id: "10",
     slug: "panipat-handloom-throw",
     name: "Cotton Throw",
-    price: checkoutCatalog["10"].price,
+    price: 1199,
     images: [textileImage, p8],
     categories: ["home", "winter"],
     colors: [
@@ -603,7 +602,7 @@ const rawProducts: Parameters<typeof normalizeProduct>[0][] = [
     id: "11",
     slug: "cotton-poplin-casual-shirt",
     name: "Cotton Poplin Casual Shirt",
-    price: checkoutCatalog["11"].price,
+    price: 1299,
     images: [catMen, p3],
     categories: ["men", "casual", "summer"],
     colors: [
@@ -640,7 +639,7 @@ const rawProducts: Parameters<typeof normalizeProduct>[0][] = [
     id: "12",
     slug: "handloom-cotton-stole",
     name: "Cotton Stole",
-    price: checkoutCatalog["12"].price,
+    price: 649,
     images: [textileImage, sareeImage],
     categories: ["accessories", "women", "summer"],
     colors: [
@@ -675,6 +674,66 @@ const rawProducts: Parameters<typeof normalizeProduct>[0][] = [
 ].map(normalizeProduct);
 
 export const products: Product[] = rawProducts;
+
+export type LiveProductRecord = {
+  id: string;
+  slug: string;
+  name: string;
+  price: number;
+  active: boolean;
+};
+
+export type LiveVariantRecord = {
+  id: string;
+  product_id: string;
+  sku: string;
+  size: string;
+  color: string;
+  color_hex: string;
+  stock_count: number;
+};
+
+export function mergeLiveCatalog(
+  productRecords: LiveProductRecord[],
+  variantRecords: LiveVariantRecord[],
+): Product[] {
+  return products.flatMap((base) => {
+    const record = productRecords.find((product) => product.id === base.id);
+    if (!record || !record.active) return [];
+    const variants = variantRecords
+      .filter((variant) => variant.product_id === record.id)
+      .map((variant) => ({
+        id: variant.id,
+        sku: variant.sku,
+        size: variant.size,
+        color: variant.color,
+        colorHex: variant.color_hex,
+        stockCount: variant.stock_count,
+        price: record.price,
+        images: base.images,
+      }));
+    const colors = [
+      ...new Map(
+        variants.map((variant) => [
+          variant.color,
+          { name: variant.color, hex: variant.colorHex },
+        ]),
+      ).values(),
+    ];
+    const sizes = [...new Set(variants.map((variant) => variant.size))];
+    return [
+      normalizeProduct({
+        ...base,
+        slug: record.slug,
+        name: record.name,
+        price: record.price,
+        colors,
+        sizes,
+        variants,
+      }),
+    ];
+  });
+}
 
 export const featuredProducts = products.slice(0, 8);
 export const bestSellers = products.filter((p) => p.tags.includes("best-seller"));

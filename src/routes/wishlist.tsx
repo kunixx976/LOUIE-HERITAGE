@@ -1,5 +1,4 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { products } from "@/lib/data";
 import { useShop } from "@/lib/shop-store";
 import { PageHeader } from "@/components/site/PageHeader";
 import { ProductCard } from "@/components/site/ProductCard";
@@ -17,8 +16,8 @@ export const Route = createFileRoute("/wishlist")({
 });
 
 function WishlistPage() {
-  const { wishlist, hydrated } = useShop();
-  const saved = products.filter((p) => wishlist.includes(p.id));
+  const { wishlist, hydrated, catalogProducts } = useShop();
+  const saved = catalogProducts.filter((p) => wishlist.includes(p.id));
 
   return (
     <>

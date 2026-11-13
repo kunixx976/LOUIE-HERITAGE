@@ -3,7 +3,6 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowUpRight, Heart, MapPin, PackageCheck, Plus } from "lucide-react";
 import { toast } from "sonner";
 import editorial from "@/assets/editorial.jpg";
-import { products } from "@/lib/data";
 import { formatPrice, useShop, type Address } from "@/lib/shop-store";
 import { PageHeader } from "@/components/site/PageHeader";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -50,8 +49,9 @@ function ProfilePage() {
     signOut,
     hydrated,
     authError,
+    catalogProducts,
   } = useShop();
-  const saved = products.filter((p) => wishlist.includes(p.id));
+  const saved = catalogProducts.filter((p) => wishlist.includes(p.id));
 
   const updateAddressField = (field: keyof typeof addressForm, value: string | boolean) => {
     setAddressForm((current) => ({ ...current, [field]: value }));

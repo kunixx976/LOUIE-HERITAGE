@@ -35,7 +35,7 @@ const faqs = [
   },
   {
     q: "Which payment methods do you accept?",
-    a: "Once checkout has been configured for the store, you can pay with UPI or credit/debit card through Razorpay, or choose cash on delivery. An order confirmation email is sent after the order is accepted.",
+    a: "Once checkout is configured, pay online through Razorpay using UPI, Visa, Mastercard, RuPay or net banking, or choose cash on delivery. An order confirmation email is sent after the order is accepted.",
   },
   {
     q: "Where are your clothes made?",

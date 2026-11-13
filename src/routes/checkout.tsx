@@ -22,6 +22,19 @@ const field =
 const FREE_DELIVERY_THRESHOLD = 1500;
 const STANDARD_DELIVERY_FEE = 79;
 const EXPRESS_DELIVERY_FEE = 199;
+const paymentMethods = [
+  {
+    id: "razorpay",
+    label: "Pay online",
+    description: "UPI, Visa, Mastercard, RuPay or net banking",
+  },
+  {
+    id: "cod",
+    label: "Cash on delivery",
+    description: "Pay when your order arrives",
+  },
+] as const;
+type PaymentMethod = (typeof paymentMethods)[number]["id"];
 
 type PaymentResponse = {
   razorpay_order_id: string;
@@ -36,12 +49,6 @@ type RazorpayOptions = {
   description: string;
   order_id: string;
   prefill: { name: string; email: string };
-  config: {
-    display: {
-      sequence: ["upi"];
-      preferences: { show_default_blocks: false };
-    };
-  };
   handler: (response: PaymentResponse) => void;
   modal: { ondismiss: () => void };
   theme: { color: string };
@@ -63,14 +70,23 @@ function loadRazorpay() {
 }
 
 function CheckoutPage() {
-  const { cartProducts, subtotal, discount, couponCode, user, addresses, clearCart } = useShop();
+  const {
+    cartProducts,
+    subtotal,
+    discount,
+    couponCode,
+    user,
+    addresses,
+    clearCart,
+    catalogError,
+  } = useShop();
   const [step, setStep] = useState(0);
   const [orderId, setOrderId] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [form, setForm] = useState({
     email: "", name: "", line1: "", city: "", postcode: "", country: "India",
-    method: "standard", payment: "upi",
+    method: "standard", payment: "razorpay" as PaymentMethod,
   });
   const shipping = form.method === "express" ? EXPRESS_DELIVERY_FEE : subtotal >= FREE_DELIVERY_THRESHOLD ? 0 : STANDARD_DELIVERY_FEE;
   const total = Math.max(0, subtotal - discount) + shipping;
@@ -95,9 +111,23 @@ function CheckoutPage() {
     setStep(2);
   };
   const submitOrder = async () => {
-    if (!supabase) throw new Error("Checkout is temporarily unavailable. Please contact customer care.");
-    const functionName = "create-razorpay-order";
-    const { data, error: invokeError } = await supabase.functions.invoke(functionName, {
+    const client = supabase;
+    if (!client) {
+      throw new Error("Checkout is temporarily unavailable. Please contact customer care.");
+    }
+    if (form.payment === "cod") {
+      const { data, error: invokeError } = await client.functions.invoke("create-cod-order", {
+        body: checkoutPayload(),
+      });
+      if (invokeError) throw new Error(invokeError.message || "Unable to place your order.");
+      if (!data || typeof data.orderNumber !== "string") {
+        throw new Error("The order could not be confirmed. Please try again.");
+      }
+      finishOrder(data.orderNumber);
+      return;
+    }
+
+    const { data, error: invokeError } = await client.functions.invoke("create-razorpay-order", {
       body: checkoutPayload(),
     });
     if (invokeError) throw new Error(invokeError.message || "Unable to place your order.");
@@ -112,17 +142,11 @@ function CheckoutPage() {
       description: `Order ${data.orderNumber}`,
       order_id: data.razorpayOrderId,
       prefill: { name: form.name, email: user?.email || form.email },
-      config: {
-        display: {
-          sequence: ["upi"],
-          preferences: { show_default_blocks: false },
-        },
-      },
       theme: { color: "#222222" },
       modal: { ondismiss: () => setBusy(false) },
       handler: async (response) => {
         try {
-          const { data: verified, error: verifyError } = await supabase.functions.invoke("verify-razorpay-payment", {
+          const { data: verified, error: verifyError } = await client.functions.invoke("verify-razorpay-payment", {
             body: { ...response, orderNumber: data.orderNumber, abandonmentToken: data.abandonmentToken },
           });
           if (verifyError) throw new Error(verifyError.message || "Payment verification failed.");
@@ -135,7 +159,7 @@ function CheckoutPage() {
       },
     });
     payment.on("payment.failed", () => {
-      setError("UPI payment was not completed. Please try again.");
+      setError("Online payment was not completed. Please try again.");
       setBusy(false);
     });
     payment.open();
@@ -177,6 +201,12 @@ function CheckoutPage() {
             {steps.map((label, index) => <li key={label} className={cn("flex items-center gap-2", index > step && "text-muted-foreground")}><span className={cn("grid h-6 w-6 place-items-center rounded-full border border-border text-[10px]", index <= step && "border-foreground bg-foreground text-background")}>{index + 1}</span>{label}</li>)}
           </ol>
           <form className="mt-9" onSubmit={onSubmit}>
+            {catalogError && (
+              <p role="status" className="mb-5 rounded-[8px] border border-border bg-surface p-4 text-sm text-muted-foreground">
+                The live catalog could not be refreshed. Prices and availability will be rechecked
+                before your order is placed.
+              </p>
+            )}
             {step === 0 ? <div className="space-y-4">
               <p className="text-sm text-muted-foreground">{user ? <>Signed in as {user.email}.</> : <>Checking out as a guest. <Link to="/login" className="link-underline">Sign in</Link></>}</p>
               {addresses.length > 0 && <button type="button" onClick={() => { const address = addresses[0]!; setForm((current) => ({ ...current, name: address.name, line1: address.line1, city: address.city, postcode: address.postcode, country: address.country })); }} className="w-full rounded-[8px] border border-border p-4 text-left text-sm"><span className="eyebrow block">Use saved address — {addresses[0]!.label}</span><span className="mt-1 block text-muted-foreground">{addresses[0]!.line1}, {addresses[0]!.postcode} {addresses[0]!.city}</span></button>}
@@ -197,16 +227,38 @@ function CheckoutPage() {
             </div> : <div className="space-y-5 text-sm">
               <div className="rounded-[8px] border border-border p-5"><p className="eyebrow mb-2">Delivering to</p><p>{form.name} · {user?.email || form.email}</p><p className="text-muted-foreground">{form.line1}, {form.postcode} {form.city}, {form.country}</p><p className="mt-2 text-muted-foreground">{form.method === "express" ? "Express" : "Standard"} delivery · {shipping === 0 ? "Free" : formatPrice(shipping)}</p></div>
               <div className="space-y-3"><p className="eyebrow">Payment method</p>
-                <div className="rounded-[8px] border border-foreground p-4">
-                  <p className="text-sm">UPI</p>
-                  <p className="mt-1 text-xs text-muted-foreground">Pay securely using a UPI app or QR code.</p>
-                </div>
+                {paymentMethods.map((payment) => (
+                  <label
+                    key={payment.id}
+                    className={cn(
+                      "flex cursor-pointer items-start gap-3 rounded-[8px] border border-border p-4",
+                      form.payment === payment.id && "border-foreground",
+                    )}
+                  >
+                    <input
+                      type="radio"
+                      name="payment"
+                      value={payment.id}
+                      checked={form.payment === payment.id}
+                      onChange={() =>
+                        setForm((current) => ({ ...current, payment: payment.id }))
+                      }
+                      className="mt-1 accent-black"
+                    />
+                    <span>
+                      <span className="block text-sm">{payment.label}</span>
+                      <span className="mt-1 block text-xs text-muted-foreground">
+                        {payment.description}
+                      </span>
+                    </span>
+                  </label>
+                ))}
               </div>
               <p className="text-xs leading-relaxed text-muted-foreground">The total shown includes the selected delivery charge and any applied discount. The server confirms your final total before placing the order.</p>
             </div>}
-            {step === 1 && !supabase && <p role="status" className="mt-5 rounded-[8px] border border-border bg-surface p-4 text-sm text-muted-foreground">UPI checkout is temporarily unavailable while the store payment connection is being completed. Please try again later.</p>}
+            {step === 1 && !supabase && <p role="status" className="mt-5 rounded-[8px] border border-border bg-surface p-4 text-sm text-muted-foreground">Checkout is temporarily unavailable while the store connection is being completed. Please try again later.</p>}
             {error && <p role="alert" aria-live="assertive" className="mt-5 rounded-[8px] border border-destructive/40 bg-destructive/5 p-4 text-sm text-destructive">{error}</p>}
-            <div className="mt-9 flex items-center gap-3">{step > 0 && <button type="button" onClick={() => { setError(null); setStep(0); }} className="rounded-[8px] border border-border px-7 py-3.5 text-[11px] uppercase tracking-[0.16em]">Back</button>}<button type="submit" disabled={busy || (step === 1 && !supabase)} className="flex-1 rounded-[8px] bg-foreground py-4 text-[11px] font-medium uppercase tracking-[0.16em] text-background disabled:opacity-60">{busy ? "Processing…" : step === 1 ? `Continue to UPI payment — ${formatPrice(total)}` : "Continue to payment"}</button></div>
+            <div className="mt-9 flex items-center gap-3">{step > 0 && <button type="button" onClick={() => { setError(null); setStep(0); }} className="rounded-[8px] border border-border px-7 py-3.5 text-[11px] uppercase tracking-[0.16em]">Back</button>}<button type="submit" disabled={busy || (step === 1 && !supabase)} className="flex-1 rounded-[8px] bg-foreground py-4 text-[11px] font-medium uppercase tracking-[0.16em] text-background disabled:opacity-60">{busy ? "Processing…" : step === 1 ? form.payment === "cod" ? `Place COD order — ${formatPrice(total)}` : `Pay securely — ${formatPrice(total)}` : "Continue to payment"}</button></div>
           </form>
         </div>
         <aside className="lg:col-span-5"><div className="rounded-[10px] border border-border p-7 lg:sticky lg:top-28"><h2 className="text-xl">Your order</h2><ul className="mt-6 space-y-5">{cartProducts.map(({ line, product }) => <li key={`${line.productId}-${line.size}-${line.color}`} className="flex gap-4"><img src={product.images[0]} alt="" width={900} height={1200} loading="lazy" className="h-24 rounded-[6px] object-cover" style={{ width: "4.5rem" }} /><div className="flex-1 text-sm"><p>{product.name}</p><p className="mt-1 text-xs text-muted-foreground">{line.color} · {line.size} · Qty {line.quantity}</p></div><span>{formatPrice(product.price * line.quantity)}</span></li>)}</ul><dl className="mt-7 space-y-3 border-t border-border pt-6 text-sm"><div className="flex justify-between"><dt className="text-muted-foreground">Subtotal</dt><dd>{formatPrice(subtotal)}</dd></div>{discount > 0 && <div className="flex justify-between"><dt className="text-muted-foreground">Discount</dt><dd>−{formatPrice(discount)}</dd></div>}<div className="flex justify-between"><dt className="text-muted-foreground">Shipping</dt><dd>{shipping === 0 ? "Free" : formatPrice(shipping)}</dd></div><div className="flex justify-between border-t border-border pt-4 text-base"><dt>Total</dt><dd>{formatPrice(total)}</dd></div></dl><p className="mt-4 text-xs leading-relaxed text-muted-foreground">Standard shipping is ₹79, or free on orders of ₹1,500 and above. Express shipping is ₹199. Delivery timing is not yet confirmed.</p><Link to="/shipping-returns" className="mt-3 inline-block text-xs link-underline">Shipping, returns & support</Link></div></aside>

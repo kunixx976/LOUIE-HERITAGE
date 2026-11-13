@@ -75,14 +75,15 @@ URL, not the Vercel URL.
 
 ## Payments and order confirmation emails
 
-Checkout uses Razorpay for UPI and card payments, supports cash on delivery, stores orders in
-Supabase, and sends confirmation email through Resend. The integration is not live until the
-following setup is complete. Start with Razorpay test-mode keys and test orders before enabling
-live payments.
+Checkout supports online payments through Razorpay (UPI, Visa, Mastercard, RuPay and net banking)
+and cash on delivery. Orders are stored in Supabase, with confirmation email through Resend. The
+integration is not live until the following setup is complete. Start with Razorpay test-mode keys
+and test orders before enabling live payments.
 
-1. Create Razorpay and Resend accounts. In Razorpay, enable UPI and cards and copy the **test**
-   Key ID and Key Secret. In Resend, verify a sending domain and choose an address on that domain
-   for order emails.
+1. Create Razorpay and Resend accounts. In Razorpay, enable UPI, cards and net banking, then copy
+   the **test** Key ID and Key Secret. Visa, Mastercard and RuPay are accepted through card
+   payments when enabled for the Razorpay account. In Resend, verify a sending domain and choose
+   an address on that domain for order emails.
 2. Install the [Supabase CLI](https://supabase.com/docs/guides/cli) if needed, then link this
    repository to the Supabase project used by the storefront:
 
@@ -92,8 +93,9 @@ live payments.
    npx supabase db push
    ```
 
-   The migrations create the private `public.orders` table and payment/tracking fields. Row-level
-   security is enabled; order data is accessed by Edge Functions using the server-side service role.
+   The migrations create the private `public.orders` table and payment/tracking fields, plus the
+   public-read `products` and `product_variants` catalog. Row-level security is enabled; order data
+   is accessed by Edge Functions using the server-side service role.
 
 3. Add credentials as Supabase Edge Function secrets (never as `VITE_` variables or in browser
    code):
@@ -119,8 +121,9 @@ live payments.
 5. In Razorpay **Account & Settings → Webhooks**, add
    `https://YOUR_PROJECT_REF.supabase.co/functions/v1/razorpay-webhook`, use the same webhook
    secret saved above, and subscribe to `payment.captured` and `payment.failed`.
-6. Keep Razorpay in test mode and verify successful payment, failed payment, closed payment
-   window, COD order, confirmation email, verified-customer order history and tracking details.
+6. Keep Razorpay in test mode and verify successful UPI, card and net-banking payments, failed
+   payment, closed payment window, COD order, confirmation email, verified-customer order history
+   and tracking details.
    Do not switch to live credentials until these flows pass and the seller's business, tax,
    shipping, return and warranty details have been confirmed.
 
@@ -132,3 +135,12 @@ The Razorpay secret, Resend API key and Supabase service-role key must stay in S
 The browser only receives Razorpay's public Key ID and a one-time payment-abandonment token from
 the order-creation function. If function deployment or secrets are missing, checkout displays an
 error and does not create a successful order in the storefront.
+
+## Product prices and inventory
+
+Product prices, active status, sizes, colours and per-variant stock are read from the Supabase
+`products` and `product_variants` tables. Apply migrations with `npx supabase db push`, then manage
+prices, available variants and `stock_count` in the Supabase Table Editor; checkout checks those
+values on the server for every order. Product images, descriptions and category presentation remain
+in the storefront source, so adding a completely new displayed product still requires a code
+update.

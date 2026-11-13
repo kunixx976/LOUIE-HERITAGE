@@ -9,7 +9,14 @@ import {
   type ReactNode,
 } from "react";
 import type { User as SupabaseUser } from "@supabase/supabase-js";
-import { getProductVariant, products, type Product } from "./data";
+import {
+  getProductVariant,
+  mergeLiveCatalog,
+  products,
+  type LiveProductRecord,
+  type LiveVariantRecord,
+  type Product,
+} from "./data";
 import { authConfigurationMessage, supabase, supabaseConfigured } from "./supabase";
 
 export type CartLine = {
@@ -119,6 +126,8 @@ type Ctx = State & {
   ordersError: string | null;
   authConfigured: boolean;
   authError: string | null;
+  catalogProducts: Product[];
+  catalogError: string | null;
   passwordRecovery: boolean;
   addToCart: (line: CartLine) => void;
   updateQuantity: (index: number, quantity: number) => void;
@@ -149,6 +158,9 @@ const ShopContext = createContext<Ctx | null>(null);
 
 export function ShopProvider({ children }: { children: ReactNode }) {
   const [state, setState] = useState<State>(initialState);
+  const [catalogProducts, setCatalogProducts] = useState(products);
+  const [catalogError, setCatalogError] = useState<string | null>(null);
+  const [catalogLoading, setCatalogLoading] = useState(Boolean(supabase));
   const [hydrated, setHydrated] = useState(false);
   const [authError, setAuthError] = useState<string | null>(null);
   const [passwordRecovery, setPasswordRecovery] = useState(false);
@@ -218,6 +230,54 @@ export function ShopProvider({ children }: { children: ReactNode }) {
   }, []);
 
   useEffect(() => {
+    if (!supabase) return;
+    let active = true;
+
+    async function loadCatalog() {
+      try {
+        const [productResult, variantResult] = await Promise.all([
+          supabase!
+            .from("products")
+            .select("id,slug,name,price,active")
+            .order("id"),
+          supabase!
+            .from("product_variants")
+            .select("id,product_id,sku,size,color,color_hex,stock_count")
+            .order("product_id"),
+        ]);
+        if (productResult.error) throw productResult.error;
+        if (variantResult.error) throw variantResult.error;
+
+        const liveProducts = mergeLiveCatalog(
+          productResult.data as LiveProductRecord[],
+          variantResult.data as LiveVariantRecord[],
+        );
+        if (liveProducts.length !== productResult.data.length) {
+          throw new Error("The live catalog contains products without storefront details.");
+        }
+        if (active) {
+          setCatalogProducts(liveProducts);
+          setCatalogError(null);
+        }
+      } catch (error) {
+        console.error("Unable to load the live product catalog.", error);
+        if (active) {
+          setCatalogError(
+            error instanceof Error ? error.message : "Unable to load the live product catalog.",
+          );
+        }
+      } finally {
+        if (active) setCatalogLoading(false);
+      }
+    }
+
+    void loadCatalog();
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  useEffect(() => {
     if (!hydrated) return;
     try {
       window.localStorage.setItem(
@@ -236,7 +296,7 @@ export function ShopProvider({ children }: { children: ReactNode }) {
 
   const addToCart = useCallback((line: CartLine) => {
     setState((s) => {
-      const product = products.find((item) => item.id === line.productId);
+      const product = catalogProducts.find((item) => item.id === line.productId);
       const variant = product ? getProductVariant(product, line.size, line.color) : null;
       if (!variant || variant.stockCount <= 0 || line.quantity <= 0) return s;
 
@@ -250,20 +310,20 @@ export function ShopProvider({ children }: { children: ReactNode }) {
       else cart.push({ ...line, quantity });
       return { ...s, cart };
     });
-  }, []);
+  }, [catalogProducts]);
 
   const updateQuantity = useCallback((index: number, quantity: number) => {
     setState((s) => {
       if (!s.cart[index]) return s;
       const cart = [...s.cart];
       const line = cart[index]!;
-      const product = products.find((item) => item.id === line.productId);
+      const product = catalogProducts.find((item) => item.id === line.productId);
       const variant = product ? getProductVariant(product, line.size, line.color) : null;
       if (quantity <= 0 || !variant || variant.stockCount <= 0) cart.splice(index, 1);
       else cart[index] = { ...line, quantity: Math.min(Math.floor(quantity), variant.stockCount, 10) };
       return { ...s, cart };
     });
-  }, []);
+  }, [catalogProducts]);
 
   const removeLine = useCallback((index: number) => {
     setState((s) => {
@@ -395,7 +455,7 @@ export function ShopProvider({ children }: { children: ReactNode }) {
     const id = `AN-${Math.floor(20000 + Math.random() * 9000)}`;
     setState((s) => {
       const items = s.cart.map((line) => {
-        const product = products.find((p) => p.id === line.productId)!;
+        const product = catalogProducts.find((p) => p.id === line.productId)!;
         return {
           name: product.name,
           quantity: line.quantity,
@@ -423,14 +483,17 @@ export function ShopProvider({ children }: { children: ReactNode }) {
       };
     });
     return id;
-  }, []);
+  }, [catalogProducts]);
 
   const cartProducts = useMemo(
     () =>
       state.cart
-        .map((line) => ({ line, product: products.find((p) => p.id === line.productId)! }))
+        .map((line) => ({
+          line,
+          product: catalogProducts.find((p) => p.id === line.productId)!,
+        }))
         .filter((entry) => Boolean(entry.product)),
-    [state.cart],
+    [state.cart, catalogProducts],
   );
   const subtotal = cartProducts.reduce(
     (n, { line, product }) => n + product.price * line.quantity,
@@ -445,6 +508,8 @@ export function ShopProvider({ children }: { children: ReactNode }) {
     ordersError,
     authConfigured: supabaseConfigured,
     authError,
+    catalogProducts,
+    catalogError: catalogLoading ? null : catalogError,
     passwordRecovery,
     addToCart,
     updateQuantity,

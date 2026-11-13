@@ -6,7 +6,6 @@ import {
   getDefaultVariant,
   getProduct,
   getProductVariant,
-  products,
   type Product,
 } from "@/lib/data";
 import { formatPrice, useShop } from "@/lib/shop-store";
@@ -54,9 +53,17 @@ export const Route = createFileRoute("/product/$slug")({
 });
 
 function ProductPage() {
-  const { product } = Route.useLoaderData() as { product: Product };
+  const { product: initialProduct } = Route.useLoaderData() as { product: Product };
   const navigate = useNavigate();
-  const { addToCart, toggleWishlist, isWishlisted, markViewed, recentlyViewed } = useShop();
+  const {
+    addToCart,
+    toggleWishlist,
+    isWishlisted,
+    markViewed,
+    recentlyViewed,
+    catalogProducts,
+  } = useShop();
+  const product = catalogProducts.find((item) => item.slug === initialProduct.slug) ?? initialProduct;
 
   const defaultVariant = getDefaultVariant(product) ?? product.variants[0] ?? null;
   const [active, setActive] = useState(0);
@@ -78,12 +85,12 @@ function ProductPage() {
   const wishlisted = isWishlisted(product.id);
   const gallery =
     product.images.length > 1 ? product.images : [product.images[0]!, product.images[0]!];
-  const related = products
+  const related = catalogProducts
     .filter((p) => p.id !== product.id && p.categories.some((c) => product.categories.includes(c)))
     .slice(0, 4);
   const viewed = recentlyViewed
     .filter((id) => id !== product.id)
-    .map((id) => products.find((p) => p.id === id))
+    .map((id) => catalogProducts.find((p) => p.id === id))
     .filter(Boolean)
     .slice(0, 4);
 

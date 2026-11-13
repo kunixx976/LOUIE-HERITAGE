@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { products } from "@/lib/data";
+import { useShop } from "@/lib/shop-store";
 import { PageHeader } from "@/components/site/PageHeader";
 import { ShopBrowser } from "@/components/site/ShopBrowser";
 
@@ -23,6 +23,7 @@ export const Route = createFileRoute("/shop")({
 });
 
 function Shop() {
+  const { catalogProducts } = useShop();
   return (
     <>
       <PageHeader
@@ -31,7 +32,7 @@ function Shop() {
         description="Every piece we currently make, produced in limited runs from natural fibres. Filter by size, colour, price or availability."
         crumbs={[{ label: "Shop" }]}
       />
-      <ShopBrowser products={products} />
+      <ShopBrowser products={catalogProducts} />
     </>
   );
 }

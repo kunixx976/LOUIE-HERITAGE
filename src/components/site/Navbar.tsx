@@ -2,7 +2,7 @@ import { useMemo, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { Link } from "@tanstack/react-router";
 import { Heart, Menu, Search, ShoppingBag, User, X } from "lucide-react";
-import { categories, products } from "@/lib/data";
+import { categories } from "@/lib/data";
 import { formatPrice, useShop } from "@/lib/shop-store";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
@@ -13,12 +13,12 @@ export function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [query, setQuery] = useState("");
-  const { cartCount, wishlist, user, hydrated } = useShop();
+  const { cartCount, wishlist, user, hydrated, catalogProducts } = useShop();
 
   const results = useMemo(() => {
     const q = query.trim().toLowerCase();
     if (!q) return [];
-    return products
+    return catalogProducts
       .filter(
         (p) =>
           p.name.toLowerCase().includes(q) ||
@@ -26,7 +26,7 @@ export function Navbar() {
           p.fabric.toLowerCase().includes(q),
       )
       .slice(0, 6);
-  }, [query]);
+  }, [catalogProducts, query]);
 
   return (
     <>

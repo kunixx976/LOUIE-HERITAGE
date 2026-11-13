@@ -2,7 +2,6 @@ import { useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Minus, Plus, X } from "lucide-react";
 import { toast } from "sonner";
-import { featuredProducts } from "@/lib/data";
 import { FREE_DELIVERY_THRESHOLD, STANDARD_DELIVERY_FEE } from "@/lib/shipping";
 import { formatPrice, useShop } from "@/lib/shop-store";
 import { PageHeader } from "@/components/site/PageHeader";
@@ -34,6 +33,7 @@ function CartPage() {
     applyCoupon,
     clearCoupon,
     hydrated,
+    catalogProducts,
   } = useShop();
   const [coupon, setCoupon] = useState("");
   const shipping = subtotal > FREE_DELIVERY_THRESHOLD ? 0 : STANDARD_DELIVERY_FEE;
@@ -229,7 +229,7 @@ function CartPage() {
         <div className="container-editorial py-16">
           <h2 className="text-2xl">Recommended for you</h2>
           <div className="mt-10 grid grid-cols-2 gap-x-5 gap-y-12 lg:grid-cols-4">
-            {featuredProducts.slice(0, 4).map((p) => (
+            {catalogProducts.slice(0, 4).map((p) => (
               <ProductCard key={p.id} product={p} />
             ))}
           </div>

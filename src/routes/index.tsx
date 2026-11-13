@@ -4,11 +4,8 @@ import hero from "@/assets/hero.jpg";
 import editorial from "@/assets/editorial.jpg";
 import {
   categories,
-  featuredProducts,
-  newArrivals,
-  summerProducts,
-  winterProducts,
 } from "@/lib/data";
+import { useShop } from "@/lib/shop-store";
 import { ProductCard } from "@/components/site/ProductCard";
 import { SectionHeading } from "@/components/site/SectionHeading";
 import { Reveal } from "@/components/site/Reveal";
@@ -33,6 +30,15 @@ export const Route = createFileRoute("/")({
 });
 
 function Home() {
+  const { catalogProducts } = useShop();
+  const featuredProducts = catalogProducts.slice(0, 8);
+  const newArrivals = catalogProducts.filter((product) => product.tags.includes("new"));
+  const summerProducts = catalogProducts.filter(
+    (product) => product.categories.includes("summer") && product.inStock,
+  );
+  const winterProducts = catalogProducts.filter(
+    (product) => product.categories.includes("winter") && product.inStock,
+  );
   return (
     <>
       {/* Hero */}

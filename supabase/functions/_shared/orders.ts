@@ -1,5 +1,3 @@
-import { checkoutCatalog } from "./checkout-catalog.ts";
-
 const headers = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
@@ -26,6 +24,12 @@ export type CheckoutInput = {
   couponCode?: string;
   items: CheckoutItemInput[];
 };
+
+const supportedRazorpayMethods = new Set(["upi", "card", "netbanking"]);
+
+export function isSupportedRazorpayMethod(method: unknown): method is "upi" | "card" | "netbanking" {
+  return typeof method === "string" && supportedRazorpayMethods.has(method);
+}
 
 export type PricedItem = CheckoutItemInput & { name: string; unitPrice: number };
 
@@ -77,13 +81,12 @@ export async function readCheckout(request: Request): Promise<{
     throw new Error("Please check your contact, delivery and cart details.");
   }
 
-  const items = input.items.map((item) => {
-    if (!Object.hasOwn(checkoutCatalog, item.productId)) {
-      throw new Error("Your bag contains an invalid item. Please refresh it and try again.");
-    }
-    const product = checkoutCatalog[item.productId as keyof typeof checkoutCatalog];
+  for (const item of input.items) {
     if (
-      !product ||
+      !item ||
+      typeof item.productId !== "string" ||
+      item.productId.length < 1 ||
+      item.productId.length > 100 ||
       typeof item.size !== "string" ||
       item.size.length < 1 ||
       item.size.length > 30 ||
@@ -96,14 +99,76 @@ export async function readCheckout(request: Request): Promise<{
     ) {
       throw new Error("Your bag contains an invalid item. Please refresh it and try again.");
     }
-    return {
-      productId: item.productId,
-      size: item.size,
-      color: item.color,
-      quantity: item.quantity,
-      name: product.name,
-      unitPrice: product.price,
-    };
+  }
+
+  const productIds = [...new Set(input.items.map((item) => item.productId))];
+  const filters = productIds.map(encodeURIComponent).join(",");
+  const { url, headers: authHeaders } = serviceHeaders();
+  const productParams = new URLSearchParams({
+    select: "id,name,price",
+    active: "eq.true",
+    id: `in.(${filters})`,
+  });
+  const variantParams = new URLSearchParams({
+    select: "product_id,size,color,stock_count",
+    product_id: `in.(${filters})`,
+  });
+  const [productsResponse, variantsResponse] = await Promise.all([
+    fetch(`${url}/rest/v1/products?${productParams}`, { headers: authHeaders }),
+    fetch(`${url}/rest/v1/product_variants?${variantParams}`, { headers: authHeaders }),
+  ]);
+  if (!productsResponse.ok || !variantsResponse.ok) {
+    const [productsError, variantsError] = await Promise.all([
+      productsResponse.text(),
+      variantsResponse.text(),
+    ]);
+    console.error("Unable to load the live product catalog.", {
+      productStatus: productsResponse.status,
+      productsError,
+      variantStatus: variantsResponse.status,
+      variantsError,
+    });
+    throw new Error("We couldn't check product availability. Please try again.");
+  }
+  const [products, variants] = await Promise.all([
+    productsResponse.json() as Promise<{ id: string; name: string; price: number }[]>,
+    variantsResponse.json() as Promise<
+      { product_id: string; size: string; color: string; stock_count: number }[]
+    >,
+  ]);
+  const productsById = new Map(products.map((product) => [product.id, product]));
+  for (const productId of productIds) {
+    if (!productsById.has(productId)) {
+      throw new Error("A selected product is no longer available. Please refresh your bag.");
+    }
+  }
+  const variantsByKey = new Map(
+    variants.map((variant) => [
+      JSON.stringify([variant.product_id, variant.size, variant.color]),
+      variant,
+    ]),
+  );
+  const requestedQuantities = new Map<string, number>();
+  for (const item of input.items) {
+    const key = JSON.stringify([item.productId, item.size, item.color]);
+    requestedQuantities.set(key, (requestedQuantities.get(key) ?? 0) + item.quantity);
+  }
+  for (const [key, quantity] of requestedQuantities) {
+    const variant = variantsByKey.get(key);
+    if (!variant) {
+      throw new Error("A selected product, size or colour is no longer available.");
+    }
+    if (variant.stock_count < quantity) {
+      throw new Error("A selected size or colour no longer has enough stock. Please update your bag.");
+    }
+  }
+
+  const items = input.items.map((item) => {
+    const product = productsById.get(item.productId);
+    if (!product) {
+      throw new Error("A selected product is no longer available. Please refresh your bag.");
+    }
+    return { ...item, name: product.name, unitPrice: product.price };
   });
 
   const subtotal = items.reduce((sum, item) => sum + item.unitPrice * item.quantity, 0);
